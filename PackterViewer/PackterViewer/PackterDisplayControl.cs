@@ -39,7 +39,10 @@ namespace Packter_viewer2
         ContentBuilder contentBuilder;
         ContentManager contentManager;
         ContentManager Content;
-        HashSet<System.Windows.Forms.Keys> EnableKeySet = new HashSet<System.Windows.Forms.Keys>();
+        Dictionary<System.Windows.Forms.Keys, int> EnableKeyMap = new Dictionary<System.Windows.Forms.Keys,int>();
+        Dictionary<System.Windows.Forms.Keys, DateTime> KeyHitMap = new Dictionary<System.Windows.Forms.Keys, DateTime>();
+
+        System.Threading.Mutex mutex = new System.Threading.Mutex();
 
         const int MaxPacketNum = 1024*1024; // 1024*1024個までパケットは覚える
         const int flyMillisecond = 3000; // パケットが飛んでいくのにかかる時間
@@ -93,6 +96,7 @@ namespace Packter_viewer2
         DateTime startDateTime;
         DateTime prevDateTime;
         GameTime currentGameTime;
+        TimeSpan acceptGapTimeSpan = new TimeSpan(50000);
 
         Dictionary<string, Model> cachedModel = new Dictionary<string, Model>();
 
@@ -503,15 +507,37 @@ namespace Packter_viewer2
                 }
             }
             if (nowKeyState.IsKeyDown(Keys.B))
+            {
                 if (nowKeyState.IsKeyDown(Keys.LeftShift) || nowKeyState.IsKeyDown(Keys.RightShift))
                     addMilliseconds -= flyMillisecond / 3; // 少し前に戻す
                 else
                     addMilliseconds -= flyMillisecond / 30; // 少し前に戻す
+                if (EnableKeyMap.ContainsKey(System.Windows.Forms.Keys.B))
+                    EnableKeyMap[System.Windows.Forms.Keys.B] = 0;
+            }
             if (nowKeyState.IsKeyDown(Keys.F))
+            {
                 if (nowKeyState.IsKeyDown(Keys.LeftShift) || nowKeyState.IsKeyDown(Keys.RightShift))
                     addMilliseconds += flyMillisecond / 3; // 少し後に進める
                 else
                     addMilliseconds += flyMillisecond / 30; // 少し後に進める
+                if (EnableKeyMap.ContainsKey(System.Windows.Forms.Keys.F))
+                    EnableKeyMap[System.Windows.Forms.Keys.F] = 0;
+            }
+            if (EnableKeyMap.ContainsKey(System.Windows.Forms.Keys.B) && EnableKeyMap[System.Windows.Forms.Keys.B] > 0)
+            {
+                mutex.WaitOne();
+                addMilliseconds -= flyMillisecond / 3 * EnableKeyMap[System.Windows.Forms.Keys.B];
+                EnableKeyMap[System.Windows.Forms.Keys.B] = 0;
+                mutex.ReleaseMutex();
+            }
+            if (EnableKeyMap.ContainsKey(System.Windows.Forms.Keys.F) && EnableKeyMap[System.Windows.Forms.Keys.F] > 0)
+            {
+                mutex.WaitOne();
+                addMilliseconds += flyMillisecond / 3 * EnableKeyMap[System.Windows.Forms.Keys.F];
+                EnableKeyMap[System.Windows.Forms.Keys.F] = 0;
+                mutex.ReleaseMutex();
+            }
             if (JustNowKeyDown(nowKeyState, Keys.C))
                 addMilliseconds = 0.0; // C キーが押されたら元に戻す
             if (JustNowKeyDown(nowKeyState, Keys.T))
@@ -965,11 +991,37 @@ namespace Packter_viewer2
 #if true
         public void ProcessKeyDown(System.Windows.Forms.Keys key)
         {
-            EnableKeySet.Add(key);
+            //EnableKeyMap[key]++;
+            if (!KeyHitMap.ContainsKey(key))
+            {
+                KeyHitMap.Add(key, DateTime.Now);
+            }
+            else
+            {
+                KeyHitMap[key] = DateTime.Now;
+            }
         }
         public void ProcessKeyUp(System.Windows.Forms.Keys key)
         {
-            EnableKeySet.Remove(key);
+            if (!KeyHitMap.ContainsKey(key))
+                return;
+            TimeSpan gap = DateTime.Now - KeyHitMap[key];
+            if(gap > acceptGapTimeSpan)
+            {
+                return;
+            }
+
+            mutex.WaitOne();
+            if (!EnableKeyMap.ContainsKey(key))
+            {
+                EnableKeyMap.Add(key, 0);
+            }
+            EnableKeyMap[key]++;
+            mutex.ReleaseMutex();
+        }
+        public void OverrideKeyInputAcceptGapTimeMicrosecond(int microSecond)
+        {
+            acceptGapTimeSpan = new TimeSpan(microSecond * 10);
         }
 #endif
     }

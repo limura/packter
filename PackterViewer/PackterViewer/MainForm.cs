@@ -43,6 +43,8 @@ namespace WinFormsGraphicsDevice
         string packterMSGString2 = "\"><td>";
         string packterMSGString3 = "</tr></table></body></html>";
 
+        System.Nullable<int> tickKeyInputAcceptMicrosecond = null;
+
         public MainForm(string[] args)
         {
             InitializeComponent();
@@ -52,6 +54,10 @@ namespace WinFormsGraphicsDevice
             contentBuilder = new ContentBuilder();
             contentManager = new ContentManager(packterDisplayControl.Services, contentBuilder.OutputDirectory);
             packterDisplayControl.RegisterData(contentBuilder, contentManager, defaultScale);
+            if (tickKeyInputAcceptMicrosecond != null)
+            {
+                packterDisplayControl.OverrideKeyInputAcceptGapTimeMicrosecond(tickKeyInputAcceptMicrosecond.GetValueOrDefault());
+            }
 
             intervalTimer.Tick += new System.EventHandler(intervalTimer_Tick);
             intervalTimer.Interval = 100;
@@ -137,6 +143,16 @@ namespace WinFormsGraphicsDevice
                                 break;
                             case "packtermsgformat3":
                                 packterMSGString3 = value;
+                                break;
+                            case "tickkeyinputacceptmicrosecond":
+                                try
+                                {
+                                    tickKeyInputAcceptMicrosecond = int.Parse(value);
+                                }
+                                catch
+                                {
+                                    tickKeyInputAcceptMicrosecond = null;
+                                }
                                 break;
                             default:
                                 break;
