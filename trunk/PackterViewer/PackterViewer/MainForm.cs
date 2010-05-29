@@ -49,6 +49,7 @@ namespace WinFormsGraphicsDevice
         {
             InitializeComponent();
 
+            webBrowserVisibleChangeTimer.Interval = 10 * 1000; // 10•b
             ParseArgs(args);
 
             contentBuilder = new ContentBuilder();
@@ -63,7 +64,6 @@ namespace WinFormsGraphicsDevice
             intervalTimer.Interval = 100;
             intervalTimer.Start();
 
-            webBrowserVisibleChangeTimer.Interval = 30 * 1000; // 30•b
             webBrowserVisibleChangeTimer.Tick += new System.EventHandler(webBrowserVisibleChangeTimer_Tick);
 
             webBrowser.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(webBrowser_DocumentCompleted);
@@ -153,6 +153,17 @@ namespace WinFormsGraphicsDevice
                                 {
                                     tickKeyInputAcceptMicrosecond = null;
                                 }
+                                break;
+                            case "msgboxclosetimesec":
+                                try
+                                {
+                                    int sec = int.Parse(value);
+                                    if (sec > 0)
+                                    {
+                                        webBrowserVisibleChangeTimer.Interval = sec * 1000;
+                                    }
+                                }
+                                catch { }
                                 break;
                             default:
                                 break;
