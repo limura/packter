@@ -38,6 +38,10 @@ namespace WinFormsGraphicsDevice
         string softTalkPath = "softalk\\softalkw.exe";
         float defaultScale = 8;
 
+        string packterMSGString1 = "<html lang=\"ja\"><body><table height=\"100%\" border=\"1\"><tr><td><img height=\"100%\" src=\"";
+        string packterMSGString2 = "\"><td>";
+        string packterMSGString3 = "</tr></table></body></html>";
+
         public MainForm(string[] args)
         {
             InitializeComponent();
@@ -82,9 +86,64 @@ namespace WinFormsGraphicsDevice
 
                 if (System.IO.File.Exists(args[i]))
                 {
-                    // nothing to do!
+                    ParseSettingFile(args[i]);
+                    continue;
                 }
             }
+        }
+
+        void ParseSettingFile(string file)
+        {
+            try
+            {
+                System.IO.StreamReader reader = new System.IO.StreamReader(file, System.Text.Encoding.GetEncoding("Shift_JIS"));
+                string text;
+                while ((text = reader.ReadLine()) != null)
+                {
+                    if (text.IndexOf('#') == 0)
+                        continue;
+                    string[] list = text.Split(new char[] { '=' }, 2);
+                    if (list.Length == 2)
+                    {
+                        string key = list[0];
+                        string value = list[1];
+                        key = key.Trim();
+                        key = key.ToLower();
+                        //value.Trim();
+                        switch (key)
+                        {
+                            case "size":
+                                {
+                                    float f;
+                                    if (float.TryParse(value, out f))
+                                    {
+                                        if (f > 0)
+                                            defaultScale = f;
+                                    }
+                                }
+                                break;
+                            case "softalk":
+                                if (System.IO.File.Exists(value))
+                                {
+                                    softTalkPath = value;
+                                }
+                                break;
+                            case "packtermsgformat1":
+                                packterMSGString1 = value;
+                                break;
+                            case "packtermsgformat2":
+                                packterMSGString2 = value;
+                                break;
+                            case "packtermsgformat3":
+                                packterMSGString3 = value;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+            catch { }
         }
 
         void intervalTimer_Tick(object sender, System.EventArgs e)
@@ -125,8 +184,8 @@ namespace WinFormsGraphicsDevice
                             {
                                 string numString = msgString.Substring(0, pos);
                                 string htmlString = msgString.Substring(pos + 1);
-                                targetHtml = "<html lang=\"ja\"><body><table height=\"100%\" border=\"1\"><tr><td><img height=\"100%\" src=\""
-                                    + imgUri.ToString() + "/" + numString + ".png\"><td>" + htmlString + "</tr></table></body></html>";
+                                targetHtml = packterMSGString1 + imgUri.ToString() + "/" + numString
+                                    + packterMSGString2 + htmlString + packterMSGString3;
                             }
                         }
                         if (!string.IsNullOrEmpty(targetHtml))
@@ -164,7 +223,7 @@ namespace WinFormsGraphicsDevice
                                 startInfo.FileName = softTalkPath;
                                 startInfo.Arguments = targetList[targetList.Count - 1];
                                 startInfo.CreateNoWindow = true;
-                                startInfo.UseShellExecute = false;
+                                startInfo.UseShellExecute = true;
                                 try
                                 {
                                     System.Diagnostics.Process.Start(startInfo);

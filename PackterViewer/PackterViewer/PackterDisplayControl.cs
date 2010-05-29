@@ -914,14 +914,14 @@ namespace Packter_viewer2
                 // カメラの情報を表示
                 this.spriteBatch.DrawString(this.font,
                     "CameraPosition : " + cameraPosition,
-                    new Vector2(5, this.Height - 75), Color.White);
+                    new Vector2(5, 50), Color.White);
                     //new Vector2(5, graphics.PreferredBackBufferHeight - 75), Color.White);
             }
 
             // どの程度時間を巻き戻しているかを表示する
             TimeSpan time = TimeSpan.FromMilliseconds(addMilliseconds);
             this.spriteBatch.DrawString(this.font, "Display Time : " + time.ToString()
-                    , new Vector2(5, 50), Color.White);
+                    , new Vector2(5, 5), Color.White);
                     //, new Vector2(5, graphics.PreferredBackBufferHeight - 50), Color.White);
             
             // パケットの情報を表示する
@@ -939,13 +939,13 @@ namespace Packter_viewer2
                     {
                         String hash = String.Format("hash:{0}", words2[0]);
                         this.spriteBatch.DrawString(this.font, hash
-                                , new Vector2(5, 25), Color.White);
+                                , new Vector2(5, 30), Color.White);
                                 //, new Vector2(5, graphics.PreferredBackBufferHeight - 25), Color.White);
                     }
                     else
                     {
                         this.spriteBatch.DrawString(this.font, line2
-                                , new Vector2(5, 25), Color.White);
+                                , new Vector2(5, 30), Color.White);
                     }
                 }
 
