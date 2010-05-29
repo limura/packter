@@ -58,7 +58,8 @@ namespace Packter_viewer2
         
         Model packetModel;
 
-        Vector3 cameraPosition = new Vector3(-128, 250, 480);
+        //Vector3 cameraPosition = new Vector3(-128, 250, 480);
+        Vector3 cameraPosition = new Vector3(-321, 22, 304);
         Vector3 cameraTarget = new Vector3(0, 0, 0);
         Vector3 cameraRotation = new Vector3(0, 0, 0);
         MouseState mouseState;
@@ -915,7 +916,6 @@ namespace Packter_viewer2
                 this.spriteBatch.DrawString(this.font,
                     "CameraPosition : " + cameraPosition,
                     new Vector2(5, 50), Color.White);
-                    //new Vector2(5, graphics.PreferredBackBufferHeight - 75), Color.White);
             }
 
             // どの程度時間を巻き戻しているかを表示する
@@ -954,6 +954,12 @@ namespace Packter_viewer2
             this.spriteBatch.End();
 
             //base.Draw(gameTime);
+        }
+
+        public bool StatusDraw
+        {
+            get { return statusDraw; }
+            set { statusDraw = value; }
         }
 
 #if true

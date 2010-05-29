@@ -10,6 +10,7 @@
 #region Using Statements
 using System.Windows.Forms;
 using Packter_viewer2;
+using Packter_viewer;
 using Microsoft.Xna.Framework.Content;
 using System.Collections.Generic;
 #endregion
@@ -158,18 +159,18 @@ namespace WinFormsGraphicsDevice
                     if (msg != null)
                     {
                         string targetHtml = null;
-                        if (msg.ContainsKey("PACKTERHTML")) // plain HTML
+                        if (msg.ContainsKey(PacketReader.HTMLTriggerString)) // plain HTML
                         {
-                            List<string> stringList = msg["PACKTERHTML"];
+                            List<string> stringList = msg[PacketReader.HTMLTriggerString];
                             if (stringList.Count > 0)
                             {
                                 targetHtml = stringList[stringList.Count - 1];
                             }
                         }
                         string msgString = null;
-                        if (msg.ContainsKey("PACKTERMSG")) // 画像番号と文字列の奴
+                        if (msg.ContainsKey(PacketReader.MSGTriggerString)) // 画像番号と文字列の奴
                         {
-                            List<string> stringList = msg["PACKTERMSG"];
+                            List<string> stringList = msg[PacketReader.MSGTriggerString];
                             // format案
                             // img番号, 文字列
                             if (stringList.Count > 0)
@@ -193,9 +194,9 @@ namespace WinFormsGraphicsDevice
                             LoadHtml(targetHtml);
                         }
 
-                        if (msg.ContainsKey("PACKTERSOUND")) // sound
+                        if (msg.ContainsKey(PacketReader.SOUNDTriggerString)) // sound
                         {
-                            List<string> targetList = msg["PACKTERSOUND"];
+                            List<string> targetList = msg[PacketReader.SOUNDTriggerString];
                             if(targetList.Count > 0){
                                 if (bgmSoundPlayer != null)
                                 {
@@ -214,9 +215,9 @@ namespace WinFormsGraphicsDevice
                             }
                         }
 
-                        if (msg.ContainsKey("PACKTERYUKKURI")) // ゆっくりボイス
+                        if (msg.ContainsKey(PacketReader.VOICETriggerString)) // ゆっくりボイス
                         {
-                            List<string> targetList = msg["PACKTERYUKKURI"];
+                            List<string> targetList = msg[PacketReader.VOICETriggerString];
                             if (targetList.Count > 0 && !string.IsNullOrEmpty(targetList[targetList.Count - 1]))
                             {
                                 System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
@@ -235,6 +236,17 @@ namespace WinFormsGraphicsDevice
                             }
                         }
                     }
+                }
+
+                if (packterDisplayControl.StatusDraw != webBrowser.Visible)
+                {
+                    if (packterDisplayControl.StatusDraw)
+                    {
+                        OpenWebBrowser();
+                    }else{
+                        CloseWebBrowser();
+                    }
+                    webBrowserVisibleChangeTimer.Stop();
                 }
             }
         }
@@ -265,20 +277,37 @@ namespace WinFormsGraphicsDevice
             }
         }
 
-        private void UnloadHtml()
+        private void OpenWebBrowser()
+        {
+            packterDisplayControl.Height = basePanel.Height - webBrowser.Height;
+            webBrowser.Visible = true;
+            packterDisplayControl.StatusDraw = true;
+        }
+
+        private void CloseWebBrowser()
         {
             packterDisplayControl.Height = basePanel.Height;
-            webBrowserTargetText = "";
             webBrowser.Visible = false;
+            packterDisplayControl.StatusDraw = false;
+        }
+
+        private void UnloadHtml()
+        {
+            CloseWebBrowser();
+            webBrowserTargetText = "";
             webBrowserVisibleChangeTimer.Stop();
         }
         private void LoadHtml(string txt)
         {
-            packterDisplayControl.Height = basePanel.Height - webBrowser.Height;
+            if (string.IsNullOrEmpty(txt))
+            {
+                UnloadHtml();
+                return;
+            }
+            OpenWebBrowser();
             webBrowserTargetText = txt;
             webBrowserVisibleChangeTimer.Stop();
             webBrowserVisibleChangeTimer.Start();
-            webBrowser.Visible = true;
             webBrowser.Navigate("http://127.0.0.1:12345/");
         }
 
