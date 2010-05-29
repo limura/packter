@@ -20,7 +20,6 @@ namespace WinFormsGraphicsDevice
     // To avoid conflicts, we define shortcut names for them both.
     using GdiColor = System.Drawing.Color;
     using XnaColor = Microsoft.Xna.Framework.Graphics.Color;
-
     
     /// <summary>
     /// Custom form provides the main user interface for the program.
@@ -36,14 +35,18 @@ namespace WinFormsGraphicsDevice
         System.Windows.Forms.Timer intervalTimer = new System.Windows.Forms.Timer();
         System.Uri imgUri;
         System.Media.SoundPlayer bgmSoundPlayer = null;
+        string softTalkPath = "softalk\\softalkw.exe";
+        float defaultScale = 8;
 
-        public MainForm()
+        public MainForm(string[] args)
         {
             InitializeComponent();
 
+            ParseArgs(args);
+
             contentBuilder = new ContentBuilder();
             contentManager = new ContentManager(packterDisplayControl.Services, contentBuilder.OutputDirectory);
-            packterDisplayControl.RegisterContentBuilder(contentBuilder, contentManager);
+            packterDisplayControl.RegisterData(contentBuilder, contentManager, defaultScale);
 
             intervalTimer.Tick += new System.EventHandler(intervalTimer_Tick);
             intervalTimer.Interval = 100;
@@ -57,6 +60,31 @@ namespace WinFormsGraphicsDevice
             webBrowserTargetText
                 = "<html><body><div style=\"valign=top\"><img height=100% src=\"" + imgUri.ToString() + "teacher.png\">攻撃を検知しました。</body></html>";
             //webBrowser.Navigate("http://www.google.co.jp");
+        }
+
+        void ParseArgs(string[] args)
+        {
+            for(int i = 0; i < args.Length; i++)
+            {
+                float f;
+                if (args.Length > i+1 && args[i] == "/size" && float.TryParse(args[i + 1], out f))
+                {
+                    if (f > 0)
+                        defaultScale = f;
+                    i++; continue;
+                }
+
+                if (args.Length > i + 1 && args[i] == "/softalk" && System.IO.File.Exists(args[i + 1]))
+                {
+                    softTalkPath = args[i + 1];
+                    i++; continue;
+                }
+
+                if (System.IO.File.Exists(args[i]))
+                {
+                    // nothing to do!
+                }
+            }
         }
 
         void intervalTimer_Tick(object sender, System.EventArgs e)
@@ -123,6 +151,27 @@ namespace WinFormsGraphicsDevice
                                 catch
                                 {
                                     bgmSoundPlayer = null;
+                                }
+                            }
+                        }
+
+                        if (msg.ContainsKey("PACKTERYUKKURI")) // ゆっくりボイス
+                        {
+                            List<string> targetList = msg["PACKTERYUKKURI"];
+                            if (targetList.Count > 0 && !string.IsNullOrEmpty(targetList[targetList.Count - 1]))
+                            {
+                                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                                startInfo.FileName = softTalkPath;
+                                startInfo.Arguments = targetList[targetList.Count - 1];
+                                startInfo.CreateNoWindow = true;
+                                startInfo.UseShellExecute = false;
+                                try
+                                {
+                                    System.Diagnostics.Process.Start(startInfo);
+                                }
+                                catch (System.ComponentModel.Win32Exception w32error)
+                                {
+                                    //PutLog(e.Message);
                                 }
                             }
                         }
