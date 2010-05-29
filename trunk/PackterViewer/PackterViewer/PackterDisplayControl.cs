@@ -913,9 +913,9 @@ namespace Packter_viewer2
             if (statusDraw == true)
             {
                 // カメラの情報を表示
-                this.spriteBatch.DrawString(this.font,
-                    "CameraPosition : " + cameraPosition,
-                    new Vector2(5, 50), Color.White);
+                //this.spriteBatch.DrawString(this.font,
+                //    "CameraPosition : " + cameraPosition,
+                //    new Vector2(5, 50), Color.White);
             }
 
             // どの程度時間を巻き戻しているかを表示する
