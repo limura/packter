@@ -20,6 +20,12 @@ namespace Packter_viewer
         Mutex mutex;
         Thread readerThread = null;
 
+        public const string BoardTriggerString = "PACKTER";
+        public const string HTMLTriggerString = "PACKTERHTML";
+        public const string MSGTriggerString = "PACKTERMSG";
+        public const string SOUNDTriggerString = "PACKTERSOUND";
+        public const string VOICETriggerString = "PACKTERVOICE";
+
         Dictionary<string, List<string> > packterStringQueue = new Dictionary<string, List<string> >();
 
         public PacketReader(IPEndPoint endpoint)
@@ -51,8 +57,9 @@ namespace Packter_viewer
             ReadData(Encoding.UTF8.GetBytes("PACKTERMSG\npackter01.png,らんらんるー"));
             //ReadData(Encoding.UTF8.GetBytes("PACKTERHTML\n<html><body>らんらんるー<a href=http://www.google.co.jp/>google</A></body></html>"));
             //ReadData(Encoding.UTF8.GetBytes("PACKTER\n0.0.0.0,255.255.255.255,0,65535,misairu,0"));
-            //ReadData(Encoding.UTF8.GetBytes("PACKTERYUKKURI\n/W:ぱくたーが起動したよ？"));
-            //ReadData(Encoding.UTF8.GetBytes("PACKTERYUKKURI\n/T:3 /W:ハロー"));
+            //ReadData(Encoding.UTF8.GetBytes("PACKTERVOICE\n/W:ぱくたーが起動したよ？"));
+            //ReadData(Encoding.UTF8.GetBytes("PACKTERVOICE\n/T:3 /W:ハロー"));
+            ReadData(Encoding.UTF8.GetBytes("PACKTERVOICE\n/W:ゆっくりからボイスに変えてみたよ"));
 #endif
 #endif
         }
@@ -92,13 +99,13 @@ namespace Packter_viewer
             string firstLine = reader.ReadLine();
             switch (firstLine)
             {
-                case "PACKTER":
+                case PacketReader.BoardTriggerString:
                     // これは今までのモノなのでそのまま通す
                     break;
-                case "PACKTERHTML": // plain html
-                case "PACKTERMSG":  // imgNumber, msgHTML
-                case "PACKTERSOUND":  // soundFileName
-                case "PACKTERYUKKURI": // ゆっくりボイス
+                case PacketReader.HTMLTriggerString: // plain html
+                case PacketReader.MSGTriggerString:  // imgNumber, msgHTML
+                case PacketReader.SOUNDTriggerString:  // soundFileName
+                case PacketReader.VOICETriggerString: // ゆっくりボイス
                     if(packterStringQueue.ContainsKey(firstLine) == false){
                         packterStringQueue[firstLine] = new List<string>();
                     }
