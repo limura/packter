@@ -82,6 +82,7 @@ namespace WinFormsGraphicsDevice
                 bgmSoundPlayer.Stop();
             }
             bgmSoundPlayer = null;
+            bgmTimer.Stop();
         }
 
         void ParseArgs(string[] args)
@@ -239,8 +240,8 @@ namespace WinFormsGraphicsDevice
                                 if (bgmSoundPlayer != null)
                                 {
                                     bgmSoundPlayer.Stop();
-                                    bgmTimer.Stop();
                                 }
+                                bgmTimer.Stop();
                                 try
                                 {
                                     string target = targetList[targetList.Count - 1];
