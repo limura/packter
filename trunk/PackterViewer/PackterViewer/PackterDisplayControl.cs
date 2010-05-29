@@ -93,6 +93,8 @@ namespace Packter_viewer2
         DateTime prevDateTime;
         GameTime currentGameTime;
 
+        Dictionary<string, Model> cachedModel = new Dictionary<string, Model>();
+
         protected override void Initialize()
         {
             timer = Stopwatch.StartNew();
@@ -112,10 +114,10 @@ namespace Packter_viewer2
             };
 
             //graphics = new GraphicsDeviceManager(this);
-            //Content.RootDirectory = "Content";
             args = null;
 
             Content = new ContentManager(Services, "Content");
+            Content.RootDirectory = "Content";
             //LoadContent();
         }
 
@@ -137,6 +139,7 @@ namespace Packter_viewer2
             float dstX = packet.DstAddress;
             float dstY = packet.DstPort;
             byte imageNumber = packet.PacketImageNumber;
+            string fileName = packet.PacketImageString;
             GameTime nowGameTime = packet.CreatedGameTime;
             
             Vector3 startPoint = new Vector3((srcX - 0.5f) * senderBoard.Scale * 2 - defaultScale / 4.0f,
@@ -146,7 +149,55 @@ namespace Packter_viewer2
             
             //System.Diagnostics.Debug.WriteLine("new Packet: " + srcIP + ", " + srcPort + " -> " + endPoint.X + ", " + endPoint.Y + " end: " + endPoint.X + ", " + endPoint.Y);
 
-            PacketBoard pb = new PacketBoard(packetModel, (Texture2D)packetImages[imageNumber % packetImages.Count]
+            Model targetModel = packetModel;
+            Texture2D targetTexture = (Texture2D)packetImages[imageNumber % packetImages.Count];
+            // ファイルがあるならloadして targetModel と targetTexture を書き換える
+            // キャッシュされたものがあるのかをまず確かめる
+
+            if (fileName != null && cachedModel.ContainsKey(fileName))
+            {
+                targetModel = cachedModel[fileName];
+                targetTexture = null;
+            }
+            else if (fileName != null && cachedModel.ContainsKey(fileName + ".x"))
+            {
+                targetModel = cachedModel[fileName + ".x"];
+                targetTexture = null;
+            }
+            else if (fileName != null)
+            {
+                Model tmpModel = null;
+                if (!System.IO.File.Exists(fileName))
+                {
+                    fileName += ".x";
+                }
+                if (System.IO.File.Exists(fileName))
+                {
+                    string targetFileName = System.IO.Directory.GetCurrentDirectory() + "\\" + fileName;
+                    //contentBuilder.Add(targetFileName, fileName, null, "ModelProcessor");
+                    contentBuilder.Add(targetFileName, "Model", null, "ModelProcessor");
+                    string buildError = contentBuilder.Build();
+                    if (buildError == null || buildError.IndexOf(fileName) < 0)
+                    {
+//                        try
+                        {
+                            tmpModel = contentManager.Load<Model>("Model");
+                        }
+//                        catch
+                        {
+//                            tmpModel = null;
+                        }
+                    }
+                }
+                if (tmpModel != null)
+                {
+                    cachedModel[fileName] = tmpModel;
+                    targetModel = tmpModel;
+                    targetTexture = null;
+                }
+            }
+
+            PacketBoard pb = new PacketBoard(targetModel, targetTexture
                 , startPoint, endPoint, nowGameTime, flyMillisecond, packet.OriginalString);
             pb.Scale = defaultScale;
             packetList.Add(pb);
@@ -162,7 +213,7 @@ namespace Packter_viewer2
             contentBuilder = builder;
             contentManager = manager;
 
-            contentManager.RootDirectory = "Content";
+            contentManager.RootDirectory = contentBuilder.OutputDirectory;
             LoadContent();
         }
 
@@ -192,45 +243,24 @@ namespace Packter_viewer2
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            //font = Content.Load<SpriteFont>("font");
-            font = contentManager.Load<SpriteFont>("font");
-            //v4Texture = Content.Load<Texture2D>("v4");
+            font = Content.Load<SpriteFont>("font");
+            //font = contentManager.Load<SpriteFont>("font");
+            v4Texture = Content.Load<Texture2D>("v4");
             //contentBuilder.Add("v4.png", "v4Texture", null, "TextureProcessor");
-            v4Texture = contentManager.Load<Texture2D>("v4");
+            //v4Texture = contentManager.Load<Texture2D>("v4");
 
-            //contentBuilder.Add(System.IO.Directory.GetCurrentDirectory() + "\\Content\\board.x", "Board", null, "ModelProcessor");
-            contentBuilder.Add(@"Content\board.x", "Board", null, "ModelProcessor");
-            string buildError = contentBuilder.Build();
-            if (string.IsNullOrEmpty(buildError))
-            {
-                packetModel = contentManager.Load<Model>("Board");
+            packetModel = Content.Load<Model>("board");
 
-                senderBoard = new Board(Content.Load<Model>("Board"));
-                senderBoard.Position = new Vector3(0, 0, -150);
-                senderBoard.Scale = 100;
-                senderBoard.RotationY = (float)Math.PI;
-                senderBoard.Alpha = 0.3f;
-                receiverBoard = new Board(Content.Load<Model>("Board"));
-                receiverBoard.Position = new Vector3(0, 0, 150);
-                receiverBoard.RotationY = (float)Math.PI;
-                receiverBoard.Scale = 100;
-                receiverBoard.Alpha = 0.3f;
-            }
-            else
-            {
-                packetModel = contentManager.Load<Model>("board");
-
-                senderBoard = new Board(Content.Load<Model>("board"));
-                senderBoard.Position = new Vector3(0, 0, -150);
-                senderBoard.Scale = 100;
-                senderBoard.RotationY = (float)Math.PI;
-                senderBoard.Alpha = 0.3f;
-                receiverBoard = new Board(Content.Load<Model>("board"));
-                receiverBoard.Position = new Vector3(0, 0, 150);
-                receiverBoard.RotationY = (float)Math.PI;
-                receiverBoard.Scale = 100;
-                receiverBoard.Alpha = 0.3f;
-            }
+            senderBoard = new Board(Content.Load<Model>("board"));
+            senderBoard.Position = new Vector3(0, 0, -150);
+            senderBoard.Scale = 100;
+            senderBoard.RotationY = (float)Math.PI;
+            senderBoard.Alpha = 0.3f;
+            receiverBoard = new Board(Content.Load<Model>("board"));
+            receiverBoard.Position = new Vector3(0, 0, 150);
+            receiverBoard.RotationY = (float)Math.PI;
+            receiverBoard.Scale = 100;
+            receiverBoard.Alpha = 0.3f;
 
 #if false
             myship = new Board(Content.Load<Model>("myship"));
@@ -252,7 +282,7 @@ namespace Packter_viewer2
                 }
                 catch
                 {
-                    t = contentManager.Load<Texture2D>("packter_sender");
+                    t = Content.Load<Texture2D>("packter_sender");
                 }
                 senderBoard.Texture = t;
                 try
@@ -261,7 +291,7 @@ namespace Packter_viewer2
                 }
                 catch
                 {
-                    t = contentManager.Load<Texture2D>("packter_receiver");
+                    t = Content.Load<Texture2D>("packter_receiver");
                 }
                 receiverBoard.Texture = t;
             }
@@ -282,7 +312,7 @@ namespace Packter_viewer2
                     {
                         try
                         {
-                            t = contentManager.Load<Texture2D>("packter" + i);
+                            t = Content.Load<Texture2D>("packter" + i);
                         }
                         catch { break; }
                     }
@@ -890,7 +920,7 @@ namespace Packter_viewer2
             // どの程度時間を巻き戻しているかを表示する
             TimeSpan time = TimeSpan.FromMilliseconds(addMilliseconds);
             this.spriteBatch.DrawString(this.font, "Display Time : " + time.ToString()
-                    , new Vector2(5, this.Height - 50), Color.White);
+                    , new Vector2(5, 50), Color.White);
                     //, new Vector2(5, graphics.PreferredBackBufferHeight - 50), Color.White);
             
             // パケットの情報を表示する
@@ -908,13 +938,13 @@ namespace Packter_viewer2
                     {
                         String hash = String.Format("hash:{0}", words2[0]);
                         this.spriteBatch.DrawString(this.font, hash
-                                , new Vector2(5, this.Height - 25), Color.White);
+                                , new Vector2(5, 25), Color.White);
                                 //, new Vector2(5, graphics.PreferredBackBufferHeight - 25), Color.White);
                     }
                     else
                     {
                         this.spriteBatch.DrawString(this.font, line2
-                                , new Vector2(5, this.Height - 25), Color.White);
+                                , new Vector2(5, 25), Color.White);
                     }
                 }
 

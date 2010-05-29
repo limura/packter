@@ -53,10 +53,10 @@ namespace WinFormsGraphicsDevice
             webBrowserVisibleChangeTimer.Tick += new System.EventHandler(webBrowserVisibleChangeTimer_Tick);
 
             webBrowser.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(webBrowser_DocumentCompleted);
-            imgUri = new System.Uri(System.IO.Directory.GetCurrentDirectory() + "../../../../Content/");
+            imgUri = new System.Uri(System.IO.Directory.GetCurrentDirectory() /* + "../../../../Content/" */);
             webBrowserTargetText
                 = "<html><body><div style=\"valign=top\"><img height=100% src=\"" + imgUri.ToString() + "teacher.png\">çUåÇÇåüímÇµÇ‹ÇµÇΩÅB</body></html>";
-            webBrowser.Navigate("http://www.google.co.jp");
+            //webBrowser.Navigate("http://www.google.co.jp");
         }
 
         void intervalTimer_Tick(object sender, System.EventArgs e)
@@ -71,18 +71,18 @@ namespace WinFormsGraphicsDevice
                     if (msg != null)
                     {
                         string targetHtml = null;
-                        if (msg.ContainsKey("PACTERHTML")) // plain HTML
+                        if (msg.ContainsKey("PACKTERHTML")) // plain HTML
                         {
-                            List<string> stringList = msg["PACTERHTML"];
+                            List<string> stringList = msg["PACKTERHTML"];
                             if (stringList.Count > 0)
                             {
                                 targetHtml = stringList[stringList.Count - 1];
                             }
                         }
                         string msgString = null;
-                        if (msg.ContainsKey("PACTERMSG")) // âÊëúî‘çÜÇ∆ï∂éöóÒÇÃìz
+                        if (msg.ContainsKey("PACKTERMSG")) // âÊëúî‘çÜÇ∆ï∂éöóÒÇÃìz
                         {
-                            List<string> stringList = msg["PACTERMSG"];
+                            List<string> stringList = msg["PACKTERMSG"];
                             // formatàƒ
                             // imgî‘çÜ, ï∂éöóÒ
                             if (stringList.Count > 0)
@@ -93,13 +93,12 @@ namespace WinFormsGraphicsDevice
                         if (!string.IsNullOrEmpty(msgString))
                         {
                             int pos = msgString.IndexOf(',');
-                            string numString = msgString.Substring(0, pos);
-                            string htmlString = msgString.Substring(pos + 1);
-                            int num = int.Parse(numString);
-                            if (num >= 1 && num <= 10 && !string.IsNullOrEmpty(htmlString))
+                            if (pos > 0)
                             {
-                                targetHtml = "<html lang=\"ja\"><body><img height=100% src=\""
-                                    + imgUri.ToString() + numString + ".png\">" + htmlString + "</body></html>";
+                                string numString = msgString.Substring(0, pos);
+                                string htmlString = msgString.Substring(pos + 1);
+                                targetHtml = "<html lang=\"ja\"><body><table height=\"100%\" border=\"1\"><tr><td><img height=\"100%\" src=\""
+                                    + imgUri.ToString() + "/" + numString + ".png\"><td>" + htmlString + "</tr></table></body></html>";
                             }
                         }
                         if (!string.IsNullOrEmpty(targetHtml))
@@ -107,9 +106,9 @@ namespace WinFormsGraphicsDevice
                             LoadHtml(targetHtml);
                         }
 
-                        if (msg.ContainsKey("PACTERSOUND")) // sound
+                        if (msg.ContainsKey("PACKTERSOUND")) // sound
                         {
-                            List<string> targetList = msg["PACTERSOUND"];
+                            List<string> targetList = msg["PACKTERSOUND"];
                             if(targetList.Count > 0){
                                 if (bgmSoundPlayer != null)
                                 {
@@ -134,8 +133,7 @@ namespace WinFormsGraphicsDevice
 
         void webBrowserVisibleChangeTimer_Tick(object sender, System.EventArgs e)
         {
-            webBrowser.Visible = false;
-            webBrowserVisibleChangeTimer.Stop();
+            UnloadHtml();
         }
 
         void webBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
@@ -161,12 +159,14 @@ namespace WinFormsGraphicsDevice
 
         private void UnloadHtml()
         {
+            packterDisplayControl.Height = basePanel.Height;
             webBrowserTargetText = "";
             webBrowser.Visible = false;
             webBrowserVisibleChangeTimer.Stop();
         }
         private void LoadHtml(string txt)
         {
+            packterDisplayControl.Height = basePanel.Height - webBrowser.Height;
             webBrowserTargetText = txt;
             webBrowserVisibleChangeTimer.Stop();
             webBrowserVisibleChangeTimer.Start();

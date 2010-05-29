@@ -51,12 +51,12 @@ namespace WinFormsGraphicsDevice
             // 
             this.webBrowser.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.webBrowser.Location = new System.Drawing.Point(11, 325);
+            this.webBrowser.Location = new System.Drawing.Point(0, 325);
             this.webBrowser.Margin = new System.Windows.Forms.Padding(2);
             this.webBrowser.MinimumSize = new System.Drawing.Size(15, 16);
             this.webBrowser.Name = "webBrowser";
             this.webBrowser.ScrollBarsEnabled = false;
-            this.webBrowser.Size = new System.Drawing.Size(607, 150);
+            this.webBrowser.Size = new System.Drawing.Size(629, 157);
             this.webBrowser.TabIndex = 5;
             this.webBrowser.Visible = false;
             // 
