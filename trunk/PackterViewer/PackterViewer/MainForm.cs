@@ -34,6 +34,7 @@ namespace WinFormsGraphicsDevice
         string webBrowserTargetText;
         System.Windows.Forms.Timer webBrowserVisibleChangeTimer = new System.Windows.Forms.Timer();
         System.Windows.Forms.Timer intervalTimer = new System.Windows.Forms.Timer();
+        System.Windows.Forms.Timer bgmTimer = new System.Windows.Forms.Timer();
         System.Uri imgUri;
         System.Media.SoundPlayer bgmSoundPlayer = null;
         string softTalkPath = "softalk\\softalkw.exe";
@@ -65,12 +66,22 @@ namespace WinFormsGraphicsDevice
             intervalTimer.Start();
 
             webBrowserVisibleChangeTimer.Tick += new System.EventHandler(webBrowserVisibleChangeTimer_Tick);
+            bgmTimer.Tick += new System.EventHandler(bgmTimer_Tick);
 
             webBrowser.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(webBrowser_DocumentCompleted);
             imgUri = new System.Uri(System.IO.Directory.GetCurrentDirectory() /* + "../../../../Content/" */);
             webBrowserTargetText
                 = "<html><body><div style=\"valign=top\"><img height=100% src=\"" + imgUri.ToString() + "teacher.png\">çUåÇÇåüímÇµÇ‹ÇµÇΩÅB</body></html>";
             //webBrowser.Navigate("http://www.google.co.jp");
+        }
+
+        void bgmTimer_Tick(object sender, System.EventArgs e)
+        {
+            if (bgmSoundPlayer != null)
+            {
+                bgmSoundPlayer.Stop();
+            }
+            bgmSoundPlayer = null;
         }
 
         void ParseArgs(string[] args)
@@ -231,9 +242,29 @@ namespace WinFormsGraphicsDevice
                                 }
                                 try
                                 {
-                                    bgmSoundPlayer = new System.Media.SoundPlayer(targetList[targetList.Count - 1]);
-                                    if(bgmSoundPlayer != null)
-                                        bgmSoundPlayer.PlayLooping();
+                                    string target = targetList[targetList.Count - 1];
+                                    string[] cmdList = target.Split(new char[] {','}, 2);
+                                    if (cmdList != null && cmdList.Length == 2)
+                                    {
+                                        int loopTime = int.Parse(cmdList[0]);
+                                        string file = cmdList[1].Trim();
+                                        if (loopTime > 0)
+                                        {
+                                            bgmSoundPlayer = new System.Media.SoundPlayer(file);
+                                            if (bgmSoundPlayer != null)
+                                                bgmSoundPlayer.Play();
+                                            bgmTimer.Interval = loopTime * 1000;
+                                            bgmTimer.Start();
+                                        }
+                                        else if (loopTime < 0)
+                                        {
+                                            bgmSoundPlayer = new System.Media.SoundPlayer(file);
+                                            if (bgmSoundPlayer != null)
+                                                bgmSoundPlayer.PlayLooping();
+                                            bgmTimer.Interval = loopTime * -1000;
+                                            bgmTimer.Start();
+                                        }
+                                    }
                                 }
                                 catch
                                 {

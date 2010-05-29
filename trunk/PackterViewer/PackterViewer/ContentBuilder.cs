@@ -140,7 +140,7 @@ namespace Packter_viewer2
             string outputPath = Path.Combine(buildDirectory, "bin");
 
             // Create the build engine.
-            msBuildEngine = new Engine(RuntimeEnvironment.GetRuntimeDirectory());
+            msBuildEngine = new Engine();
             msBuildEngine.DefaultToolsVersion = "3.5"; // ‹­§“I‚É version 3.5 ‚ğ“Ç‚İ‚Ş
 
             // Hook up our custom error logger.
