@@ -9,11 +9,10 @@
 
 #region Using Statements
 using System.Windows.Forms;
-#endregion
-
 using Packter_viewer2;
 using Microsoft.Xna.Framework.Content;
 using System.Collections.Generic;
+#endregion
 
 namespace WinFormsGraphicsDevice
 {
@@ -30,80 +29,173 @@ namespace WinFormsGraphicsDevice
     /// </summary>
     public partial class MainForm : Form
     {
-
         ContentBuilder contentBuilder;
         ContentManager contentManager;
+        string webBrowserTargetText;
+        System.Windows.Forms.Timer webBrowserVisibleChangeTimer = new System.Windows.Forms.Timer();
+        System.Windows.Forms.Timer intervalTimer = new System.Windows.Forms.Timer();
+        System.Uri imgUri;
+        System.Media.SoundPlayer bgmSoundPlayer = null;
 
         public MainForm()
         {
             InitializeComponent();
 
-            vertexColor1.SelectedIndex = 1;
-            vertexColor2.SelectedIndex = 2;
-            vertexColor3.SelectedIndex = 4;
-
             contentBuilder = new ContentBuilder();
             contentManager = new ContentManager(packterDisplayControl.Services, contentBuilder.OutputDirectory);
             packterDisplayControl.RegisterContentBuilder(contentBuilder, contentManager);
 
+            intervalTimer.Tick += new System.EventHandler(intervalTimer_Tick);
+            intervalTimer.Interval = 100;
+            intervalTimer.Start();
+
+            webBrowserVisibleChangeTimer.Interval = 30 * 1000; // 30ïb
+            webBrowserVisibleChangeTimer.Tick += new System.EventHandler(webBrowserVisibleChangeTimer_Tick);
+
             webBrowser.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(webBrowser_DocumentCompleted);
+            imgUri = new System.Uri(System.IO.Directory.GetCurrentDirectory() + "../../../../Content/");
+            webBrowserTargetText
+                = "<html><body><div style=\"valign=top\"><img height=100% src=\"" + imgUri.ToString() + "teacher.png\">çUåÇÇåüímÇµÇ‹ÇµÇΩÅB</body></html>";
             webBrowser.Navigate("http://www.google.co.jp");
         }
 
-        string webBrowserTargetText = "dummy";
-        void webBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        void intervalTimer_Tick(object sender, System.EventArgs e)
         {
-            if (webBrowser.DocumentText != webBrowserTargetText)
+            if (packterDisplayControl != null)
             {
-                System.Uri imgUri = new System.Uri(System.IO.Directory.GetCurrentDirectory() + "../../../../Content/teacher.png");
-                webBrowser.DocumentText
-                    = webBrowserTargetText
-                    = "<html><body bgcolor=lightgreen><img height=100% src=\"" + imgUri.ToString() + "\">çUåÇÇåüímÇµÇ‹ÇµÇΩÅB</body></html>";
+                List<Dictionary<string, List<string>>> msgList = new List<Dictionary<string, List<string>>>();
+                msgList.Add(packterDisplayControl.GetQueuedMessagesV4());
+                msgList.Add(packterDisplayControl.GetQueuedMessagesV6());
+                foreach (Dictionary<string, List<string>> msg in msgList)
+                {
+                    if (msg != null)
+                    {
+                        string targetHtml = null;
+                        if (msg.ContainsKey("PACTERHTML")) // plain HTML
+                        {
+                            List<string> stringList = msg["PACTERHTML"];
+                            if (stringList.Count > 0)
+                            {
+                                targetHtml = stringList[stringList.Count - 1];
+                            }
+                        }
+                        string msgString = null;
+                        if (msg.ContainsKey("PACTERMSG")) // âÊëúî‘çÜÇ∆ï∂éöóÒÇÃìz
+                        {
+                            List<string> stringList = msg["PACTERMSG"];
+                            // formatàƒ
+                            // imgî‘çÜ, ï∂éöóÒ
+                            if (stringList.Count > 0)
+                            {
+                                msgString = stringList[stringList.Count - 1];
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(msgString))
+                        {
+                            int pos = msgString.IndexOf(',');
+                            string numString = msgString.Substring(0, pos);
+                            string htmlString = msgString.Substring(pos + 1);
+                            int num = int.Parse(numString);
+                            if (num >= 1 && num <= 10 && !string.IsNullOrEmpty(htmlString))
+                            {
+                                targetHtml = "<html lang=\"ja\"><body><img height=100% src=\""
+                                    + imgUri.ToString() + numString + ".png\">" + htmlString + "</body></html>";
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(targetHtml))
+                        {
+                            LoadHtml(targetHtml);
+                        }
+
+                        if (msg.ContainsKey("PACTERSOUND")) // sound
+                        {
+                            List<string> targetList = msg["PACTERSOUND"];
+                            if(targetList.Count > 0){
+                                if (bgmSoundPlayer != null)
+                                {
+                                    bgmSoundPlayer.Stop();
+                                }
+                                try
+                                {
+                                    bgmSoundPlayer = new System.Media.SoundPlayer(targetList[targetList.Count - 1]);
+                                    if(bgmSoundPlayer != null)
+                                        bgmSoundPlayer.PlayLooping();
+                                }
+                                catch
+                                {
+                                    bgmSoundPlayer = null;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
-
-        /// <summary>
-        /// Event handler updates the spinning triangle control when
-        /// one of the three vertex color combo boxes is altered.
-        /// </summary>
-        void vertexColor_SelectedIndexChanged(object sender, System.EventArgs e)
+        void webBrowserVisibleChangeTimer_Tick(object sender, System.EventArgs e)
         {
-            // Which vertex was changed?
-            int vertexIndex;
-
-            if (sender == vertexColor1)
-                vertexIndex = 0;
-            else if (sender == vertexColor2)
-                vertexIndex = 1;
-            else if (sender == vertexColor3)
-                vertexIndex = 2;
-            else
-                return;
-
-            // Which color was selected?
-            ComboBox combo = (ComboBox)sender;
-
-            string colorName = combo.SelectedItem.ToString();
-
-            GdiColor gdiColor = GdiColor.FromName(colorName);
-
-            XnaColor xnaColor = new XnaColor(gdiColor.R, gdiColor.G, gdiColor.B);
-
-            // Update the spinning triangle control with the new color.
-            spinningTriangleControl.Vertices[vertexIndex].Color = xnaColor;
+            webBrowser.Visible = false;
+            webBrowserVisibleChangeTimer.Stop();
         }
 
-#if false
+        void webBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(webBrowserTargetText) && webBrowser.DocumentText != webBrowserTargetText)
+            {
+                webBrowser.DocumentText = webBrowserTargetText;
+                webBrowserTargetText = null;
+            }
+        }
+
+        void MessageWindowUpdateHandler(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                UnloadHtml();
+            }
+            else
+            {
+                LoadHtml(text);
+            }
+        }
+
+        private void UnloadHtml()
+        {
+            webBrowserTargetText = "";
+            webBrowser.Visible = false;
+            webBrowserVisibleChangeTimer.Stop();
+        }
+        private void LoadHtml(string txt)
+        {
+            webBrowserTargetText = txt;
+            webBrowserVisibleChangeTimer.Stop();
+            webBrowserVisibleChangeTimer.Start();
+            webBrowser.Visible = true;
+            webBrowser.Navigate("http://127.0.0.1:12345/");
+        }
+
         private void packterDisplayControl_KeyDown(object sender, KeyEventArgs e)
         {
-            packterDisplayControl.KeyDown(e.KeyCode);
+            packterDisplayControl.ProcessKeyDown(e.KeyCode);
         }
 
         private void packterDisplayControl_KeyUp(object sender, KeyEventArgs e)
         {
-            packterDisplayControl.KeyUp(e.KeyCode);
+            packterDisplayControl.ProcessKeyUp(e.KeyCode);
         }
-#endif
+
+        private void packterDisplayControl_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //packterDisplayControl.ProcessKeyDown();
+        }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            packterDisplayControl.UnloadContent();
+            webBrowserVisibleChangeTimer.Stop();
+            intervalTimer.Stop();
+            webBrowserVisibleChangeTimer.Dispose();
+            intervalTimer.Dispose();
+        }
     }
 }

@@ -104,9 +104,6 @@
     </Compile>
     <Compile Include="RingBuffer.cs" />
     <Compile Include="ServiceContainer.cs" />
-    <Compile Include="SpinningTriangleControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="SpriteFontControl.cs">
       <SubType>Component</SubType>
     </Compile>

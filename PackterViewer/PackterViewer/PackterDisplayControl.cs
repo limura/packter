@@ -317,7 +317,7 @@ namespace Packter_viewer2
         /// UnloadContent will be called once per game and is the place to unload
         /// all content.
         /// </summary>
-        /*protected override*/ void UnloadContent()
+        /*protected override*/ public void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
             if(packetReader_v4 != null)
@@ -519,7 +519,7 @@ namespace Packter_viewer2
             // キーボードの状態を見る場合はこの行より前で見ないと駄目
             keyboardState = nowKeyState;
             /// packter sender からパケットを読み込む
-            ReadPackets(gameTime);
+            ReadMessages(gameTime);
             
 #if false
             /// PacketBoard のリストをゲーム時間で更新しつつ、
@@ -560,9 +560,10 @@ namespace Packter_viewer2
             // http://msdn.microsoft.com/ja-jp/library/bb203905.aspx
             // のコピペ。:P
             MouseState mouseState = Mouse.GetState();
+            System.Drawing.Point mousePoint = this.PointToClient(new System.Drawing.Point(mouseState.X, mouseState.Y));
 
-            Vector3 nearSource = new Vector3((float)mouseState.X, (float)mouseState.Y, 0.0f);
-            Vector3 farSource =  new Vector3((float)mouseState.X, (float)mouseState.Y, 1.0f);
+            Vector3 nearSource = new Vector3((float)mousePoint.X, (float)mousePoint.Y, 0.0f);
+            Vector3 farSource =  new Vector3((float)mousePoint.X, (float)mousePoint.Y, 1.0f);
 
             Matrix view = Matrix.CreateLookAt(
                     this.cameraPosition,
@@ -625,11 +626,25 @@ namespace Packter_viewer2
             }
         }
 
+        public Dictionary<string, List<string>> GetQueuedMessagesV4()
+        {
+            if(packetReader_v4 != null)
+                return packetReader_v4.GetAvailableMessageStrings();
+            return null;
+        }
+        public Dictionary<string, List<string>> GetQueuedMessagesV6()
+        {
+            if(packetReader_v6 != null)
+                return packetReader_v6.GetAvailableMessageStrings();
+            return null;
+        }
+
         /// packter sender から送信されたパケットのリストを読み込んでいるところ。
-        private void ReadPackets(GameTime gameTime)
+        private void ReadMessages(GameTime gameTime)
         {
             FlyPacket[] newPackets = null;
-            if (packetReader_v4 != null)
+
+            if(packetReader_v4 != null) 
             {
                 newPackets = packetReader_v4.GetAvailablePackets();
                 if (newPackets != null)
@@ -910,12 +925,12 @@ namespace Packter_viewer2
             //base.Draw(gameTime);
         }
 
-#if false
-        public void KeyDown(System.Windows.Forms.Keys key)
+#if true
+        public void ProcessKeyDown(System.Windows.Forms.Keys key)
         {
             EnableKeySet.Add(key);
         }
-        public void KeyUp(System.Windows.Forms.Keys key)
+        public void ProcessKeyUp(System.Windows.Forms.Keys key)
         {
             EnableKeySet.Remove(key);
         }

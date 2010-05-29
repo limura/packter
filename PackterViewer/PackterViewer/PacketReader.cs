@@ -13,12 +13,14 @@ using System.IO;
 
 namespace Packter_viewer
 {
-    class PacketReader
+    class PacketReader : IDisposable
     {
         Socket socket = null;
         ArrayList packetQueue = new ArrayList();
         Mutex mutex;
         Thread readerThread = null;
+
+        Dictionary<string, List<string> > packterStringQueue = new Dictionary<string, List<string> >();
 
         public PacketReader(IPEndPoint endpoint)
         {
@@ -31,6 +33,7 @@ namespace Packter_viewer
             readerThread = new Thread(new ThreadStart(PacketReadRoop));
             readerThread.Start();
 
+#if true
 #if false
             string dummyPacket = "PACTER\n"
                 + "0.0.0.0,255.255.255.255,0,65535,0\n"
@@ -41,13 +44,13 @@ namespace Packter_viewer
                 + "64::0,128.128.128.128,32768,0,2\n"
                 + "0.5,0.5,0.5,0.5,4\n"
                 + ",,0.5,0.5,5\n";
-            char[] clist = dummyPacket.ToCharArray();
-            byte[] blist = new byte[clist.Length];
-            int i = 0;
-            foreach (char c in clist){
-                blist[i++] = (byte)c;
-            }
-            ReadData(blist);
+            ReadData(Encoding.UTF8.GetBytes(dummyPacket));
+#else
+            ReadData(Encoding.UTF8.GetBytes("PACTERSOUND\ntm2_door000.wav"));
+            ReadData(Encoding.UTF8.GetBytes("PACTERSOUND\n")); // Ç±ÇÃìÒâÒñ⁄ÇÃ null Ç» PACTERSOUND åƒÇ—èoÇµÇ≈âπÇ™è¡Ç¶ÇÈ
+            //ReadData(Encoding.UTF8.GetBytes("PACTERMSG\n1,ÇÁÇÒÇÁÇÒÇÈÅ["));
+            ReadData(Encoding.UTF8.GetBytes("PACTERHTML\n<html><body>ÇÁÇÒÇÁÇÒÇÈÅ[<a href=http://www.google.co.jp/>google</A></body></html>"));
+#endif
 #endif
         }
         
@@ -69,12 +72,43 @@ namespace Packter_viewer
             return packets;
         }
 
+        public Dictionary<string, List<string> > GetAvailableMessageStrings()
+        {
+            mutex.WaitOne();
+            Dictionary<string, List<string> > result = new Dictionary<string,List<string>>(packterStringQueue);
+            mutex.ReleaseMutex();
+            packterStringQueue.Clear();
+            return result;
+        }
+
         void ReadData(byte[] buffer)
         {
             MemoryStream ms = new MemoryStream(buffer);
             StreamReader reader = new StreamReader(ms);
 
             string firstLine = reader.ReadLine();
+            switch (firstLine)
+            {
+                case "PACTER":
+                    // Ç±ÇÍÇÕç°Ç‹Ç≈ÇÃÉÇÉmÇ»ÇÃÇ≈ÇªÇÃÇ‹Ç‹í Ç∑
+                    break;
+                case "PACTERHTML": // plain html
+                case "PACTERMSG":  // imgNumber, msgHTML
+                case "PACTERSOUND":  // soundFileName
+                    if(packterStringQueue.ContainsKey(firstLine) == false){
+                        packterStringQueue[firstLine] = new List<string>();
+                    }
+                    string unicodeString = Encoding.UTF8.GetString(buffer);
+                    string[] splitString = unicodeString.Split(new char[] {'\n'}, 2);
+                    if (splitString.Length == 2)
+                    {
+                        packterStringQueue[firstLine].Add(splitString[1]);
+                    }
+                    break;
+                default:
+                    // âΩÇ…Ç‡à¯Ç¡Ç©Ç©ÇÁÇ»Ç©Ç¡ÇΩÇÁñ≥éãÇ∑ÇÈ
+                    return;
+            }
             if (firstLine != "PACTER")
                 return;
 
