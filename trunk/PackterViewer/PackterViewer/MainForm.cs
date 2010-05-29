@@ -287,6 +287,7 @@ namespace WinFormsGraphicsDevice
         {
             if (!string.IsNullOrEmpty(webBrowserTargetText) && webBrowser.DocumentText != webBrowserTargetText)
             {
+                OpenWebBrowser();
                 webBrowser.DocumentText = webBrowserTargetText;
                 webBrowserTargetText = null;
             }
@@ -331,7 +332,7 @@ namespace WinFormsGraphicsDevice
                 UnloadHtml();
                 return;
             }
-            OpenWebBrowser();
+            //OpenWebBrowser();
             webBrowserTargetText = txt;
             webBrowserVisibleChangeTimer.Stop();
             webBrowserVisibleChangeTimer.Start();
