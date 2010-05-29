@@ -66,6 +66,10 @@ namespace Packter_viewer
                         effect.TextureEnabled = true;
                         effect.Texture = texture;
                     }
+                    else
+                    {
+                        effect.TextureEnabled = false;
+                    }
                     effect.Alpha = Alpha;
                     effect.Projection = projection;
                     effect.GraphicsDevice.RenderState.AlphaBlendEnable = true;

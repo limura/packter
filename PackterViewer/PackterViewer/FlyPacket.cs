@@ -27,6 +27,7 @@ namespace Packter_viewer
         float srcPort = 0;
         float dstPort = 0;
         byte packetImageNumber = 0;
+        string packetImageString = null;
         string packetDescription = null;
 
         GameTime gameTime = null;
@@ -74,6 +75,11 @@ namespace Packter_viewer
         public byte PacketImageNumber
         {
             get { return packetImageNumber; }
+        }
+
+        public string PacketImageString
+        {
+            get { return packetImageString; }
         }
 
         public GameTime CreatedGameTime
@@ -148,8 +154,9 @@ namespace Packter_viewer
                 return false;
             if ((dstPort = String2float(words[3])) < 0)
                 return false;
+            packetImageString = words[4];
             if (byte.TryParse(words[4], out packetImageNumber) == false)
-                return false;
+                packetImageNumber = 0;
             packetDescription = words[5];
             originalString = line;
             

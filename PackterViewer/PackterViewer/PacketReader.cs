@@ -35,7 +35,7 @@ namespace Packter_viewer
 
 #if true
 #if false
-            string dummyPacket = "PACTER\n"
+            string dummyPacket = "PACKTER\n"
                 + "0.0.0.0,255.255.255.255,0,65535,0\n"
                 + "255.255.255.255,0.0.0.0,0,65535,0\n"
                 + "255.255.255.255,255.255.255.255,65535,0,0\n"
@@ -46,10 +46,11 @@ namespace Packter_viewer
                 + ",,0.5,0.5,5\n";
             ReadData(Encoding.UTF8.GetBytes(dummyPacket));
 #else
-            ReadData(Encoding.UTF8.GetBytes("PACTERSOUND\ntm2_door000.wav"));
-            ReadData(Encoding.UTF8.GetBytes("PACTERSOUND\n")); // この二回目の null な PACTERSOUND 呼び出しで音が消える
-            //ReadData(Encoding.UTF8.GetBytes("PACTERMSG\n1,らんらんるー"));
-            ReadData(Encoding.UTF8.GetBytes("PACTERHTML\n<html><body>らんらんるー<a href=http://www.google.co.jp/>google</A></body></html>"));
+            ReadData(Encoding.UTF8.GetBytes("PACKTERSOUND\ntm2_door000.wav"));
+            ReadData(Encoding.UTF8.GetBytes("PACKTERSOUND\n")); // この二回目の null な PACKTERSOUND 呼び出しで音が消える
+            ReadData(Encoding.UTF8.GetBytes("PACKTERMSG\n1,らんらんるー"));
+            //ReadData(Encoding.UTF8.GetBytes("PACKTERHTML\n<html><body>らんらんるー<a href=http://www.google.co.jp/>google</A></body></html>"));
+            ReadData(Encoding.UTF8.GetBytes("PACKTER\n0.0.0.0,255.255.255.255,0,65535,misairu,0"));
 #endif
 #endif
         }
@@ -89,12 +90,12 @@ namespace Packter_viewer
             string firstLine = reader.ReadLine();
             switch (firstLine)
             {
-                case "PACTER":
+                case "PACKTER":
                     // これは今までのモノなのでそのまま通す
                     break;
-                case "PACTERHTML": // plain html
-                case "PACTERMSG":  // imgNumber, msgHTML
-                case "PACTERSOUND":  // soundFileName
+                case "PACKTERHTML": // plain html
+                case "PACKTERMSG":  // imgNumber, msgHTML
+                case "PACKTERSOUND":  // soundFileName
                     if(packterStringQueue.ContainsKey(firstLine) == false){
                         packterStringQueue[firstLine] = new List<string>();
                     }
@@ -109,7 +110,7 @@ namespace Packter_viewer
                     // 何にも引っかからなかったら無視する
                     return;
             }
-            if (firstLine != "PACTER")
+            if (firstLine != "PACKTER")
                 return;
 
             while (true)

@@ -73,7 +73,7 @@ namespace Packter_viewer2
         /// </summary>
         public string OutputDirectory
         {
-            get { return Path.Combine(buildDirectory, "bin/Content"); }
+            get { return Path.Combine(buildDirectory, "bin\\Content"); }
         }
 
 
