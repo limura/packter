@@ -208,10 +208,11 @@ namespace Packter_viewer2
             base.OnCreateControl();
         }
 
-        public void RegisterContentBuilder(ContentBuilder builder, ContentManager manager)
+        public void RegisterData(ContentBuilder builder, ContentManager manager, float DefaultScale)
         {
             contentBuilder = builder;
             contentManager = manager;
+            defaultScale = DefaultScale;
 
             contentManager.RootDirectory = contentBuilder.OutputDirectory;
             LoadContent();
@@ -893,7 +894,7 @@ namespace Packter_viewer2
             this.spriteBatch.Begin();
             if (packetReader_v4 == null && packetReader_v6 == null)
             {
-                this.spriteBatch.DrawString(this.font, "can not bind port 11300", new Vector2(50, 50), Color.White);
+                this.spriteBatch.DrawString(this.font, "can not bind port 11300", new Vector2(50, 150), Color.White);
             }
             else if (packetReader_v6 == null && disableShowV4 == false)
             {

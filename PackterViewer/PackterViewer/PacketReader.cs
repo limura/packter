@@ -46,11 +46,13 @@ namespace Packter_viewer
                 + ",,0.5,0.5,5\n";
             ReadData(Encoding.UTF8.GetBytes(dummyPacket));
 #else
-            ReadData(Encoding.UTF8.GetBytes("PACKTERSOUND\ntm2_door000.wav"));
-            ReadData(Encoding.UTF8.GetBytes("PACKTERSOUND\n")); // この二回目の null な PACKTERSOUND 呼び出しで音が消える
-            ReadData(Encoding.UTF8.GetBytes("PACKTERMSG\n1,らんらんるー"));
+            //ReadData(Encoding.UTF8.GetBytes("PACKTERSOUND\ntm2_door000.wav"));
+            //ReadData(Encoding.UTF8.GetBytes("PACKTERSOUND\n")); // この二回目の null な PACKTERSOUND 呼び出しで音が消える
+            //ReadData(Encoding.UTF8.GetBytes("PACKTERMSG\n1,らんらんるー"));
             //ReadData(Encoding.UTF8.GetBytes("PACKTERHTML\n<html><body>らんらんるー<a href=http://www.google.co.jp/>google</A></body></html>"));
-            ReadData(Encoding.UTF8.GetBytes("PACKTER\n0.0.0.0,255.255.255.255,0,65535,misairu,0"));
+            //ReadData(Encoding.UTF8.GetBytes("PACKTER\n0.0.0.0,255.255.255.255,0,65535,misairu,0"));
+            ReadData(Encoding.UTF8.GetBytes("PACKTERYUKKURI\n/W:ぱくたーが起動したよ"));
+            //ReadData(Encoding.UTF8.GetBytes("PACKTERYUKKURI\n/T:3 /W:ハロー"));
 #endif
 #endif
         }
@@ -96,6 +98,7 @@ namespace Packter_viewer
                 case "PACKTERHTML": // plain html
                 case "PACKTERMSG":  // imgNumber, msgHTML
                 case "PACKTERSOUND":  // soundFileName
+                case "PACKTERYUKKURI": // ゆっくりボイス
                     if(packterStringQueue.ContainsKey(firstLine) == false){
                         packterStringQueue[firstLine] = new List<string>();
                     }
