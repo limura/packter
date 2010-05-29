@@ -134,21 +134,23 @@ namespace Packter_viewer
 
         void PacketReadRoop()
         {
-            byte[] buffer = null;  //new byte[65536];
+            byte[] buffer = new byte[65536];
             socket.ReceiveTimeout = 1000; // ˆê•b‚¨‚«‚Å Receive ‚©‚ç”²‚¯‚ÄAThread.Aboart ‚ðŽó‚¯•t‚¯‚éB
             while (true)
             {
                 try
                 {
-                    buffer = new byte[65536];
-                    if (socket.Receive(buffer) > 0)
+                    int length = 0;
+                    if ((length = socket.Receive(buffer)) > 0)
                     {
+                        byte[] tmp = new byte[length];
+                        Array.Copy(buffer, 0, tmp, 0, length);
                         mutex.WaitOne();
-                        ReadData(buffer);
+                        ReadData(tmp);
                         mutex.ReleaseMutex();
                     }
                 }
-                catch { }
+                catch(SocketException) { }
             }
         }
     }

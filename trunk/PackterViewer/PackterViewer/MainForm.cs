@@ -239,6 +239,7 @@ namespace WinFormsGraphicsDevice
                                 if (bgmSoundPlayer != null)
                                 {
                                     bgmSoundPlayer.Stop();
+                                    bgmTimer.Stop();
                                 }
                                 try
                                 {
@@ -253,7 +254,7 @@ namespace WinFormsGraphicsDevice
                                             bgmSoundPlayer = new System.Media.SoundPlayer(file);
                                             if (bgmSoundPlayer != null)
                                                 bgmSoundPlayer.Play();
-                                            bgmTimer.Interval = loopTime * 1000;
+                                            bgmTimer.Interval = loopTime;
                                             bgmTimer.Start();
                                         }
                                         else if (loopTime < 0)
@@ -261,7 +262,7 @@ namespace WinFormsGraphicsDevice
                                             bgmSoundPlayer = new System.Media.SoundPlayer(file);
                                             if (bgmSoundPlayer != null)
                                                 bgmSoundPlayer.PlayLooping();
-                                            bgmTimer.Interval = loopTime * -1000;
+                                            bgmTimer.Interval = -loopTime;
                                             bgmTimer.Start();
                                         }
                                     }
