@@ -119,7 +119,7 @@ namespace Packter_viewer
                     // ‰½‚É‚àˆø‚Á‚©‚©‚ç‚È‚©‚Á‚½‚ç–³Ž‹‚·‚é
                     return;
             }
-            if (firstLine != "PACKTER")
+            if (firstLine != PacketReader.BoardTriggerString)
                 return;
 
             while (true)
@@ -133,12 +133,13 @@ namespace Packter_viewer
 
         void PacketReadRoop()
         {
-            byte[] buffer = new byte[65536];
+            byte[] buffer = null;  //new byte[65536];
             socket.ReceiveTimeout = 1000; // ˆê•b‚¨‚«‚Å Receive ‚©‚ç”²‚¯‚ÄAThread.Aboart ‚ðŽó‚¯•t‚¯‚éB
             while (true)
             {
                 try
                 {
+                    buffer = new byte[65536];
                     if (socket.Receive(buffer) > 0)
                     {
                         mutex.WaitOne();
