@@ -46,10 +46,10 @@ namespace Packter_viewer
             get { return texture; }
         }
 
-        public void Draw(Matrix view, Viewport viewport, Matrix projection)
+        public void Draw(Matrix view, Viewport viewport, Matrix projection, float scale)
         {
             Matrix transform = Matrix.Identity;
-            transform *= Matrix.CreateScale(Scale);
+            transform *= Matrix.CreateScale(Scale * scale);
             transform *= Matrix.CreateRotationY(RotationY);
             transform *= Matrix.CreateTranslation(position);
 

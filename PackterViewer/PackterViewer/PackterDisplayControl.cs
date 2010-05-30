@@ -851,9 +851,17 @@ namespace Packter_viewer2
             for (int i = 0; i < packetList.Length; i++)
             {
                 PacketBoard pb = packetList[i + first];
+                //hilightPacketBoard
                 if (pb == null || pb.Update(nowTime) != 0)
                     return; // 表示すべきものがなくなった
-                pb.Draw(view, viewport, projection);
+                if (hilightPacketBoard == pb)
+                {
+                    pb.Draw(view, viewport, projection, 2.0f);
+                }
+                else
+                {
+                    pb.Draw(view, viewport, projection, 1.0f);
+                }
             }
 #endif
         }
@@ -902,20 +910,20 @@ namespace Packter_viewer2
 
             if (showMyShip)
             {
-                myship.Draw(view, GraphicsDevice.Viewport, projection);
-                myship_wake.Draw(view, GraphicsDevice.Viewport, projection);
+                myship.Draw(view, GraphicsDevice.Viewport, projection, 1.0f);
+                myship_wake.Draw(view, GraphicsDevice.Viewport, projection, 1.0f);
             }
             if (cameraPosition.Z > 0)
             {
-                senderBoard.Draw(view, GraphicsDevice.Viewport, projection);
+                senderBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f);
                 DrawPacketBoards(gameTime, view, GraphicsDevice.Viewport, projection);
-                receiverBoard.Draw(view, GraphicsDevice.Viewport, projection);
+                receiverBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f);
             }
             else
             {
-                receiverBoard.Draw(view, GraphicsDevice.Viewport, projection);
+                receiverBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f);
                 DrawPacketBoards(gameTime, view, GraphicsDevice.Viewport, projection);
-                senderBoard.Draw(view, GraphicsDevice.Viewport, projection);
+                senderBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f);
             }
 
             this.spriteBatch.Begin();

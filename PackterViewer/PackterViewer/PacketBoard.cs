@@ -62,9 +62,9 @@ namespace Packter_viewer
             return 0;
         }
 
-        public void Draw(Matrix view, Viewport viewport, Matrix projection)
+        public void Draw(Matrix view, Viewport viewport, Matrix projection, float scale)
         {
-            board.Draw(view, viewport, projection);
+            board.Draw(view, viewport, projection, scale);
         }
 
         public BoundingSphere BoundingSphere
