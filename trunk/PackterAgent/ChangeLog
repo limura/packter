@@ -1,0 +1,6 @@
+1.0.1
+	Fix bug for 802.1Q VLAN (aka Tagged VLAN)
+
+1.0.0
+	Initial Release
+
