@@ -1,0 +1,41 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ(2.61)
+AC_INIT(pt-agent, 1.0.0, namaya2hashi@packter.net)
+AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION)
+AC_CONFIG_SRCDIR([packter_agent/pt_agent.c],[packter_thmon/pt_thmon.c])
+AC_CONFIG_HEADER([config.h])
+
+# Checks for programs.
+AC_PROG_CC
+AC_PROG_INSTALL
+
+# Checks for libraries.
+AC_SUBST(PKG_CONFIG)
+PKG_CHECK_MODULES(GNET, gnet-2.0 > 2.0.0,
+  [LIBS="$LIBS $GNET_LIBS" CFLAGS="$CFLAGS $GNET_CFLAGS"],
+  AC_MSG_ERROR(Cannot find GNet: do you have the GNet development packages installed?))
+
+
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h stdlib.h string.h sys/socket.h sys/time.h sys/un.h unistd.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_UINT32_T
+
+# Checks for library functions.
+AC_CHECK_FUNCS([memset socket])
+
+AC_ARG_ENABLE(ipv6,
+[  --enable-ipv6           enable ipv6 PACKTER viewer [default no]])
+if test "$enable_ipv6" = "yes"; then
+  CFLAGS="-DUSE_INET6 $CFLAGS"
+fi
+
+AC_CONFIG_FILES([Makefile
+                 packter_agent/Makefile
+                 packter_thmon/Makefile])
+AC_OUTPUT
