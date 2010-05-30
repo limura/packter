@@ -522,7 +522,7 @@ packter_analy()
 
 	snprintf(mesg, PACKTER_BUFSIZ, "%spackter01.png,", PACKTER_MSG);
 	snprintf(voice, PACKTER_BUFSIZ, "%s/T:1 /W:", PACKTER_VOICE);
-	snprintf(sound, PACKTER_BUFSIZ, "%s30000,packter06.wav", PACKTER_SOUND);
+	snprintf(sound, PACKTER_BUFSIZ, "%s30000,packter01.wav", PACKTER_SOUND);
 
 	if (mon_syn > th.rate_syn && th.rate_syn > 0){
 		alert = PACKTER_TRUE;
