@@ -3,22 +3,44 @@ use Socket;
 use IO::Socket;
 use IPTB;
 use Time::HiRes (gettimeofday);
+use Getopt::Long;
 
-my $dp_host = '127.0.0.1';
+my $progname = 'packter_tc.pl';
+
+my ($dp_host, $my_host, $pt_host);
 my $dp_port = '9005';
-
-my $my_host = '210.135.85.66';
 my $my_port = 11301;
-
-my $pt_host = '210.135.85.68';
 my $pt_port = 11300;
 
+my $config_file = "./packter.conf";
+my $enable_sound = 0;
+
+my $pt_msg_h = "PACKTERMSG";
+my $pt_sound_h = "PACKTERSOUND";
+my $pt_voice_h = "PACKTERVOICE";
+
+my %config = ();
+
 $| = 0;
+
+GetOptions(
+	'dp=s' => \$dp_host,
+	'listen=s' => \$my_host,
+	'viewer=s' => \$pt_host,
+	'config=s' => \$config_file,
+	'sound' => \$enable_sound 
+);
 
 &main;
 
 sub main {
-	local ($src, $dst, $sport, $dport, $flag, $hash);
+	my ($src, $dst, $sport, $dport, $flag, $hash);
+	my ($msg, $sound, $voice);
+	if ($my_host eq "" || $dp_host eq "" || $pt_host eq ""){
+		&usage();
+	}
+
+	&read_config();
 
 	&connect_DP;
 
@@ -30,10 +52,49 @@ sub main {
 			recv(SOCKET, $buf, 10000, 0);
 			$buf =~ s/\r//g;
 			$buf =~ s/\n//g;
+
 			($src, $dst, $sport, $dport, $flag, $hash) = split(/,/, $buf);
 			if ($hash eq ""){
 				next;
 			}
+
+			#
+			# Process Request
+			#	
+			{	
+				$msg = "";
+				$sound = "";
+				$voice = "";
+
+				socket(PACKTER, PF_INET, SOCK_DGRAM, 0);
+				$pt_addr = pack_sockaddr_in($pt_port, inet_aton($pt_host));
+				$msg = sprintf("%s\n%s,%s<br>%s%s",
+									$pt_msg_h,
+									$config{'IPTB_START_PIC'},
+									$config{'IPTB_START_MSG'},
+									$config{'IPTB_OPT_HASH'},
+									$hash
+							);
+				send(PACKTER, $msg, 0, $pt_addr);
+
+				if ($enable_sound){
+					$voice = sprintf("%s\n%s%s",
+									$pt_voice_h,
+									$config{'OPT_VOICE'},
+									$config{'IPTB_START_VOICE'}
+									);
+					send(PACKTER, $voice, 0, $pt_addr);
+
+					$sound = sprintf("%s\n%s%s",
+									$pt_sound_h,
+									$config{'OPT_SOUND'},
+									$config{'IPTB_START_SOUND'}
+									);
+					send(PACKTER, $sound, 0, $pt_addr);
+				}
+				#sleep 1;	
+			}
+
 			$req = &generate_req($hash);
 			print $dp_sock "$req";
 			print "Request $hash\n";
@@ -44,7 +105,6 @@ sub main {
 		local $mode = 0;
 		local $tc_rep = undef;
 		local $result = "";
-		local $msg = "";
 		local $pt_addr;
 
 		socket(PACKTER, PF_INET, SOCK_DGRAM, 0);
@@ -69,26 +129,72 @@ sub main {
 					}
 					elsif ($tc_rep->type eq "ClientTraceReply"){
 						$result = "";
-						$msg = "";
 
 						$result = &show_TraceReply($tc_rep);
 						if (length $result > 1){
-							# $msg = sprintf("ult for %s", $result);
-
 							$result =~ s/\n/\<br\>/g;
-							if ($result =~ m/found/){
-								$msg = sprintf("PACKTERMSG\npackter02.png, <div align=center><font color=red>追跡が成功しました</font></div><br>ハッシュ値：%s<br>", $result);
 
-								$sound = sprintf("PACKTERSOUND\n30000, packter03.wav");
+							$msg = "";
+							$sound = "";
+							$voice = "";
 
+							if ($result =~ m/notfound/i){
+								$msg = sprintf("%s\n%s,%s<br>%s%s<br>",
+												$pt_msg_h,
+												$config{'IPTB_FAILED_PIC'},
+												$config{'IPTB_FAILED_MSG'},
+												$config{'IPTB_OPT_HASH'},
+												$result
+											);
+								if (enable_sound){
+									$sound = sprintf("%s\n%s%s",
+													$pt_sound_h,
+													$config{'OPT_SOUND'},
+													$config{'IPTB_FAILED_SOUND'}
+									);
+									$voice = sprintf("%s\n%s%s",
+													$pt_voice_h,
+													$config{'OPT_VOICE'},
+													$config{'IPTB_FAILED_VOICE'}
+									);
+								}
 							}
-							else {
-								$msg = sprintf("PACKTERMSG\npackter03.png, <center><font color=red>追跡しましたが、発見できませんでした。</font></center>s<br>", $result);
+							elsif ($result =~ m/found/i){
+								$msg = sprintf("%s\n%s,%s<br>%s%s<br>",
+												$pt_msg_h,
+												$config{'IPTB_SUCCEED_PIC'},
+												$config{'IPTB_SUCCEED_MSG'},
+												$config{'IPTB_OPT_HASH'},
+												$result
+											);
+								if (enable_sound){
+									$sound = sprintf("%s\n%s%s",
+													$pt_sound_h,
+													$config{'OPT_SOUND'},
+													$config{'IPTB_SUCCEED_SOUND'}
+									);
+									$voice = sprintf("%s\n%s%s",
+													$pt_voice_h,
+													$config{'OPT_VOICE'},
+													$config{'IPTB_SUCCEED_VOICE'}
+									);
+								}
 							}
 
-							send(PACKTER, $msg, 0, $pt_addr);
-							send(PACKTER, $sound, 0, $pt_addr);
-							print "send $msg";
+							if ($msg ne ""){
+								send(PACKTER, $msg, 0, $pt_addr);
+								print "send $msg\n";
+							}
+
+							if ($sound ne ""){
+								send(PACKTER, $sound, 0, $pt_addr);
+								print "send $sound\n";
+							}
+					
+							if ($voice ne ""){
+								send(PACKTER, $voice, 0, $pt_addr);
+								print "send $voice\n";
+							}
 						}
 					}
 					else {
@@ -225,4 +331,43 @@ sub show_TraceReply {
 	print $pt_mesg;
 
 	return $pt_mesg;
+}
+
+sub usage ()
+{
+  print $progname . " : Packter TC\n";
+  print "\n";
+  print $progname . "\n";
+  print "   -v [ Viewer IP address ] (must)\n";
+  print "   -d [ DP IP address ] (must)\n";
+  print "   -l [ Listening IP address ] (must)\n";
+  print "   -c [ Config file ] (optional: default \"./packter.conf\")\n";
+  print "   -s ( Enable Sound )(optional: default no)\n";
+  print "\n";
+  print "example) ./$progname -p 127.0.0.1 -l 127.0.0.1 -m 127.0.0.1 -c /usr/local/etc/packter.conf -s\n";
+  print "\n";
+
+  exit;
+}
+
+sub read_config()
+{
+	local ($key, $val);
+	open(IN, $config_file) or die;
+	while(<IN>){
+		s/\r//g;
+		s/\n//g;
+		if ($_ eq ""){
+			next;
+		}
+		elsif (m/^#/){
+			next;
+		}
+		else {
+			($key,$val) = split(/=/, $_);	
+			$config{$key} = $val;	
+		}
+	}
+	close(IN);
+	return;
 }
