@@ -8,7 +8,8 @@ AC_CONFIG_SRCDIR([packter_agent/pt_agent.c],[packter_thmon/pt_thmon.c])
 AC_CONFIG_HEADER([config.h])
 
 # Checks for programs.
-AC_PROG_CC
+#AC_PROG_CC
+AM_PROG_CC_C_O
 AC_PROG_INSTALL
 
 # Checks for libraries.
@@ -16,6 +17,9 @@ AC_SUBST(PKG_CONFIG)
 PKG_CHECK_MODULES(GNET, gnet-2.0 > 2.0.0,
   [LIBS="$LIBS $GNET_LIBS" CFLAGS="$CFLAGS $GNET_CFLAGS"],
   AC_MSG_ERROR(Cannot find GNet: do you have the GNet development packages installed?))
+PKG_CHECK_MODULES(GNET, glib-2.0 > 2.0.0,
+  [LIBS="$LIBS $GLIB_LIBS" CFLAGS="$CFLAGS $GLIB_CFLAGS"],
+  AC_MSG_ERROR(Cannot find GLib: do you have the GLib development packages installed?))
 
 
 # Checks for header files.

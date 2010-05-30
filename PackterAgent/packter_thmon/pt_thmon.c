@@ -39,7 +39,7 @@
 #include <netdb.h>
 
 #include <pcap.h>
-
+#include <glib.h>
 #include <gnet.h>
 #include <openssl/md5.h>
 
@@ -76,6 +76,8 @@ int interval = PACKTER_INTVAL;
 /* sound */
 int enable_sound = PACKTER_FALSE;
 
+GHashTable *config = NULL;
+
 int main(int argc, char *argv[])
 {
 	/* pcap */
@@ -92,15 +94,18 @@ int main(int argc, char *argv[])
 	int viewer = PACKTER_FALSE;
 	int snort = PACKTER_FALSE;
 
+	/* config */
+	char *configfile = NULL ;
+
 	progname = argv[0];
 
 	packter_init();
 
 	/* getopt */
 #ifdef USE_INET6
-	while ((op = getopt(argc, argv, "v:i:r:p:S:F:R:I:U:P:C:W:s6dh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:i:r:p:S:F:R:I:U:P:C:w:c:s6dh?")) != -1) 
 #else
-	while ((op = getopt(argc, argv, "v:i:r:p:S:F:R:I:U:P:C:W:sdh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:i:r:p:S:F:R:I:U:P:C:w:c:sdh?")) != -1) 
 #endif
 	{
 		switch (op) {
@@ -160,12 +165,16 @@ int main(int argc, char *argv[])
 			th.count_max = atoi(optarg);
 			break;
 	
-		case 'W': /* interval */
+		case 'w': /* interval */
 			interval = atoi(optarg);
 			break;
 
 		case 's': /* enable sound */
 			enable_sound = PACKTER_TRUE;
+			break;
+
+		case 'c': /* config */
+			configfile = optarg;
 			break;
 
 		case 'h':
@@ -183,6 +192,9 @@ int main(int argc, char *argv[])
 		packter_usage();
 	}
 
+	if (packter_config_parse(configfile) < 0){
+		packter_usage();
+	}
 
 #ifdef USE_INET6
 	if (use6 == PACKTER_TRUE){
@@ -255,6 +267,8 @@ void packter_init()
 	th.stop.tv_usec = 0;
 
 	packter_count_init();
+
+	config = g_hash_table_new((GHashFunc)g_str_hash, (GCompareFunc)g_str_equal);
 
 	return;
 }
@@ -408,14 +422,20 @@ packter_usage(void)
 {
 	printf("usage: %s \n", progname);
 	printf("      -v [ Viewer IP address ]\n");
-	printf("      -p [ Viewer Port number ] (optiona: default 11300)\n");
+	printf("      -p [ Viewer Port number ] (optional: default 11300)\n");
 	printf("      -i [ Monitor device ] (optional)\n");
 	printf("      -r [ Pcap dump file ] (optional)\n");
-	printf("      -s ( Read from Snort's UNIX domain socket: optional)\n");
 	printf("      -d ( Show debug information: optional)\n");
-	printf("      -R [ Random droprate ] (optional)\n");
+	printf("      -w [ Waint Interval ] (optional: default 30)\n");
+	printf("      -c [ config file ] (optional: default %s)\n", PACKTER_THCONFIG);
+	printf("      -C [ Number of Couting packet ] (optional: default 500)\n");
+	printf("      -S [ TCP SYN Threshold ] (optional)\n");
+	printf("      -F [ TCP FIN Threshold ] (optional)\n");
+	printf("      -R [ TCP RST Threshold ] (optional)\n");
+	printf("      -I [ ICMP Threshold ] (optional)\n");
+	printf("      -U [ UDP Threshold ] (optional)\n");
+	printf("      -P [ PPS Threshold ] (optional)\n");
 	printf("      [ pcap filter expression ] (optional)\n");
-	printf("      (if -s specified, then [ UNIX domain socket path ]) \n");
 	printf("\n");
 	printf(" ex) %s -v 192.168.1.1 \"port not 11300 and port not 22\"\n", progname);
 	printf("\n");
@@ -520,54 +540,176 @@ packter_analy()
 	}
 	mon_pps = (float)th.count_all/(float)diff;
 
-	snprintf(mesg, PACKTER_BUFSIZ, "%spackter01.png,", PACKTER_MSG);
-	snprintf(voice, PACKTER_BUFSIZ, "%s/T:1 /W:", PACKTER_VOICE);
-	snprintf(sound, PACKTER_BUFSIZ, "%s30000,packter01.wav", PACKTER_SOUND);
+	snprintf(mesg, PACKTER_BUFSIZ, "%s", PACKTER_MSG);
+	snprintf(sound, PACKTER_BUFSIZ, "%s", PACKTER_SOUND);
+	snprintf(voice, PACKTER_BUFSIZ, "%s%s", PACKTER_VOICE, 
+						(char *)g_hash_table_lookup(config, "MON_OPT_VOICE_HEAD"));
+
+	printf("%d,%d,%f\n", th.count_syn, th.count_all, mon_syn);
 
 	if (mon_syn > th.rate_syn && th.rate_syn > 0){
-		alert = PACKTER_TRUE;
-
-		snprintf(mesg, PACKTER_BUFSIZ, "%sTCP SYN パケットの割合が閾値を越えました<br>(観測値は %.f %% 閾値は%.f %%)<br>", mesg, (mon_syn) * 100, (th.rate_syn) * 100);
-		snprintf(voice, PACKTER_BUFSIZ, "%sTCP シンパケット　", voice);
+		if (alert == PACKTER_FALSE){
+			snprintf(mesg, PACKTER_BUFSIZ, "%s%s,", 
+											mesg,
+											(char *)g_hash_table_lookup(config, "MON_SYN_PIC")
+							);
+			snprintf(sound, PACKTER_BUFSIZ, "%s%s", 	
+													sound,
+													(char *)g_hash_table_lookup(config, "MON_SYN_SOUND")
+							);
+			alert = PACKTER_TRUE;
+		}
+		snprintf(mesg, PACKTER_BUFSIZ, "%s%s<br>%s %.f %%, %s %.f %%<br>",
+										mesg,
+										(char *)g_hash_table_lookup(config, "MON_SYN_MSG"),
+										(char *)g_hash_table_lookup(config, "MONITOR"),
+										(mon_syn) * 100,			
+										(char *)g_hash_table_lookup(config, "THRESHOLD"),
+										(th.rate_syn) * 100
+						);
+		snprintf(voice, PACKTER_BUFSIZ, "%s%s",
+										voice,
+										(char *)g_hash_table_lookup(config, "MON_SYN_VOICE")
+						);
 	}
 
-	if (mon_fin > th.rate_fin && th.rate_fin > 0){
-		alert = PACKTER_TRUE;
-		snprintf(mesg, PACKTER_BUFSIZ, "%sTCP FIN パケットの割合が閾値を越えました<br>(観測値は %.f %% 閾値は %.f %%)<br>", mesg, (mon_fin) * 100, (th.rate_fin) * 100);
-		snprintf(voice, PACKTER_BUFSIZ, "%sTCP フィンパケット　", voice);
-	}
+  if (mon_fin > th.rate_fin && th.rate_fin > 0){
+    if (alert == PACKTER_FALSE){
+      snprintf(mesg, PACKTER_BUFSIZ, "%s%s,",
+                      mesg,
+                      (char *)g_hash_table_lookup(config, "MON_FIN_PIC")
+              );
+      snprintf(sound, PACKTER_BUFSIZ, "%s%s",
+                          sound,
+                          (char *)g_hash_table_lookup(config, "MON_FIN_SOUND")
+              );
+      alert = PACKTER_TRUE;
+    }
+    snprintf(mesg, PACKTER_BUFSIZ, "%s%s<br>%s %.f %%, %s %.f %%<br>",
+                    mesg,
+                    (char *)g_hash_table_lookup(config, "MON_FIN_MSG"),
+                    (char *)g_hash_table_lookup(config, "MONITOR"),
+                    (mon_fin) * 100,
+                    (char *)g_hash_table_lookup(config, "THRESHOLD"),
+                    (th.rate_fin) * 100
+            );
+    snprintf(voice, PACKTER_BUFSIZ, "%s%s",
+                    voice,
+                    (char *)g_hash_table_lookup(config, "MON_FIN_VOICE")
+            );
+  }
 
-	if (mon_rst > th.rate_rst && th.rate_rst > 0){
-		alert = PACKTER_TRUE;
-		snprintf(mesg, PACKTER_BUFSIZ, "%sTCP RST パケットの割合が閾値を越えました<br>(観測値は %.f %% 閾値は %.f %%)<br>", mesg, (mon_rst) * 100, (th.rate_rst) * 100);
-		snprintf(voice, PACKTER_BUFSIZ, "%sTCP リセットパケット　", voice);
-	}
+  if (mon_rst > th.rate_rst && th.rate_rst > 0){
+    if (alert == PACKTER_FALSE){
+      snprintf(mesg, PACKTER_BUFSIZ, "%s%s,",
+                      mesg,
+                      (char *)g_hash_table_lookup(config, "MON_RST_PIC")
+              );
+      snprintf(sound, PACKTER_BUFSIZ, "%s%s",
+                          sound,
+                          (char *)g_hash_table_lookup(config, "MON_RST_SOUND")
+              );
+      alert = PACKTER_TRUE;
+    }
+    snprintf(mesg, PACKTER_BUFSIZ, "%s%s<br>%s %.f %%, %s %.f %%<br>",
+                    mesg,
+                    (char *)g_hash_table_lookup(config, "MON_RST_MSG"),
+                    (char *)g_hash_table_lookup(config, "MONITOR"),
+                    (mon_rst) * 100,
+                    (char *)g_hash_table_lookup(config, "THRESHOLD"),
+                    (th.rate_rst) * 100
+            );
+    snprintf(voice, PACKTER_BUFSIZ, "%s%s",
+                    voice,
+                    (char *)g_hash_table_lookup(config, "MON_RST_VOICE")
+            );
+  }
 
-	if (mon_icmp > th.rate_icmp && th.rate_icmp > 0){
-		alert = PACKTER_TRUE;
-		snprintf(mesg, PACKTER_BUFSIZ, "%sICMP パケットの割合が閾値を越えました<br>(観測値は %.f %% 閾値は %.f %%)<br>", mesg, (mon_icmp) * 100, (th.rate_icmp) * 100);
-		snprintf(voice, PACKTER_BUFSIZ, "%sICMP パケット　", voice);
-	}
+  if (mon_icmp > th.rate_icmp && th.rate_icmp > 0){
+    if (alert == PACKTER_FALSE){
+      snprintf(mesg, PACKTER_BUFSIZ, "%s%s,",
+                      mesg,
+                      (char *)g_hash_table_lookup(config, "MON_ICMP_PIC")
+              );
+      snprintf(sound, PACKTER_BUFSIZ, "%s%s",
+                          sound,
+                          (char *)g_hash_table_lookup(config, "MON_ICMP_SOUND")
+              );
+      alert = PACKTER_TRUE;
+    }
+    snprintf(mesg, PACKTER_BUFSIZ, "%s%s<br>%s %.f %%, %s %.f %%<br>",
+                    mesg,
+                    (char *)g_hash_table_lookup(config, "MON_ICMP_MSG"),
+                    (char *)g_hash_table_lookup(config, "MONITOR"),
+                    (mon_icmp) * 100,
+                    (char *)g_hash_table_lookup(config, "THRESHOLD"),
+                    (th.rate_icmp) * 100
+            );
+    snprintf(voice, PACKTER_BUFSIZ, "%s%s",
+                    voice,
+                    (char *)g_hash_table_lookup(config, "MON_ICMP_VOICE")
+            );
+  }
 
-	if (mon_udp > th.rate_udp && th.rate_udp > 0){
-		alert = PACKTER_TRUE;
-		snprintf(mesg, PACKTER_BUFSIZ, "%sUDP パケットの割合が閾値を越えました<br>(観測値は %.f %% 閾値は %.f %%)", mesg, (mon_udp) * 100, (th.rate_udp) * 100);
-		snprintf(voice, PACKTER_BUFSIZ, "%sUDP パケット　", voice);
-	}
+  if (mon_udp > th.rate_udp && th.rate_udp > 0){
+    if (alert == PACKTER_FALSE){
+      snprintf(mesg, PACKTER_BUFSIZ, "%s%s,",
+                      mesg,
+                      (char *)g_hash_table_lookup(config, "MON_UDP_PIC")
+              );
+      snprintf(sound, PACKTER_BUFSIZ, "%s%s",
+                          sound,
+                          (char *)g_hash_table_lookup(config, "MON_UDP_SOUND")
+              );
+      alert = PACKTER_TRUE;
+    }
+    snprintf(mesg, PACKTER_BUFSIZ, "%s%s<br>%s %.f %%, %s %.f %%<br>",
+                    mesg,
+                    (char *)g_hash_table_lookup(config, "MON_UDP_MSG"),
+                    (char *)g_hash_table_lookup(config, "MONITOR"),
+                    (mon_udp) * 100,
+                    (char *)g_hash_table_lookup(config, "THRESHOLD"),
+                    (th.rate_udp) * 100
+            );
+    snprintf(voice, PACKTER_BUFSIZ, "%s%s",
+                    voice,
+                    (char *)g_hash_table_lookup(config, "MON_UDP_VOICE")
+            );
+  }
 
-	if (mon_pps > th.rate_pps && th.rate_pps > 0){
-		alert = PACKTER_TRUE;
-		snprintf(mesg, PACKTER_BUFSIZ, "%sパケットの割合が閾値を越えました<br>(観測値は %.f pps 閾値は %.f pps)", mesg, (mon_pps), (th.rate_pps) );
-		snprintf(voice, PACKTER_BUFSIZ, "%sPPS　", voice);
-	}
-
+  if (mon_pps > th.rate_pps && th.rate_pps > 0){
+    if (alert == PACKTER_FALSE){
+      snprintf(mesg, PACKTER_BUFSIZ, "%s%s,",
+                      mesg,
+                      (char *)g_hash_table_lookup(config, "MON_PPS_PIC")
+              );
+      snprintf(sound, PACKTER_BUFSIZ, "%s%s",
+                          sound,
+                          (char *)g_hash_table_lookup(config, "MON_PPS_SOUND")
+              );
+      alert = PACKTER_TRUE;
+    }
+    snprintf(mesg, PACKTER_BUFSIZ, "%s%s<br>%s %.f %%, %s %.f %%<br>",
+                    mesg,
+                    (char *)g_hash_table_lookup(config, "MON_PPS_MSG"),
+                    (char *)g_hash_table_lookup(config, "MONITOR"),
+                    (mon_pps) * 100,
+                    (char *)g_hash_table_lookup(config, "THRESHOLD"),
+                    (th.rate_pps) * 100
+            );
+    snprintf(voice, PACKTER_BUFSIZ, "%s%s",
+                    voice,
+                    (char *)g_hash_table_lookup(config, "MON_PPS_VOICE")
+            );
+  }
 	if (alert == PACKTER_TRUE){
-		snprintf(voice, PACKTER_BUFSIZ, "%sが　しきいちをこえました", voice);
-
 		printf("%s\n", mesg);
 		packter_send(mesg);
 
 		if (enable_sound == PACKTER_TRUE){
+			snprintf(voice, PACKTER_BUFSIZ, "%s%s",
+							voice, (char *)g_hash_table_lookup(config, "MON_OPT_VOICE_FOOT"));
+
 			printf("%s\n", voice);
 			packter_send(voice);
 
@@ -736,3 +878,109 @@ void packter_mesg(char *mesg, char *srcip, char *dstip, int data1, int data2, in
 						mesgbuf
 		);
 }
+
+int packter_config_trim(char buf[])
+{
+  char newbuf[PACKTER_BUFSIZ];
+  int i, j, space, frontspace;
+
+  /* init variables */
+  frontspace = space = i = j = 0;
+
+  for (i = 0; i < strlen(buf); i++){
+    if (frontspace == 0 && (buf[i] == '\t' || buf[i] == ' ')){
+        continue;
+    }
+    else {
+      frontspace = 1;
+    }
+
+    switch(buf[i]){
+      case '\r':
+      case '\n':
+        break;
+
+      case '\t':
+      case ' ':
+        if (space == 0){
+          newbuf[j++] = ' ';
+          space = 1;
+        }
+        break;
+
+      default:
+        newbuf[j++] = buf[i];
+        space = 0;
+        break;
+    }
+  }
+  newbuf[j] = '\0';
+
+  /* copy */
+  memcpy((void *)buf, (void *)newbuf, PACKTER_BUFSIZ);
+
+  return j;
+}
+
+int packter_config_parse(char *configfile)
+{
+	FILE *fp;
+	GHashTable *hash = NULL;
+	char buf[PACKTER_BUFSIZ];
+	char key[PACKTER_BUFSIZ];
+	char val[PACKTER_BUFSIZ];
+	char *tmp;
+
+	if ((fp = fopen(configfile, "r")) == NULL){
+		fprintf(stderr, "configuration file %s is not readable\n", configfile);
+		return PACKTER_FALSE;
+	}
+
+	while(fgets(buf, PACKTER_BUFSIZ, fp) != NULL){
+    if (buf == NULL || strlen(buf) < 1 ){
+      break;
+    }
+    if (buf[0] == '#'){
+      continue;
+    }
+    if (packter_config_trim(buf) < 1){
+      continue;
+    }
+
+    if ((tmp = strchr(buf, '=')) != NULL){
+      *(tmp++) = '\0';
+      strncpy(key, buf, PACKTER_BUFSIZ);
+      strncpy(val, tmp, PACKTER_BUFSIZ);
+			if (strlen(key) < 1 || strlen(val) < 1){
+				continue;
+			}
+			if (g_hash_table_lookup(config, (gconstpointer)key) == NULL){
+				g_hash_table_insert(config, g_strdup(key), g_strdup(val));
+			}
+    }
+	}
+	return PACKTER_TRUE;
+}
+
+void *packter_destroy_func(void *data) {
+  GHashTable *cf_hash;
+  if (data == NULL){
+    return;
+  }
+  else {
+    cf_hash = (GHashTable *)data;
+    g_hash_table_foreach(cf_hash, packter_free_hash, NULL);
+    g_hash_table_destroy(cf_hash);
+  }
+  return;
+}
+
+void packter_free_hash(gpointer key, gpointer value, gpointer user_data)
+{
+  if (value != NULL){
+    g_free(value);
+  }
+  g_free(key);
+  return;
+}
+

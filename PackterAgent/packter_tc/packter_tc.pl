@@ -21,7 +21,8 @@ my $pt_voice_h = "PACKTERVOICE";
 
 my %config = ();
 
-$| = 0;
+$| = 1;
+$SIG{PIPE} = 'connect_DP';
 
 GetOptions(
 	'dp=s' => \$dp_host,
@@ -39,6 +40,7 @@ sub main {
 	if ($my_host eq "" || $dp_host eq "" || $pt_host eq ""){
 		&usage();
 	}
+
 
 	&read_config();
 
@@ -78,24 +80,26 @@ sub main {
 				send(PACKTER, $msg, 0, $pt_addr);
 
 				if ($enable_sound){
-					$voice = sprintf("%s\n%s%s",
+					$voice = sprintf("%s\n%s%s%s",
 									$pt_voice_h,
-									$config{'OPT_VOICE'},
-									$config{'IPTB_START_VOICE'}
+									$config{'IPTB_OPT_VOICE_HEAD'},
+									$config{'IPTB_START_VOICE'},
+									$config{'IPTB_OPT_VOICE_FOOT'}
 									);
 					send(PACKTER, $voice, 0, $pt_addr);
 
 					$sound = sprintf("%s\n%s%s",
 									$pt_sound_h,
-									$config{'OPT_SOUND'},
+									$config{'IPTB_OPT_SOUND'},
 									$config{'IPTB_START_SOUND'}
 									);
 					send(PACKTER, $sound, 0, $pt_addr);
 				}
-				#sleep 1;	
+				sleep 5;	
 			}
 
 			$req = &generate_req($hash);
+
 			print $dp_sock "$req";
 			print "Request $hash\n";
 		}
@@ -110,33 +114,34 @@ sub main {
 		socket(PACKTER, PF_INET, SOCK_DGRAM, 0);
 		$pt_addr = pack_sockaddr_in($pt_port, inet_aton($pt_host));
 
-		while(<$dp_sock>){
-			if ($mode == 0){
-        if (/<InterTrackMessage/){
-          $mode = 1;
-        }
-      }
+		while (1){
+			while(<$dp_sock>){
+				if ($mode == 0){
+      	  if (/<InterTrackMessage/){
+        	  $mode = 1;
+       	 }
+      	}
 
-      if ($mode == 1){
-        $buf .= $_;
+	      if ($mode == 1){
+  	      $buf .= $_;
+	
+			  	if(/<\/InterTrackMessage>/){
+						$mode = 0;
+						$tc_rep = &gen_InterTrackMessage($buf);
+						$buf = undef;
+						if ($tc_rep->type eq "ClientMessageIDReply"){
+							&show_IDReply($tc_rep);	
+						}
+						elsif ($tc_rep->type eq "ClientTraceReply"){
+							$result = "";
 
-		  	if(/<\/InterTrackMessage>/){
-					$mode = 0;
-					$tc_rep = &gen_InterTrackMessage($buf);
-					$buf = undef;
-					if ($tc_rep->type eq "ClientMessageIDReply"){
-						&show_IDReply($tc_rep);	
-					}
-					elsif ($tc_rep->type eq "ClientTraceReply"){
-						$result = "";
+							$result = &show_TraceReply($tc_rep);
+							if (length $result > 1){
+								$result =~ s/\n/\<br\>/g;
 
-						$result = &show_TraceReply($tc_rep);
-						if (length $result > 1){
-							$result =~ s/\n/\<br\>/g;
-
-							$msg = "";
-							$sound = "";
-							$voice = "";
+								$msg = "";
+								$sound = "";
+								$voice = "";
 
 							if ($result =~ m/notfound/i){
 								$msg = sprintf("%s\n%s,%s<br>%s%s<br>",
@@ -203,6 +208,7 @@ sub main {
 					}
 				}
 			}
+		}	
 		}
 	}
 }
@@ -216,6 +222,7 @@ sub connect_DP {
 		PeerPort=>$dp_port,
 		Proto=>'tcp'
 	) or die;
+
 }
 
 #
@@ -352,7 +359,7 @@ sub usage ()
 
 sub read_config()
 {
-	local ($key, $val);
+	local ($key, @list);
 	open(IN, $config_file) or die;
 	while(<IN>){
 		s/\r//g;
@@ -364,8 +371,8 @@ sub read_config()
 			next;
 		}
 		else {
-			($key,$val) = split(/=/, $_);	
-			$config{$key} = $val;	
+			($key, @list) = split(/=/, $_);	
+			$config{$key} = join('=', @list);	
 		}
 	}
 	close(IN);
