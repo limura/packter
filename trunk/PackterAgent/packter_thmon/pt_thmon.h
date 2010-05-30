@@ -31,6 +31,7 @@
 
 #define PACKTER_THCOUNT 500
 #define PACKTER_INTVAL 30
+#define PACKTER_THCONFIG "/usr/local/etc/packter.conf"
 
 struct pt_threshold {
 	/* Threshold Rate */
@@ -56,5 +57,10 @@ struct pt_threshold {
 
 void packter_count_init();
 void packter_analy();
+int packter_config_parse(char *);
+int packter_config_trim(char *);
+void packter_destroy_tree();
+void packter_free_hash(gpointer, gpointer, gpointer);
+
 #endif
 
