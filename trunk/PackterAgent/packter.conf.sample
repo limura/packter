@@ -1,7 +1,7 @@
 #
 # SYN 関連
 #
-MON_SYN_MSG=TCP SYN パケットの割合が閾値を越えました
+MON_SYN_MSG=<div align="center"><font color="red" face="メイリオ">TCP SYN パケットの割合が閾値を越えました</font></div>
 MON_SYN_PIC=packter03.png
 MON_SYN_SOUND=30000,packter01.wav
 MON_SYN_VOICE=TCPシンパケット　
@@ -9,7 +9,7 @@ MON_SYN_VOICE=TCPシンパケット　
 #
 # FIN 関連
 #
-MON_FIN_MSG=TCP SYN パケットの割合が閾値を越えました
+MON_FIN_MSG=<div align="center"><font color="red" face="メイリオ">TCP FIN パケットの割合が閾値を越えました</font></div>
 MON_FIN_PIC=packter03.png
 MON_FIN_SOUND=30000,packter01.wav
 MON_FIN_VOICE=TCPフィンパケット　
@@ -17,7 +17,7 @@ MON_FIN_VOICE=TCPフィンパケット　
 #
 # RST 関連
 #
-MON_RST_MSG=TCP RST パケットの割合が閾値を越えました
+MON_RST_MSG=<div align="center"><font color="red" face="メイリオ">TCP RST パケットの割合が閾値を越えました</font></div>
 MON_RST_PIC=packter03.png
 MON_RST_SOUND=30000,packter01.wav
 MON_RST_VOICE=TCPリセットフィンパケット　
@@ -25,7 +25,7 @@ MON_RST_VOICE=TCPリセットフィンパケット　
 #
 # ICMP 関連
 #
-MON_ICMP_MSG=ICMP パケットの割合が閾値を越えました
+MON_ICMP_MSG=<div align="center"><font color="red" face="メイリオ">ICMP パケットの割合が閾値を越えました</font></div>
 MON_ICMP_PIC=packter03.png
 MON_ICMP_SOUND=30000,packter01.wav
 MON_ICMP_VOICE=ICMPパケット　
@@ -33,7 +33,7 @@ MON_ICMP_VOICE=ICMPパケット　
 #
 # UDP 関連
 #
-MON_UDP_MSG=UDP パケットの割合が閾値を越えました
+MON_UDP_MSG=<div align="center"><font color="red" face="メイリオ">UDP パケットの割合が閾値を越えました</font></div>
 MON_UDP_PIC=packter03.png
 MON_UDP_SOUND=30000,packter01.wav
 MON_UDP_VOICE=UDPパケット　
@@ -41,7 +41,7 @@ MON_UDP_VOICE=UDPパケット　
 #
 # PPS 関連
 #
-MON_PPS_MSG=UDP パケットの割合が閾値を越えました
+MON_PPS_MSG=<div align="center"><font color="red" face="メイリオ">PPS が閾値を越えました</font></div>
 MON_PPS_PIC=packter03.png
 MON_PPS_SOUND=30000,packter01.wav
 MON_PPS_VOICE=PPS　

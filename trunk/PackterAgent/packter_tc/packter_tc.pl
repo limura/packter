@@ -12,7 +12,7 @@ my $dp_port = '9005';
 my $my_port = 11301;
 my $pt_port = 11300;
 
-my $config_file = "./packter.conf";
+my $config_file = "/usr/local/etc/packter.conf";
 my $enable_sound = 0;
 
 my $pt_msg_h = "PACKTERMSG";

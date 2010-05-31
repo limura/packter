@@ -61,6 +61,6 @@ int packter_config_parse(char *);
 int packter_config_trim(char *);
 void packter_destroy_tree();
 void packter_free_hash(gpointer, gpointer, gpointer);
-
+int packter_generate_alert(int, char *, char *, char *, char *, char *, char *, char *, float, float);
 #endif
 

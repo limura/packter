@@ -428,7 +428,8 @@ packter_usage(void)
 	printf("      -d ( Show debug information: optional)\n");
 	printf("      -w [ Waint Interval ] (optional: default 30)\n");
 	printf("      -c [ config file ] (optional: default %s)\n", PACKTER_THCONFIG);
-	printf("      -C [ Number of Couting packet ] (optional: default 500)\n");
+	printf("      -s ( Enable Sound: optional: default no)\n", PACKTER_THCONFIG);
+	printf("      -C [ Number of couting packet ] (optional: default 500)\n");
 	printf("      -S [ TCP SYN Threshold ] (optional)\n");
 	printf("      -F [ TCP FIN Threshold ] (optional)\n");
 	printf("      -R [ TCP RST Threshold ] (optional)\n");
@@ -545,175 +546,67 @@ packter_analy()
 	snprintf(voice, PACKTER_BUFSIZ, "%s%s", PACKTER_VOICE, 
 						(char *)g_hash_table_lookup(config, "MON_OPT_VOICE_HEAD"));
 
-	printf("%d,%d,%f\n", th.count_syn, th.count_all, mon_syn);
+	printf ("-------------------------\n");
+	printf ("Statistics of %d packet\n", th.count_all);
+	printf ("Observed: %d.%d - %d.%d\n", th.start.tv_sec, th.start.tv_usec, th.stop.tv_sec, th.stop.tv_usec);
+	printf ("SYN : %.4f   FIN : %.4f   RST: %.4f\n", mon_syn, mon_fin, mon_rst);
+	printf ("ICMP: %.4f   UDP : %.4f   PPS: %.4f\n", mon_icmp, mon_udp, mon_pps);
+	printf ("-------------------------\n");
 
 	if (mon_syn > th.rate_syn && th.rate_syn > 0){
-		if (alert == PACKTER_FALSE){
-			snprintf(mesg, PACKTER_BUFSIZ, "%s%s,", 
-											mesg,
-											(char *)g_hash_table_lookup(config, "MON_SYN_PIC")
-							);
-			snprintf(sound, PACKTER_BUFSIZ, "%s%s", 	
-													sound,
-													(char *)g_hash_table_lookup(config, "MON_SYN_SOUND")
-							);
-			alert = PACKTER_TRUE;
-		}
-		snprintf(mesg, PACKTER_BUFSIZ, "%s%s<br>%s %.f %%, %s %.f %%<br>",
-										mesg,
-										(char *)g_hash_table_lookup(config, "MON_SYN_MSG"),
-										(char *)g_hash_table_lookup(config, "MONITOR"),
-										(mon_syn) * 100,			
-										(char *)g_hash_table_lookup(config, "THRESHOLD"),
-										(th.rate_syn) * 100
-						);
-		snprintf(voice, PACKTER_BUFSIZ, "%s%s",
-										voice,
-										(char *)g_hash_table_lookup(config, "MON_SYN_VOICE")
-						);
+		alert = packter_generate_alert(alert, mesg, sound, voice,
+											"MON_SYN_PIC", "MON_SYN_MSG", "MON_SYN_SOUND", "MON_SYN_VOICE",
+											mon_syn, th.rate_syn);
 	}
 
   if (mon_fin > th.rate_fin && th.rate_fin > 0){
-    if (alert == PACKTER_FALSE){
-      snprintf(mesg, PACKTER_BUFSIZ, "%s%s,",
-                      mesg,
-                      (char *)g_hash_table_lookup(config, "MON_FIN_PIC")
-              );
-      snprintf(sound, PACKTER_BUFSIZ, "%s%s",
-                          sound,
-                          (char *)g_hash_table_lookup(config, "MON_FIN_SOUND")
-              );
-      alert = PACKTER_TRUE;
-    }
-    snprintf(mesg, PACKTER_BUFSIZ, "%s%s<br>%s %.f %%, %s %.f %%<br>",
-                    mesg,
-                    (char *)g_hash_table_lookup(config, "MON_FIN_MSG"),
-                    (char *)g_hash_table_lookup(config, "MONITOR"),
-                    (mon_fin) * 100,
-                    (char *)g_hash_table_lookup(config, "THRESHOLD"),
-                    (th.rate_fin) * 100
-            );
-    snprintf(voice, PACKTER_BUFSIZ, "%s%s",
-                    voice,
-                    (char *)g_hash_table_lookup(config, "MON_FIN_VOICE")
-            );
+		alert = packter_generate_alert(alert, mesg, sound, voice,
+											"MON_FIN_PIC", "MON_FIN_MSG", "MON_FIN_SOUND", "MON_FIN_VOICE",
+											mon_fin, th.rate_fin);
   }
 
   if (mon_rst > th.rate_rst && th.rate_rst > 0){
-    if (alert == PACKTER_FALSE){
-      snprintf(mesg, PACKTER_BUFSIZ, "%s%s,",
-                      mesg,
-                      (char *)g_hash_table_lookup(config, "MON_RST_PIC")
-              );
-      snprintf(sound, PACKTER_BUFSIZ, "%s%s",
-                          sound,
-                          (char *)g_hash_table_lookup(config, "MON_RST_SOUND")
-              );
-      alert = PACKTER_TRUE;
-    }
-    snprintf(mesg, PACKTER_BUFSIZ, "%s%s<br>%s %.f %%, %s %.f %%<br>",
-                    mesg,
-                    (char *)g_hash_table_lookup(config, "MON_RST_MSG"),
-                    (char *)g_hash_table_lookup(config, "MONITOR"),
-                    (mon_rst) * 100,
-                    (char *)g_hash_table_lookup(config, "THRESHOLD"),
-                    (th.rate_rst) * 100
-            );
-    snprintf(voice, PACKTER_BUFSIZ, "%s%s",
-                    voice,
-                    (char *)g_hash_table_lookup(config, "MON_RST_VOICE")
-            );
+		alert = packter_generate_alert(alert, mesg, sound, voice,
+											"MON_RST_PIC", "MON_RST_MSG", "MON_RST_SOUND", "MON_RST_VOICE",
+											mon_rst, th.rate_rst);
   }
 
   if (mon_icmp > th.rate_icmp && th.rate_icmp > 0){
-    if (alert == PACKTER_FALSE){
-      snprintf(mesg, PACKTER_BUFSIZ, "%s%s,",
-                      mesg,
-                      (char *)g_hash_table_lookup(config, "MON_ICMP_PIC")
-              );
-      snprintf(sound, PACKTER_BUFSIZ, "%s%s",
-                          sound,
-                          (char *)g_hash_table_lookup(config, "MON_ICMP_SOUND")
-              );
-      alert = PACKTER_TRUE;
-    }
-    snprintf(mesg, PACKTER_BUFSIZ, "%s%s<br>%s %.f %%, %s %.f %%<br>",
-                    mesg,
-                    (char *)g_hash_table_lookup(config, "MON_ICMP_MSG"),
-                    (char *)g_hash_table_lookup(config, "MONITOR"),
-                    (mon_icmp) * 100,
-                    (char *)g_hash_table_lookup(config, "THRESHOLD"),
-                    (th.rate_icmp) * 100
-            );
-    snprintf(voice, PACKTER_BUFSIZ, "%s%s",
-                    voice,
-                    (char *)g_hash_table_lookup(config, "MON_ICMP_VOICE")
-            );
-  }
+		alert = packter_generate_alert(alert, mesg, sound, voice,
+											"MON_ICMP_PIC", "MON_ICMP_MSG", "MON_ICMP_SOUND", "MON_ICMP_VOICE",
+											mon_icmp, th.rate_icmp);
+	}
 
   if (mon_udp > th.rate_udp && th.rate_udp > 0){
-    if (alert == PACKTER_FALSE){
-      snprintf(mesg, PACKTER_BUFSIZ, "%s%s,",
-                      mesg,
-                      (char *)g_hash_table_lookup(config, "MON_UDP_PIC")
-              );
-      snprintf(sound, PACKTER_BUFSIZ, "%s%s",
-                          sound,
-                          (char *)g_hash_table_lookup(config, "MON_UDP_SOUND")
-              );
-      alert = PACKTER_TRUE;
-    }
-    snprintf(mesg, PACKTER_BUFSIZ, "%s%s<br>%s %.f %%, %s %.f %%<br>",
-                    mesg,
-                    (char *)g_hash_table_lookup(config, "MON_UDP_MSG"),
-                    (char *)g_hash_table_lookup(config, "MONITOR"),
-                    (mon_udp) * 100,
-                    (char *)g_hash_table_lookup(config, "THRESHOLD"),
-                    (th.rate_udp) * 100
-            );
-    snprintf(voice, PACKTER_BUFSIZ, "%s%s",
-                    voice,
-                    (char *)g_hash_table_lookup(config, "MON_UDP_VOICE")
-            );
-  }
+		alert = packter_generate_alert(alert, mesg, sound, voice,
+											"MON_UDP_PIC", "MON_UDP_MSG", "MON_UDP_SOUND", "MON_UDP_VOICE",
+											mon_udp, th.rate_udp);
+	}
 
   if (mon_pps > th.rate_pps && th.rate_pps > 0){
-    if (alert == PACKTER_FALSE){
-      snprintf(mesg, PACKTER_BUFSIZ, "%s%s,",
-                      mesg,
-                      (char *)g_hash_table_lookup(config, "MON_PPS_PIC")
-              );
-      snprintf(sound, PACKTER_BUFSIZ, "%s%s",
-                          sound,
-                          (char *)g_hash_table_lookup(config, "MON_PPS_SOUND")
-              );
-      alert = PACKTER_TRUE;
-    }
-    snprintf(mesg, PACKTER_BUFSIZ, "%s%s<br>%s %.f %%, %s %.f %%<br>",
-                    mesg,
-                    (char *)g_hash_table_lookup(config, "MON_PPS_MSG"),
-                    (char *)g_hash_table_lookup(config, "MONITOR"),
-                    (mon_pps) * 100,
-                    (char *)g_hash_table_lookup(config, "THRESHOLD"),
-                    (th.rate_pps) * 100
-            );
-    snprintf(voice, PACKTER_BUFSIZ, "%s%s",
-                    voice,
-                    (char *)g_hash_table_lookup(config, "MON_PPS_VOICE")
-            );
-  }
+		alert = packter_generate_alert(alert, mesg, sound, voice,
+											"MON_PPS_PIC", "MON_PPS_MSG", "MON_PPS_SOUND", "MON_PPS_VOICE",
+											mon_pps, th.rate_pps);
+	}
+
 	if (alert == PACKTER_TRUE){
-		printf("%s\n", mesg);
+		if (debug == PACKTER_TRUE){
+			printf("Packter-MSG\n%s\n", mesg);
+		}
 		packter_send(mesg);
 
 		if (enable_sound == PACKTER_TRUE){
 			snprintf(voice, PACKTER_BUFSIZ, "%s%s",
 							voice, (char *)g_hash_table_lookup(config, "MON_OPT_VOICE_FOOT"));
 
-			printf("%s\n", voice);
+			if (debug == PACKTER_TRUE){
+				printf("Packter-VOICE\n%s\n", voice);
+			}
 			packter_send(voice);
 
-			printf("%s\n", sound);
+			if (debug == PACKTER_TRUE){
+				printf("Packter-SOUND\n%s\n", sound);
+			}
 			packter_send(sound);
 		}
 	}
@@ -984,3 +877,30 @@ void packter_free_hash(gpointer key, gpointer value, gpointer user_data)
   return;
 }
 
+int packter_generate_alert(int alert, char *mesg, char *sound, char *voice, char *mon_pic, char *mon_mesg, char *mon_sound, char *mon_voice, float mon_th, float given_th)
+{
+    if (alert == PACKTER_FALSE){
+      snprintf(mesg, PACKTER_BUFSIZ, "%s%s,",
+                      mesg,
+                      (char *)g_hash_table_lookup(config, mon_pic)
+              );
+      snprintf(sound, PACKTER_BUFSIZ, "%s%s",
+                          sound,
+                          (char *)g_hash_table_lookup(config, mon_sound)
+              );
+      alert = PACKTER_TRUE;
+    }
+    snprintf(mesg, PACKTER_BUFSIZ, "%s%s<div align=center><font size=-1 color=gray face=arial>%s %.f , %s %.f </font></div>",
+                    mesg,
+                    (char *)g_hash_table_lookup(config, mon_mesg),
+                    (char *)g_hash_table_lookup(config, "MONITOR"),
+                    (mon_th) * 100,
+                    (char *)g_hash_table_lookup(config, "THRESHOLD"),
+                    (given_th) * 100
+            );
+    snprintf(voice, PACKTER_BUFSIZ, "%s%s",
+                    voice,
+                    (char *)g_hash_table_lookup(config, mon_voice)
+            );
+	return alert;
+}
