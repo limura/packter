@@ -78,7 +78,7 @@ sub main {
 									$hash
 							);
 				send(PACKTER, $msg, 0, $pt_addr);
-
+				printf("MSG:%s\n", $msg);
 				if ($enable_sound){
 					$voice = sprintf("%s\n%s%s%s",
 									$pt_voice_h,
@@ -137,7 +137,9 @@ sub main {
 
 							$result = &show_TraceReply($tc_rep);
 							if (length $result > 1){
-								$result =~ s/\n/\<br\>/g;
+								$result =~ s/\n/\<br\>/;
+								$result =~ s/\n/-\&gt;/g;
+								$result = $result . "Target";
 
 								$msg = "";
 								$sound = "";
@@ -191,14 +193,16 @@ sub main {
 								print "send $msg\n";
 							}
 
-							if ($sound ne ""){
-								send(PACKTER, $sound, 0, $pt_addr);
-								print "send $sound\n";
-							}
+							if ($enable_sound){
+								if ($sound ne ""){
+									send(PACKTER, $sound, 0, $pt_addr);
+									print "send $sound\n";
+								}
 					
-							if ($voice ne ""){
-								send(PACKTER, $voice, 0, $pt_addr);
-								print "send $voice\n";
+								if ($voice ne ""){
+									send(PACKTER, $voice, 0, $pt_addr);
+									print "send $voice\n";
+								}
 							}
 						}
 					}
