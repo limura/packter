@@ -596,8 +596,11 @@ packter_analy()
 		packter_send(mesg);
 
 		if (enable_sound == PACKTER_TRUE){
-			snprintf(voice, PACKTER_BUFSIZ, "%s%s",
+			char tmp[PACKTER_BUFSIZ];
+			memset((void *)tmp, '\0', PACKTER_BUFSIZ);
+			snprintf(tmp, PACKTER_BUFSIZ, "%s%s",
 							voice, (char *)g_hash_table_lookup(config, "MON_OPT_VOICE_FOOT"));
+			strncpy(voice, tmp, PACKTER_BUFSIZ);
 
 			if (debug == PACKTER_TRUE){
 				printf("Packter-VOICE\n%s\n", voice);
@@ -759,19 +762,6 @@ void packter_send(char *mesg)
 	return;
 }
 
-void packter_mesg(char *mesg, char *srcip, char *dstip, int data1, int data2, int flag, char *mesgbuf)
-{
-		snprintf(mesg, PACKTER_BUFSIZ, "%s%s,%s,%d,%d,%d,%s\n",
-						PACKTER_HEADER,
-						srcip,
-						dstip,
-						data1,
-						data2,
-						flag,
-						mesgbuf
-		);
-}
-
 int packter_config_trim(char buf[])
 {
   char newbuf[PACKTER_BUFSIZ];
@@ -879,28 +869,39 @@ void packter_free_hash(gpointer key, gpointer value, gpointer user_data)
 
 int packter_generate_alert(int alert, char *mesg, char *sound, char *voice, char *mon_pic, char *mon_mesg, char *mon_sound, char *mon_voice, float mon_th, float given_th)
 {
-    if (alert == PACKTER_FALSE){
-      snprintf(mesg, PACKTER_BUFSIZ, "%s%s,",
-                      mesg,
-                      (char *)g_hash_table_lookup(config, mon_pic)
-              );
-      snprintf(sound, PACKTER_BUFSIZ, "%s%s",
-                          sound,
-                          (char *)g_hash_table_lookup(config, mon_sound)
-              );
-      alert = PACKTER_TRUE;
-    }
-    snprintf(mesg, PACKTER_BUFSIZ, "%s%s<div align=center><font size=-1 color=gray face=arial>%s %.f , %s %.f </font></div>",
-                    mesg,
-                    (char *)g_hash_table_lookup(config, mon_mesg),
-                    (char *)g_hash_table_lookup(config, "MONITOR"),
-                    (mon_th) * 100,
-                    (char *)g_hash_table_lookup(config, "THRESHOLD"),
-                    (given_th) * 100
-            );
-    snprintf(voice, PACKTER_BUFSIZ, "%s%s",
-                    voice,
-                    (char *)g_hash_table_lookup(config, mon_voice)
-            );
+	char tmp[PACKTER_BUFSIZ];
+  if (alert == PACKTER_FALSE){
+		memset((void *)tmp, '\0', PACKTER_BUFSIZ);
+    snprintf(tmp, PACKTER_BUFSIZ, "%s%s,",
+									mesg,
+                  (char *)g_hash_table_lookup(config, mon_pic));
+		strncpy(mesg, tmp, PACKTER_BUFSIZ);
+
+		memset((void *)tmp, '\0', PACKTER_BUFSIZ);
+    snprintf(tmp, PACKTER_BUFSIZ, "%s%s",
+										sound,
+                    (char *)g_hash_table_lookup(config, mon_sound));
+		strncpy(sound, tmp, PACKTER_BUFSIZ);
+    alert = PACKTER_TRUE;
+  }
+
+	memset((void *)tmp, '\0', PACKTER_BUFSIZ);
+  snprintf(tmp, PACKTER_BUFSIZ, "%s%s<div align=center><font size=-1 color=gray face=arial>%s %.f , %s %.f </font></div>",
+                mesg,
+                (char *)g_hash_table_lookup(config, mon_mesg),
+                (char *)g_hash_table_lookup(config, "MONITOR"),
+								(mon_th),
+                (char *)g_hash_table_lookup(config, "THRESHOLD"),
+                (given_th)
+  				);
+
+	strncpy(mesg, tmp, PACKTER_BUFSIZ);
+
+	memset((void *)tmp, '\0', PACKTER_BUFSIZ);
+  snprintf(tmp, PACKTER_BUFSIZ, "%s%s",
+								voice,
+                (char *)g_hash_table_lookup(config, mon_voice)
+           );
+	strncpy(voice, tmp, PACKTER_BUFSIZ);
 	return alert;
 }
