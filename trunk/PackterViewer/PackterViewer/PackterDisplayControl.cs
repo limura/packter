@@ -99,6 +99,8 @@ namespace Packter_viewer2
         TimeSpan acceptGapTimeSpan = new TimeSpan(50000);
 
         Dictionary<string, Model> cachedModel = new Dictionary<string, Model>();
+        Dictionary<string, Texture2D> cachedTexture2D = new Dictionary<string, Texture2D>();
+        Texture2D caraImageTexture = null;
 
         protected override void Initialize()
         {
@@ -129,6 +131,25 @@ namespace Packter_viewer2
         public void writeString(string[] Args)
         {
             return;
+        }
+
+        Texture2D GetCachedTexture2D(string filename)
+        {
+            if (filename == null)
+            {
+                return null;
+            }
+            if (cachedTexture2D.ContainsKey(filename))
+            {
+                return cachedTexture2D[filename];
+            }
+            Texture2D texture = Texture2D.FromFile(GraphicsDevice, filename);
+            if (texture != null)
+            {
+                cachedTexture2D[filename] = texture;
+                return texture;
+            }
+            return null;
         }
 
         /// <summary>
@@ -697,6 +718,11 @@ namespace Packter_viewer2
             return null;
         }
 
+        public void SetCaraImageTexture(string filename)
+        {
+            caraImageTexture = GetCachedTexture2D(filename);
+        }
+
         /// packter sender から送信されたパケットのリストを読み込んでいるところ。
         private void ReadMessages(GameTime gameTime)
         {
@@ -983,6 +1009,14 @@ namespace Packter_viewer2
                     }
                 }
 
+            }
+
+            // キャラクタのイメージを表示する
+            // 最後なので一番上になるはず。
+            if (caraImageTexture != null)
+            {
+                this.spriteBatch.Draw(caraImageTexture, new Vector2((float)(this.Width * 0.1)
+                        , (float)(this.Height - caraImageTexture.Height)), Color.White);
             }
 
             this.spriteBatch.End();
