@@ -217,12 +217,14 @@ namespace WinFormsGraphicsDevice
                                 msgString = stringList[stringList.Count - 1];
                             }
                         }
+                        string imgFileName = null;
                         if (!string.IsNullOrEmpty(msgString))
                         {
                             int pos = msgString.IndexOf(',');
                             if (pos > 0)
                             {
                                 string numString = msgString.Substring(0, pos);
+                                imgFileName = numString;
                                 string htmlString = msgString.Substring(pos + 1);
                                 targetHtml = packterMSGString1 + imgUri.ToString() + "/" + numString
                                     + packterMSGString2 + htmlString + packterMSGString3;
@@ -230,7 +232,7 @@ namespace WinFormsGraphicsDevice
                         }
                         if (!string.IsNullOrEmpty(targetHtml))
                         {
-                            LoadHtml(targetHtml);
+                            LoadHtml(imgFileName, targetHtml);
                         }
 
                         if (msg.ContainsKey(PacketReader.SOUNDTriggerString)) // sound
@@ -334,7 +336,7 @@ namespace WinFormsGraphicsDevice
             }
             else
             {
-                LoadHtml(text);
+                LoadHtml(null, text);
             }
         }
 
@@ -356,15 +358,17 @@ namespace WinFormsGraphicsDevice
         {
             CloseWebBrowser();
             webBrowserTargetText = "";
+            packterDisplayControl.SetCaraImageTexture(null);
             webBrowserVisibleChangeTimer.Stop();
         }
-        private void LoadHtml(string txt)
+        private void LoadHtml(string filename, string txt)
         {
             if (string.IsNullOrEmpty(txt))
             {
                 UnloadHtml();
                 return;
             }
+            packterDisplayControl.SetCaraImageTexture(filename);
             //OpenWebBrowser();
             webBrowserTargetText = txt;
             webBrowserVisibleChangeTimer.Stop();
