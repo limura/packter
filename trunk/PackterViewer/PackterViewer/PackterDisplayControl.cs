@@ -127,6 +127,13 @@ namespace Packter_viewer2
             Content = new ContentManager(Services, "Content");
             Content.RootDirectory = "Content";
             //LoadContent();
+
+            SetDefaultLightingDirection();
+        }
+
+        void SetDefaultLightingDirection()
+        {
+            ;
         }
 
         public void writeString(string[] Args)
@@ -240,6 +247,7 @@ namespace Packter_viewer2
             PacketBoard pb = new PacketBoard(targetModel, targetTexture
                 , startPoint, endPoint, nowGameTime, flyMillisecond, packet.OriginalString);
             pb.Scale = defaultScale;
+            pb.LightingEnabled = targetModel != packetModel; // 標準の model でなければ lighting を true にする
             packetList.Add(pb);
         }
 
@@ -272,14 +280,14 @@ namespace Packter_viewer2
                     string buildError = contentBuilder.Build();
                     if (buildError == null || buildError.IndexOf(targetFileName) < 0)
                     {
-                        //try
+                        try
                         {
                             tmpModel = contentManager.Load<Model>(targetFileName);
                         }
-                        //catch
-                        //{
-                        //    tmpModel = null;
-                        //}
+                        catch
+                        {
+                            tmpModel = null;
+                        }
                     }
                 }
                 if (tmpModel != null)

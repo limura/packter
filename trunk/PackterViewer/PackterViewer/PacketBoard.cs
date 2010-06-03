@@ -79,5 +79,11 @@ namespace Packter_viewer
         {
             get { return description; }
         }
+
+        public bool LightingEnabled
+        {
+            get { return board.LightingEnabled; }
+            set { board.LightingEnabled = value; }
+        }
     }
 }
