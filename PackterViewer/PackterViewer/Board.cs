@@ -21,10 +21,17 @@ namespace Packter_viewer
         Texture2D texture;
         Vector3 position = new Vector3(0, 0, 0);
         Model model = null;
+        bool lightingEnabled = false;
 
         public Board(Model Model)
         {
             model = Model;
+        }
+
+        public bool LightingEnabled
+        {
+            get { return lightingEnabled; }
+            set { lightingEnabled = value; }
         }
 
         public Vector3 Position
@@ -57,8 +64,16 @@ namespace Packter_viewer
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    //effect.EnableDefaultLighting();
-                    effect.LightingEnabled = false;
+                    if (lightingEnabled)
+                    {
+                        effect.EnableDefaultLighting();
+                        effect.LightingEnabled = true;
+                    }
+                    else
+                    {
+                        //effect.EnableDefaultLighting();
+                        effect.LightingEnabled = false;
+                    }
                     effect.World = transform;
                     effect.View = view;
                     if (texture != null)
