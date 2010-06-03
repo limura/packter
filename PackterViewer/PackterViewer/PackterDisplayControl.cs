@@ -60,6 +60,7 @@ namespace Packter_viewer2
         // ArrayList drawPacketList = new ArrayList();
         
         Model packetModel;
+        List<Model> packetModelList = new List<Model>();
 
         //Vector3 cameraPosition = new Vector3(-128, 250, 480);
         Vector3 cameraPosition = new Vector3(-321, 22, 304);
@@ -183,8 +184,13 @@ namespace Packter_viewer2
             
             //System.Diagnostics.Debug.WriteLine("new Packet: " + srcIP + ", " + srcPort + " -> " + endPoint.X + ", " + endPoint.Y + " end: " + endPoint.X + ", " + endPoint.Y);
 
-            Model targetModel = packetModel;
+            // Model targetModel = packetModel;
+            Model targetModel = packetModelList[imageNumber % packetModelList.Count];
             Texture2D targetTexture = (Texture2D)packetImages[imageNumber % packetImages.Count];
+            if (targetModel != packetModel)
+            {
+                targetTexture = null;
+            }
             // ファイルがあるならloadして targetModel と targetTexture を書き換える
             // キャッシュされたものがあるのかをまず確かめる
 
@@ -209,17 +215,17 @@ namespace Packter_viewer2
                 {
                     string targetFileName = System.IO.Directory.GetCurrentDirectory() + "\\" + fileName;
                     //contentBuilder.Add(targetFileName, fileName, null, "ModelProcessor");
-                    contentBuilder.Add(targetFileName, "Model", null, "ModelProcessor");
+                    contentBuilder.Add(targetFileName, fileName, null, "ModelProcessor");
                     string buildError = contentBuilder.Build();
                     if (buildError == null || buildError.IndexOf(fileName) < 0)
                     {
-//                        try
+                        try
                         {
-                            tmpModel = contentManager.Load<Model>("Model");
+                            tmpModel = contentManager.Load<Model>(fileName);
                         }
-//                        catch
+                        catch
                         {
-//                            tmpModel = null;
+                            tmpModel = null;
                         }
                     }
                 }
@@ -250,6 +256,41 @@ namespace Packter_viewer2
 
             contentManager.RootDirectory = contentBuilder.OutputDirectory;
             LoadContent();
+        }
+
+        // current directory から packter??.x を読み込んで packetModelList に入れる。
+        // んで、存在しなかったら board.x の Model を入れる。
+        private void LoadPacketModelList(Model defaultModel)
+        {
+            for(int num = 0; num < 10; num++)
+            {
+                string targetFileName = string.Format("packter{0,0:D2}.x", num + 1);
+                Model tmpModel = null;
+                if (System.IO.File.Exists(targetFileName))
+                {
+                    contentBuilder.Add(targetFileName, targetFileName, null, "ModelProcessor");
+                    string buildError = contentBuilder.Build();
+                    if (buildError == null || buildError.IndexOf(targetFileName) < 0)
+                    {
+                        //try
+                        {
+                            tmpModel = contentManager.Load<Model>(targetFileName);
+                        }
+                        //catch
+                        //{
+                        //    tmpModel = null;
+                        //}
+                    }
+                }
+                if (tmpModel != null)
+                {
+                    packetModelList.Add(tmpModel);
+                }
+                else
+                {
+                    packetModelList.Add(defaultModel);
+                }
+            }
         }
 
         /// <summary>
@@ -285,6 +326,7 @@ namespace Packter_viewer2
             //v4Texture = contentManager.Load<Texture2D>("v4");
 
             packetModel = Content.Load<Model>("board");
+            LoadPacketModelList(packetModel);
 
             senderBoard = new Board(Content.Load<Model>("board"));
             senderBoard.Position = new Vector3(0, 0, -150);
