@@ -56,7 +56,7 @@ namespace Packter_viewer
             //ReadData(Encoding.UTF8.GetBytes("PACKTERSOUND\n0,packter01.wav"));
             //ReadData(Encoding.UTF8.GetBytes("PACKTERSOUND\n")); // この二回目の null な PACKTERSOUND 呼び出しで音が消える
             //ReadData(Encoding.UTF8.GetBytes("PACKTERMSG\npackter01.png,らんらんるー"));
-            ReadData(Encoding.UTF8.GetBytes("PACKTERMSG\nteacher.png,<font face=\"メイリオ\" size=+2>こうなってくれると嬉しいです<br>画像は全部用意する感じで。</font>"));
+            //ReadData(Encoding.UTF8.GetBytes("PACKTERMSG\nteacherr.png,<font face=\"メイリオ\" size=+2>こうなってくれると嬉しいです<br>画像は全部用意する感じで。</font>"));
             //ReadData(Encoding.UTF8.GetBytes("PACKTERHTML\n<html><body>らんらんるー<a href=http://www.google.co.jp/>google</A></body></html>"));
             //ReadData(Encoding.UTF8.GetBytes("PACKTER\n0.0.0.0,255.255.255.255,0,65535,misairu,0"));
             //ReadData(Encoding.UTF8.GetBytes("PACKTERVOICE\n/W:ぱくたーが起動したよ？"));

@@ -143,7 +143,15 @@ namespace Packter_viewer2
             {
                 return cachedTexture2D[filename];
             }
-            Texture2D texture = Texture2D.FromFile(GraphicsDevice, filename);
+            Texture2D texture = null;
+            try
+            {
+                texture = Texture2D.FromFile(GraphicsDevice, filename);
+            }
+            catch
+            {
+                texture = null;
+            }
             if (texture != null)
             {
                 cachedTexture2D[filename] = texture;
