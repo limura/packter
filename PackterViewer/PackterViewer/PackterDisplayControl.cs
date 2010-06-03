@@ -1015,8 +1015,14 @@ namespace Packter_viewer2
             // 最後なので一番上になるはず。
             if (caraImageTexture != null)
             {
-                this.spriteBatch.Draw(caraImageTexture, new Vector2((float)(this.Width * 0.1)
-                        , (float)(this.Height - caraImageTexture.Height)), Color.White);
+                float aspectRate = (float)caraImageTexture.Width / (float)caraImageTexture.Height;
+                float targetHeight = this.Height * 0.8f;
+                float targetWidth = targetHeight * aspectRate;
+                this.spriteBatch.Draw(caraImageTexture, new Rectangle(
+                        0
+                        , (int)(this.Height * 0.2)
+                        , (int)targetWidth
+                        , (int)targetHeight), Color.White);
             }
 
             this.spriteBatch.End();
