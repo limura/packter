@@ -32,6 +32,7 @@ namespace WinFormsGraphicsDevice
         ContentBuilder contentBuilder;
         ContentManager contentManager;
         string webBrowserTargetText;
+        string caractorImageFile;
         System.Windows.Forms.Timer webBrowserVisibleChangeTimer = new System.Windows.Forms.Timer();
         System.Windows.Forms.Timer intervalTimer = new System.Windows.Forms.Timer();
         System.Windows.Forms.Timer bgmTimer = new System.Windows.Forms.Timer();
@@ -40,9 +41,8 @@ namespace WinFormsGraphicsDevice
         string softTalkPath = "softalk\\softalkw.exe";
         float defaultScale = 8;
 
-        string packterMSGString1 = "<html lang=\"ja\"><body><table height=\"100%\" border=\"1\"><tr><td><img height=\"100%\" src=\"";
-        string packterMSGString2 = "\"><td>";
-        string packterMSGString3 = "</tr></table></body></html>";
+        string packterMSGString1 = "<html lang=\"ja\"><body>";
+        string packterMSGString2 = "</body></html>";
 
         System.Nullable<int> tickKeyInputAcceptMicrosecond = null;
 
@@ -153,9 +153,6 @@ namespace WinFormsGraphicsDevice
                             case "packtermsgformat2":
                                 packterMSGString2 = value;
                                 break;
-                            case "packtermsgformat3":
-                                packterMSGString3 = value;
-                                break;
                             case "tickkeyinputacceptmicrosecond":
                                 try
                                 {
@@ -226,8 +223,7 @@ namespace WinFormsGraphicsDevice
                                 string numString = msgString.Substring(0, pos);
                                 imgFileName = numString;
                                 string htmlString = msgString.Substring(pos + 1);
-                                targetHtml = packterMSGString1 + imgUri.ToString() + "/" + numString
-                                    + packterMSGString2 + htmlString + packterMSGString3;
+                                targetHtml = packterMSGString1 + htmlString + packterMSGString2;
                             }
                         }
                         if (!string.IsNullOrEmpty(targetHtml))
@@ -344,6 +340,7 @@ namespace WinFormsGraphicsDevice
         {
             packterDisplayControl.Height = basePanel.Height - webBrowser.Height;
             webBrowser.Visible = true;
+            packterDisplayControl.SetCaraImageTexture(caractorImageFile);
             packterDisplayControl.StatusDraw = true;
         }
 
@@ -352,13 +349,13 @@ namespace WinFormsGraphicsDevice
             packterDisplayControl.Height = basePanel.Height;
             webBrowser.Visible = false;
             packterDisplayControl.StatusDraw = false;
+            packterDisplayControl.SetCaraImageTexture(null);
         }
 
         private void UnloadHtml()
         {
             CloseWebBrowser();
             webBrowserTargetText = "";
-            packterDisplayControl.SetCaraImageTexture(null);
             webBrowserVisibleChangeTimer.Stop();
         }
         private void LoadHtml(string filename, string txt)
@@ -368,7 +365,8 @@ namespace WinFormsGraphicsDevice
                 UnloadHtml();
                 return;
             }
-            packterDisplayControl.SetCaraImageTexture(filename);
+            //packterDisplayControl.SetCaraImageTexture(filename);
+            caractorImageFile = filename;
             //OpenWebBrowser();
             webBrowserTargetText = txt;
             webBrowserVisibleChangeTimer.Stop();
