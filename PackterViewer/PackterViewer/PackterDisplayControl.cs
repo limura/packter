@@ -30,6 +30,7 @@ using System.Diagnostics;
 
 using WinFormsGraphicsDevice;
 using Packter_viewer;
+using PackterViewer;
 
 namespace Packter_viewer2
 {
@@ -41,6 +42,7 @@ namespace Packter_viewer2
         ContentManager Content;
         Dictionary<System.Windows.Forms.Keys, int> EnableKeyMap = new Dictionary<System.Windows.Forms.Keys,int>();
         Dictionary<System.Windows.Forms.Keys, DateTime> KeyHitMap = new Dictionary<System.Windows.Forms.Keys, DateTime>();
+        ConfigReader configReader = null;
 
         System.Threading.Mutex mutex = new System.Threading.Mutex();
 
@@ -73,7 +75,6 @@ namespace Packter_viewer2
         Packter_viewer.PacketReader packetReader_v6 = null;
 
         ArrayList packetImages = new ArrayList();
-        string[] args = null;
         float defaultScale = 8;
 
         bool statusDraw = false;
@@ -122,7 +123,6 @@ namespace Packter_viewer2
             };
 
             //graphics = new GraphicsDeviceManager(this);
-            args = null;
 
             Content = new ContentManager(Services, "Content");
             Content.RootDirectory = "Content";
@@ -247,7 +247,9 @@ namespace Packter_viewer2
             PacketBoard pb = new PacketBoard(targetModel, targetTexture
                 , startPoint, endPoint, nowGameTime, flyMillisecond, packet.OriginalString);
             pb.Scale = defaultScale;
-            pb.LightingEnabled = targetModel != packetModel; // 標準の model でなければ lighting を true にする
+            // 標準が "board" でないか、標準の model でなければ lighting を true にする
+            if (targetModel != packetModel || configReader.LoadPacketTarget != "board")
+                pb.LightingEnabled = true;
             packetList.Add(pb);
         }
 
@@ -256,11 +258,12 @@ namespace Packter_viewer2
             base.OnCreateControl();
         }
 
-        public void RegisterData(ContentBuilder builder, ContentManager manager, float DefaultScale)
+        public void RegisterData(ContentBuilder builder, ContentManager manager, float DefaultScale, ConfigReader reader)
         {
             contentBuilder = builder;
             contentManager = manager;
             defaultScale = DefaultScale;
+            configReader = reader;
 
             contentManager.RootDirectory = contentBuilder.OutputDirectory;
             LoadContent();
@@ -314,15 +317,6 @@ namespace Packter_viewer2
             defaultHeight = GraphicsDevice.DisplayMode.Height;
 
             //this.IsMouseVisible = true; // XXX
-            if (args != null && args.Length >= 2)
-            {
-                float f;
-                if (args[0] == "/size" && float.TryParse(args[1], out f))
-                {
-                    if (f > 0)
-                        defaultScale = f;
-                }
-            }
 
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -333,7 +327,15 @@ namespace Packter_viewer2
             //contentBuilder.Add("v4.png", "v4Texture", null, "TextureProcessor");
             //v4Texture = contentManager.Load<Texture2D>("v4");
 
-            packetModel = Content.Load<Model>("board");
+            switch (configReader.LoadPacketTarget)
+            {
+                case "board":
+                    packetModel = Content.Load<Model>("board");
+                    break;
+                default:
+                    packetModel = Content.Load<Model>("ball");
+                    break;
+            }
             LoadPacketModelList(packetModel);
 
             senderBoard = new Board(Content.Load<Model>("board"));
