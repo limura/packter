@@ -55,10 +55,12 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Board.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="ConfigReader.cs" />
     <Compile Include="ContentBuilder.cs" />
     <Compile Include="ErrorLogger.cs" />
     <Compile Include="FlyPacket.cs" />

@@ -169,6 +169,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ball.x">
+      <Name>ball</Name>
+      <Importer>XImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
     <None Include="mecha3bump.bmp">
       <Name>mecha3bump</Name>
       <Importer>TextureImporter</Importer>
