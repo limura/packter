@@ -41,6 +41,7 @@
   <ItemGroup>
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.DirectX.AudioVideoPlayback, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Microsoft.Xna.Framework, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.EffectImporter, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.FBXImporter, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
@@ -74,6 +75,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GraphicsDeviceService.cs" />
+    <Compile Include="ContentLoader.cs" />
     <Compile Include="PacketBoard.cs" />
     <Compile Include="PacketReader.cs" />
     <Compile Include="PackterDisplayControl.cs">

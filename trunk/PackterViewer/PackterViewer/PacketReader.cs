@@ -25,6 +25,7 @@ namespace Packter_viewer
         public const string MSGTriggerString = "PACKTERMSG";
         public const string SOUNDTriggerString = "PACKTERSOUND";
         public const string VOICETriggerString = "PACKTERVOICE";
+        public const string SETriggerString = "PACKTERSE";
 
         Dictionary<string, List<string> > packterStringQueue = new Dictionary<string, List<string> >();
 
@@ -108,6 +109,7 @@ namespace Packter_viewer
                 case PacketReader.MSGTriggerString:  // imgNumber, msgHTML
                 case PacketReader.SOUNDTriggerString:  // soundFileName
                 case PacketReader.VOICETriggerString: // Ç‰Ç¡Ç≠ÇËÉ{ÉCÉX
+                case PacketReader.SETriggerString: // SE
                     if(packterStringQueue.ContainsKey(firstLine) == false){
                         packterStringQueue[firstLine] = new List<string>();
                     }
