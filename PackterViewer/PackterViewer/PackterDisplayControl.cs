@@ -37,12 +37,10 @@ namespace Packter_viewer2
     class PackterDisplayControl : GraphicsDeviceControl
     {
         Stopwatch timer;
-        ContentBuilder contentBuilder;
-        ContentManager contentManager;
-        ContentManager Content;
         Dictionary<System.Windows.Forms.Keys, int> EnableKeyMap = new Dictionary<System.Windows.Forms.Keys,int>();
         Dictionary<System.Windows.Forms.Keys, DateTime> KeyHitMap = new Dictionary<System.Windows.Forms.Keys, DateTime>();
         ConfigReader configReader = null;
+        ContentLoader contentLoader = new ContentLoader();
 
         System.Threading.Mutex mutex = new System.Threading.Mutex();
 
@@ -122,12 +120,6 @@ namespace Packter_viewer2
                 this.UpdateSene(time);
             };
 
-            //graphics = new GraphicsDeviceManager(this);
-
-            Content = new ContentManager(Services, "Content");
-            Content.RootDirectory = "Content";
-            //LoadContent();
-
             SetDefaultLightingDirection();
         }
 
@@ -192,58 +184,16 @@ namespace Packter_viewer2
             //System.Diagnostics.Debug.WriteLine("new Packet: " + srcIP + ", " + srcPort + " -> " + endPoint.X + ", " + endPoint.Y + " end: " + endPoint.X + ", " + endPoint.Y);
 
             // Model targetModel = packetModel;
-            Model targetModel = packetModelList[imageNumber % packetModelList.Count];
+            Model targetModel = contentLoader.GetModel(fileName);
+            if (targetModel == null)
+            {
+                targetModel = packetModelList[imageNumber % packetModelList.Count];
+            }
             Texture2D targetTexture = (Texture2D)packetImages[imageNumber % packetImages.Count];
             if (targetModel != packetModel)
             {
                 targetTexture = null;
             }
-            // ファイルがあるならloadして targetModel と targetTexture を書き換える
-            // キャッシュされたものがあるのかをまず確かめる
-
-            if (fileName != null && cachedModel.ContainsKey(fileName))
-            {
-                targetModel = cachedModel[fileName];
-                targetTexture = null;
-            }
-            else if (fileName != null && cachedModel.ContainsKey(fileName + ".x"))
-            {
-                targetModel = cachedModel[fileName + ".x"];
-                targetTexture = null;
-            }
-            else if (fileName != null)
-            {
-                Model tmpModel = null;
-                if (!System.IO.File.Exists(fileName))
-                {
-                    fileName += ".x";
-                }
-                if (System.IO.File.Exists(fileName))
-                {
-                    string targetFileName = System.IO.Directory.GetCurrentDirectory() + "\\" + fileName;
-                    //contentBuilder.Add(targetFileName, fileName, null, "ModelProcessor");
-                    contentBuilder.Add(targetFileName, fileName, null, "ModelProcessor");
-                    string buildError = contentBuilder.Build();
-                    if (buildError == null || buildError.IndexOf(fileName) < 0)
-                    {
-                        try
-                        {
-                            tmpModel = contentManager.Load<Model>(fileName);
-                        }
-                        catch
-                        {
-                            tmpModel = null;
-                        }
-                    }
-                }
-                if (tmpModel != null)
-                {
-                    cachedModel[fileName] = tmpModel;
-                    targetModel = tmpModel;
-                    targetTexture = null;
-                }
-            }
-
             PacketBoard pb = new PacketBoard(targetModel, targetTexture
                 , startPoint, endPoint, nowGameTime, flyMillisecond, packet.OriginalString);
             pb.Scale = defaultScale;
@@ -260,12 +210,11 @@ namespace Packter_viewer2
 
         public void RegisterData(ContentBuilder builder, ContentManager manager, float DefaultScale, ConfigReader reader)
         {
-            contentBuilder = builder;
-            contentManager = manager;
+            manager.RootDirectory = builder.OutputDirectory;
+            contentLoader.Initialize(builder, manager, Services, GraphicsDevice);
             defaultScale = DefaultScale;
             configReader = reader;
 
-            contentManager.RootDirectory = contentBuilder.OutputDirectory;
             LoadContent();
         }
 
@@ -276,23 +225,7 @@ namespace Packter_viewer2
             for(int num = 0; num < 10; num++)
             {
                 string targetFileName = string.Format("packter{0,0:D2}.x", num + 1);
-                Model tmpModel = null;
-                if (System.IO.File.Exists(targetFileName))
-                {
-                    contentBuilder.Add(targetFileName, targetFileName, null, "ModelProcessor");
-                    string buildError = contentBuilder.Build();
-                    if (buildError == null || buildError.IndexOf(targetFileName) < 0)
-                    {
-                        try
-                        {
-                            tmpModel = contentManager.Load<Model>(targetFileName);
-                        }
-                        catch
-                        {
-                            tmpModel = null;
-                        }
-                    }
-                }
+                Model tmpModel = contentLoader.GetModel(targetFileName);
                 if (tmpModel != null)
                 {
                     packetModelList.Add(tmpModel);
@@ -310,9 +243,6 @@ namespace Packter_viewer2
         /// </summary>
         public void LoadContent()
         {
-            contentManager.Unload();
-            contentBuilder.Clear();
-
             defaultWidth = GraphicsDevice.DisplayMode.Width;
             defaultHeight = GraphicsDevice.DisplayMode.Height;
 
@@ -321,29 +251,26 @@ namespace Packter_viewer2
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            font = Content.Load<SpriteFont>("font");
-            //font = contentManager.Load<SpriteFont>("font");
-            v4Texture = Content.Load<Texture2D>("v4");
-            //contentBuilder.Add("v4.png", "v4Texture", null, "TextureProcessor");
-            //v4Texture = contentManager.Load<Texture2D>("v4");
+            font = contentLoader.GetSpriteFont("font");
+            v4Texture = contentLoader.GetTexture2D("v4");
 
             switch (configReader.LoadPacketTarget)
             {
                 case "board":
-                    packetModel = Content.Load<Model>("board");
+                    packetModel = contentLoader.GetModel("board");
                     break;
                 default:
-                    packetModel = Content.Load<Model>("ball");
+                    packetModel = contentLoader.GetModel("ball");
                     break;
             }
             LoadPacketModelList(packetModel);
 
-            senderBoard = new Board(Content.Load<Model>("board"));
+            senderBoard = new Board(contentLoader.GetModel("board"));
             senderBoard.Position = new Vector3(0, 0, -150);
             senderBoard.Scale = 100;
             senderBoard.RotationY = (float)Math.PI;
             senderBoard.Alpha = 0.3f;
-            receiverBoard = new Board(Content.Load<Model>("board"));
+            receiverBoard = new Board(contentLoader.GetModel("board"));
             receiverBoard.Position = new Vector3(0, 0, 150);
             receiverBoard.RotationY = (float)Math.PI;
             receiverBoard.Scale = 100;
@@ -365,20 +292,20 @@ namespace Packter_viewer2
                 Texture2D t = null;
                 try
                 {
-                    t = Texture2D.FromFile(GraphicsDevice, "packter_sender.png");
+                    t = contentLoader.GetTexture2D("packter_sender.png");
                 }
                 catch
                 {
-                    t = Content.Load<Texture2D>("packter_sender");
+                    t = contentLoader.GetTexture2D("packter_sender");
                 }
                 senderBoard.Texture = t;
                 try
                 {
-                    t = Texture2D.FromFile(GraphicsDevice, "packter_receiver.png");
+                    t = contentLoader.GetTexture2D("packter_receiver.png");
                 }
                 catch
                 {
-                    t = Content.Load<Texture2D>("packter_receiver");
+                    t = contentLoader.GetTexture2D("packter_receiver");
                 }
                 receiverBoard.Texture = t;
             }
@@ -390,18 +317,9 @@ namespace Packter_viewer2
                 int i = 0;
                 while(true)
                 {
-                    Texture2D t = null;
-                    try
-                    {
-                        t = Texture2D.FromFile(GraphicsDevice, "packter" + i + ".png");
-                    }
-                    catch
-                    {
-                        try
-                        {
-                            t = Content.Load<Texture2D>("packter" + i);
-                        }
-                        catch { break; }
+                    Texture2D t = contentLoader.GetTexture2D("packter" + i + ".png");
+                    if(t == null){
+                        t = contentLoader.GetTexture2D("packter" + i);
                     }
                     if (t != null)
                         packetImages.Add(t);

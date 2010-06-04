@@ -192,6 +192,15 @@ namespace WinFormsGraphicsDevice
                                 }
                             }
                         }
+
+                        if (msg.ContainsKey(PacketReader.SETriggerString)) // SE
+                        {
+                            List<string> targetList = msg[PacketReader.SETriggerString];
+                            if (targetList.Count > 0 && !string.IsNullOrEmpty(targetList[targetList.Count - 1]))
+                            {
+                                PlayAudio(targetList[targetList.Count - 1]);
+                            }
+                        }
                     }
                 }
 
@@ -213,9 +222,39 @@ namespace WinFormsGraphicsDevice
             UnloadHtml();
         }
 
+        HashSet<object> audioPlayHashSet = new HashSet<object>();
+        void stopAudioEventHandler(object obj, System.EventArgs args)
+        {
+            audioPlayHashSet.Remove(obj);
+        }
+        void PlayAudio(string filename)
+        {
+            if (string.IsNullOrEmpty(filename) || !System.IO.File.Exists(filename))
+            {
+                return;
+            }
+            Microsoft.DirectX.AudioVideoPlayback.Audio audio = null;
+            try
+            {
+                audio = new Microsoft.DirectX.AudioVideoPlayback.Audio(filename);
+            }
+            catch
+            {
+                return;
+            }
+            if (audio == null)
+            {
+                return;
+            }
+            audio.Play();
+            audioPlayHashSet.Add(audio);
+            audio.Ending += new System.EventHandler(stopAudioEventHandler);
+        }
+
         void webBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
             webBrowserDocumentCompleted = true;
+
             //if (!string.IsNullOrEmpty(webBrowserTargetText) && webBrowser.DocumentText != webBrowserTargetText)
             //{
             //    OpenWebBrowser();
