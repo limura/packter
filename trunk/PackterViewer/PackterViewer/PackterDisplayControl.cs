@@ -175,11 +175,18 @@ namespace Packter_viewer2
             byte imageNumber = packet.PacketImageNumber;
             string fileName = packet.PacketImageString;
             GameTime nowGameTime = packet.CreatedGameTime;
-            
+
+#if false
             Vector3 startPoint = new Vector3((srcX - 0.5f) * senderBoard.Scale * 2 - defaultScale / 4.0f,
                 ((srcY - 0.5f) * senderBoard.Scale * 2) - defaultScale / 4.0f, senderBoard.Position.Z);
             Vector3 endPoint = new Vector3((dstX - 0.5f) * receiverBoard.Scale * 2 - defaultScale / 4.0f,
                 ((dstY - 0.5f) * receiverBoard.Scale * 2) - defaultScale / 4.0f, receiverBoard.Position.Z);
+#else
+            Vector3 startPoint = new Vector3((srcX - 0.5f) * 100.0f * 2 - defaultScale / 4.0f,
+                ((srcY - 0.5f) * 100.0f * 2) - defaultScale / 4.0f, senderBoard.Position.Z);
+            Vector3 endPoint = new Vector3((dstX - 0.5f) * 100.0f * 2 - defaultScale / 4.0f,
+                ((dstY - 0.5f) * 100.0f * 2) - defaultScale / 4.0f, receiverBoard.Position.Z);
+#endif
             
             //System.Diagnostics.Debug.WriteLine("new Packet: " + srcIP + ", " + srcPort + " -> " + endPoint.X + ", " + endPoint.Y + " end: " + endPoint.X + ", " + endPoint.Y);
 
@@ -265,16 +272,69 @@ namespace Packter_viewer2
             }
             LoadPacketModelList(packetModel);
 
-            senderBoard = new Board(contentLoader.GetModel("board"));
-            senderBoard.Position = new Vector3(0, 0, -150);
-            senderBoard.Scale = 100;
-            senderBoard.RotationY = (float)Math.PI;
-            senderBoard.Alpha = 0.3f;
-            receiverBoard = new Board(contentLoader.GetModel("board"));
-            receiverBoard.Position = new Vector3(0, 0, 150);
-            receiverBoard.RotationY = (float)Math.PI;
-            receiverBoard.Scale = 100;
-            receiverBoard.Alpha = 0.3f;
+            // sender と receiver の板を load する
+            {
+                Model tmpModel = contentLoader.GetModel(configReader.SenderBoardFile);
+                if (tmpModel == null)
+                {
+                    tmpModel = contentLoader.GetModel("board");
+
+                    senderBoard = new Board(tmpModel);
+                    senderBoard.Position = new Vector3(0, 0, -150);
+                    senderBoard.Scale = 100;
+                    senderBoard.RotationY = (float)Math.PI;
+                    senderBoard.Alpha = 0.3f;
+
+                    Texture2D t = null;
+                    try
+                    {
+                        t = contentLoader.GetTexture2D("packter_sender.png");
+                    }
+                    catch
+                    {
+                        t = contentLoader.GetTexture2D("packter_sender");
+                    }
+                    senderBoard.Texture = t;
+                }
+                else
+                {
+                    senderBoard = new Board(tmpModel);
+                    senderBoard.Position = new Vector3(0, 0, -150);
+                    senderBoard.Scale = configReader.SenderBoardScale;
+                    senderBoard.LightingEnabled = true;
+                    senderBoard.Texture = contentLoader.GetTexture2D(configReader.SenderBoardTextureFile);
+                }
+
+                tmpModel = contentLoader.GetModel(configReader.ReceiverBoardFile);
+                if (tmpModel == null)
+                {
+                    tmpModel = contentLoader.GetModel("board");
+                    receiverBoard = new Board(tmpModel);
+                    receiverBoard.Position = new Vector3(0, 0, 150);
+                    receiverBoard.RotationY = (float)Math.PI;
+                    receiverBoard.Scale = 100;
+                    receiverBoard.Alpha = 0.3f;
+
+                    Texture2D t = null;
+                    try
+                    {
+                        t = contentLoader.GetTexture2D("packter_receiver.png");
+                    }
+                    catch
+                    {
+                        t = contentLoader.GetTexture2D("packter_receiver");
+                    }
+                    receiverBoard.Texture = t;
+                }
+                else
+                {
+                    receiverBoard = new Board(tmpModel);
+                    receiverBoard.Position = new Vector3(0, 0, 150);
+                    receiverBoard.Scale = configReader.ReceiverBoardScale;
+                    receiverBoard.LightingEnabled = true;
+                    receiverBoard.Texture = contentLoader.GetTexture2D(configReader.ReceiverBoardTextureFile);
+                }
+            }
 
 #if false
             myship = new Board(Content.Load<Model>("myship"));
@@ -288,37 +348,16 @@ namespace Packter_viewer2
             myship_wake.RotationY = (float)Math.PI / -2;
 #endif
 
-            {
-                Texture2D t = null;
-                try
-                {
-                    t = contentLoader.GetTexture2D("packter_sender.png");
-                }
-                catch
-                {
-                    t = contentLoader.GetTexture2D("packter_sender");
-                }
-                senderBoard.Texture = t;
-                try
-                {
-                    t = contentLoader.GetTexture2D("packter_receiver.png");
-                }
-                catch
-                {
-                    t = contentLoader.GetTexture2D("packter_receiver");
-                }
-                receiverBoard.Texture = t;
-            }
-
             float aspectRaito = (float)GraphicsDevice.Viewport.Width / GraphicsDevice.Viewport.Height;
 
             /// packter[n].png というファイルを読み込んで、テクスチャとして登録する
             {
                 int i = 0;
-                while(true)
+                while (true)
                 {
                     Texture2D t = contentLoader.GetTexture2D("packter" + i + ".png");
-                    if(t == null){
+                    if (t == null)
+                    {
                         t = contentLoader.GetTexture2D("packter" + i);
                     }
                     if (t != null)

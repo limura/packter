@@ -16,6 +16,12 @@ namespace PackterViewer
         Nullable<int> tickKeyInputAcceptMicrosecond = null;
         int msgBoxCloseTimeSec = 1000 * 10; // 10秒
         string loadPacketTarget = "ball";
+        string senderBoard = null;
+        string receiverBoard = null;
+        float senderBoardScale = 1.0f;
+        float receiverBoardScale = 1.0f;
+        string senderBoardTextureFile = null;
+        string receiverBoardTextureFile = null;
 
         public float DefaultScale
         {
@@ -47,29 +53,108 @@ namespace PackterViewer
         {
             get { return loadPacketTarget; }
         }
+        public string SenderBoardFile
+        {
+            get { return senderBoard; }
+        }
+        public string ReceiverBoardFile
+        {
+            get { return receiverBoard; }
+        }
+        public float SenderBoardScale
+        {
+            get { return senderBoardScale; }
+        }
+        public float ReceiverBoardScale
+        {
+            get { return receiverBoardScale; }
+        }
+        public string SenderBoardTextureFile
+        {
+            get { return senderBoardTextureFile; }
+        }
+        public string ReceiverBoardTextureFile
+        {
+            get { return receiverBoardTextureFile; }
+        }
+
+        bool ConvertToFloat(string str, out float val)
+        {
+            val = 0.0f;
+            try
+            {
+                val = float.Parse(str);
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
 
         public void ParseArgs(string[] args)
         {
             for (int i = 0; i < args.Length; i++)
             {
                 float f;
-                if (args.Length > i + 1 && args[i] == "/size" && float.TryParse(args[i + 1], out f))
+                string key = args[i].ToLower();
+                if (args.Length > i + 1)
                 {
-                    if (f > 0)
-                        defaultScale = f;
-                    i++; continue;
-                }
+                    string value = args[i + 1];
+                    if (key == "/size" && float.TryParse(value, out f))
+                    {
+                        if (f > 0)
+                            defaultScale = f;
+                        i++; continue;
+                    }
 
-                if (args.Length > i + 1 && args[i] == "/softalk" && System.IO.File.Exists(args[i + 1]))
-                {
-                    sofTalkPath = args[i + 1];
-                    i++; continue;
-                }
+                    if (key == "/softalk" && System.IO.File.Exists(value))
+                    {
+                        sofTalkPath = value;
+                        i++; continue;
+                    }
 
-                if (args.Length > i + 1 && args[i] == "/loadPacketTarget")
-                {
-                    SetLoadPacketTarget(args[i + 1]);
-                    i++; continue;
+                    if (key == "/loadpackettarget")
+                    {
+                        SetLoadPacketTarget(value);
+                        i++; continue;
+                    }
+
+                    if (key == "/senderboardfile" && System.IO.File.Exists(value))
+                    {
+                        senderBoard = value;
+                        i++; continue;
+                    }
+
+                    if (key == "/receiverboardfile" && System.IO.File.Exists(value))
+                    {
+                        receiverBoard = value;
+                        i++; continue;
+                    }
+
+                    float tmpFloat = 0.0f;
+                    if (key == "/senderboardscale" && ConvertToFloat(value, out tmpFloat))
+                    {
+                        senderBoardScale = tmpFloat;
+                        i++; continue;
+                    }
+                    if (key == "/receiverboardscale" && ConvertToFloat(value, out tmpFloat))
+                    {
+                        receiverBoardScale = tmpFloat;
+                        i++; continue;
+                    }
+
+                    if (key == "/senderboardtexturefile" && System.IO.File.Exists(value))
+                    {
+                        senderBoardTextureFile = value;
+                        i++; continue;
+                    }
+
+                    if (key == "/receiverboardtexturefile" && System.IO.File.Exists(value))
+                    {
+                        receiverBoardTextureFile = value;
+                        i++; continue;
+                    }
                 }
 
                 if (System.IO.File.Exists(args[i]))
@@ -97,6 +182,7 @@ namespace PackterViewer
                         string value = list[1];
                         key = key.Trim();
                         key = key.ToLower();
+                        float tmpFloat = 0.0f;
                         //value.Trim();
                         switch (key)
                         {
@@ -145,6 +231,42 @@ namespace PackterViewer
                                 break;
                             case "loadpackettarget":
                                 SetLoadPacketTarget(value);
+                                break;
+                            case "senderboardfile":
+                                if (System.IO.File.Exists(value))
+                                {
+                                    senderBoard = value;
+                                }
+                                break;
+                            case "receiverboardfile":
+                                if (System.IO.File.Exists(value))
+                                {
+                                    receiverBoard = value;
+                                }
+                                break;
+                            case "senderboardscale":
+                                if (ConvertToFloat(value, out tmpFloat))
+                                {
+                                    senderBoardScale = tmpFloat;
+                                }
+                                break;
+                            case "receiverboardscale":
+                                if (ConvertToFloat(value, out tmpFloat))
+                                {
+                                    receiverBoardScale = tmpFloat;
+                                }
+                                break;
+                            case "senderboardtexturefile":
+                                if (System.IO.File.Exists(value))
+                                {
+                                    senderBoardTextureFile = value;
+                                }
+                                break;
+                            case "receiverboardtexturefile":
+                                if (System.IO.File.Exists(value))
+                                {
+                                    receiverBoardTextureFile = value;
+                                }
                                 break;
                             default:
                                 break;
