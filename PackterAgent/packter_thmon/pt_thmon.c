@@ -814,9 +814,17 @@ int packter_config_parse(char *configfile)
 	char val[PACKTER_BUFSIZ];
 	char *tmp;
 
-	if ((fp = fopen(configfile, "r")) == NULL){
+	if (configfile == NULL){
+	 if ((fp = fopen(PACKTER_THCONFIG, "r")) == NULL){
+		fprintf(stderr, "configuration file %s is not readable\n", PACKTER_THCONFIG);
+			return PACKTER_FALSE;
+		}
+	}
+	else {
+	 if ((fp = fopen(configfile, "r")) == NULL){
 		fprintf(stderr, "configuration file %s is not readable\n", configfile);
-		return PACKTER_FALSE;
+			return PACKTER_FALSE;
+		}
 	}
 
 	while(fgets(buf, PACKTER_BUFSIZ, fp) != NULL){

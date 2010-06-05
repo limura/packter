@@ -2,35 +2,14 @@
 	PACKTER is a tool for visualization of Internet traffic.
 
 	As PACKTER can figure out the source IP, destination IP, source port and destination port in 3D viewer, operators can easily recognize the feature of Internet Traffic Patterns.
-	PACTER also works with snort or tcpdump and informs operators to DoS or some attacks which are just performed now. 
+	PACTER also works with IDS(snort) and/or IPTraceback(intertrack) and informs operators to DoS or some attacks which are just performed now. 
 
 * Online Document
 	see http://www.packter.net/index.html (Japanese)
 	see http://www.packter.net/index_e.html (English)
 
-* How to use
-	usage: ./src/pt_agent
-      -v [ Viewer IP address ]
-      -p [ Viewer Port number ] (optiona: default 11300)
-      -i [ Monitor device ] (optional)
-      -r [ Pcap dump file ] (optional)
-      -d (show debug information: optional)
-         [ pcap filter expression ] (optional)
-
-	ex: ./src/pt_agent -v 192.168.1.1 "port not 11300 and port not 22"
-
 * Build
-
-	just run 
-
-	./configure
-
-	./make
-
-	./make install
-
-	(*) required pcap (both headers and libraries)
+	see INSTALL
 
 * Bug Report
-
-	please mail to namaya2hashi@packter.net
+	please mail to namaya2hashi atmark packter.net
