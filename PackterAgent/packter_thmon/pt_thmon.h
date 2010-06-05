@@ -62,5 +62,8 @@ int packter_config_trim(char *);
 void packter_destroy_tree();
 void packter_free_hash(gpointer, gpointer, gpointer);
 int packter_generate_alert(int, char *, char *, char *, char *, char *, char *, char *, float, float);
+void packter_addstring(char *, char *);
+void packter_addfloat(char *, float);
+void packter_addstring_hash(char *, char *);
 #endif
 
