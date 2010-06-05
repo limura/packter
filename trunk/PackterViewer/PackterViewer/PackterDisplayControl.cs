@@ -292,7 +292,11 @@ namespace Packter_viewer2
                     }
                     catch
                     {
-                        t = contentLoader.GetTexture2D("packter_sender");
+                        t = null;
+                    }
+                    if (t == null)
+                    {
+                        t = contentLoader.GetTexture2D("packter_sender");                    
                     }
                     senderBoard.Texture = t;
                 }
@@ -321,6 +325,10 @@ namespace Packter_viewer2
                         t = contentLoader.GetTexture2D("packter_receiver.png");
                     }
                     catch
+                    {
+                        t = null;
+                    }
+                    if (t == null)
                     {
                         t = contentLoader.GetTexture2D("packter_receiver");
                     }
