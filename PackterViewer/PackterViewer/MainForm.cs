@@ -33,7 +33,7 @@ namespace WinFormsGraphicsDevice
         ConfigReader configReader = new ConfigReader();
         ContentBuilder contentBuilder;
         ContentManager contentManager;
-        string webBrowserTargetText;
+        string webBrowserTargetText = null;
         string caractorImageFile = null;
         System.Windows.Forms.Timer webBrowserVisibleChangeTimer = new System.Windows.Forms.Timer();
         System.Windows.Forms.Timer intervalTimer = new System.Windows.Forms.Timer();
@@ -67,8 +67,6 @@ namespace WinFormsGraphicsDevice
 
             webBrowser.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(webBrowser_DocumentCompleted);
             imgUri = new System.Uri(System.IO.Directory.GetCurrentDirectory() /* + "../../../../Content/" */);
-            webBrowserTargetText
-                = "<html><body><div style=\"valign=top\"><img height=100% src=\"" + imgUri.ToString() + "teacher.png\">çUåÇÇåüímÇµÇ‹ÇµÇΩÅB</body></html>";
             webBrowser.Navigate("about:blank");
         }
 
