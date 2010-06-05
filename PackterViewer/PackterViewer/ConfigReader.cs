@@ -10,7 +10,7 @@ namespace PackterViewer
     class ConfigReader
     {
         float defaultScale = 8.0f;
-        string sofTalkPath = "softalk/softalkw.exe";
+        string sofTalkPath = "softalk\\softalkw.exe";
         string packterMSGString1 = "<html lang=\"ja\"><body>";
         string packterMSGString2 = "</body></html>";
         Nullable<int> tickKeyInputAcceptMicrosecond = null;
