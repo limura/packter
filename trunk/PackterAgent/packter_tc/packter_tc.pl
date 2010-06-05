@@ -57,7 +57,7 @@ sub main {
 
 			($src, $dst, $sport, $dport, $flag, $hash) = split(/,/, $buf);
 			if ($hash eq ""){
-				next;
+				$hash = $buf;
 			}
 
 			#
@@ -95,7 +95,7 @@ sub main {
 									);
 					send(PACKTER, $sound, 0, $pt_addr);
 				}
-				sleep 5;	
+				sleep 10;	
 			}
 
 			$req = &generate_req($hash);
@@ -138,7 +138,6 @@ sub main {
 							$result = &show_TraceReply($tc_rep);
 							if (length $result > 1){
 								$result =~ s/\n/\<br\>/;
-								$result =~ s/\n/-\&gt;/g;
 								$result = $result . "Target";
 
 								$msg = "";
@@ -167,6 +166,7 @@ sub main {
 								}
 							}
 							elsif ($result =~ m/found/i){
+								$result =~ s/\n/\<font color=\"red\"\ size=+1> --\&gt;\ <\/font\>/g;
 								$msg = sprintf("%s\n%s,%s<br>%s%s<br>",
 												$pt_msg_h,
 												$config{'IPTB_SUCCEED_PIC'},
@@ -355,7 +355,7 @@ sub usage ()
   print "   -c [ Config file ] (optional: default \"./packter.conf\")\n";
   print "   -s ( Enable Sound )(optional: default no)\n";
   print "\n";
-  print "example) ./$progname -p 127.0.0.1 -l 127.0.0.1 -m 127.0.0.1 -c /usr/local/etc/packter.conf -s\n";
+  print "example) ./$progname -v 127.0.0.1 -d 127.0.0.1 -l 127.0.0.1 -c /usr/local/etc/packter.conf -s\n";
   print "\n";
 
   exit;

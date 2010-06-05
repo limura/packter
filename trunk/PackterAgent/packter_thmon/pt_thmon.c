@@ -556,31 +556,31 @@ packter_analy()
 	if (mon_syn > th.rate_syn && th.rate_syn > 0){
 		alert = packter_generate_alert(alert, mesg, sound, voice,
 											"MON_SYN_PIC", "MON_SYN_MSG", "MON_SYN_SOUND", "MON_SYN_VOICE",
-											mon_syn, th.rate_syn);
+											mon_syn * 100, th.rate_syn * 100);
 	}
 
   if (mon_fin > th.rate_fin && th.rate_fin > 0){
 		alert = packter_generate_alert(alert, mesg, sound, voice,
 											"MON_FIN_PIC", "MON_FIN_MSG", "MON_FIN_SOUND", "MON_FIN_VOICE",
-											mon_fin, th.rate_fin);
+											mon_fin * 100, th.rate_fin * 100);
   }
 
   if (mon_rst > th.rate_rst && th.rate_rst > 0){
 		alert = packter_generate_alert(alert, mesg, sound, voice,
 											"MON_RST_PIC", "MON_RST_MSG", "MON_RST_SOUND", "MON_RST_VOICE",
-											mon_rst, th.rate_rst);
+											mon_rst * 100, th.rate_rst * 100);
   }
 
   if (mon_icmp > th.rate_icmp && th.rate_icmp > 0){
 		alert = packter_generate_alert(alert, mesg, sound, voice,
 											"MON_ICMP_PIC", "MON_ICMP_MSG", "MON_ICMP_SOUND", "MON_ICMP_VOICE",
-											mon_icmp, th.rate_icmp);
+											mon_icmp * 100, th.rate_icmp * 100);
 	}
 
   if (mon_udp > th.rate_udp && th.rate_udp > 0){
 		alert = packter_generate_alert(alert, mesg, sound, voice,
 											"MON_UDP_PIC", "MON_UDP_MSG", "MON_UDP_SOUND", "MON_UDP_VOICE",
-											mon_udp, th.rate_udp);
+											mon_udp * 100, th.rate_udp * 100);
 	}
 
   if (mon_pps > th.rate_pps && th.rate_pps > 0){
@@ -870,38 +870,115 @@ void packter_free_hash(gpointer key, gpointer value, gpointer user_data)
 int packter_generate_alert(int alert, char *mesg, char *sound, char *voice, char *mon_pic, char *mon_mesg, char *mon_sound, char *mon_voice, float mon_th, float given_th)
 {
 	char tmp[PACKTER_BUFSIZ];
+	memset((void *)tmp, '\0', PACKTER_BUFSIZ);
+
   if (alert == PACKTER_FALSE){
-		memset((void *)tmp, '\0', PACKTER_BUFSIZ);
-    snprintf(tmp, PACKTER_BUFSIZ, "%s%s,",
-									mesg,
-                  (char *)g_hash_table_lookup(config, mon_pic));
-		strncpy(mesg, tmp, PACKTER_BUFSIZ);
-
-		memset((void *)tmp, '\0', PACKTER_BUFSIZ);
-    snprintf(tmp, PACKTER_BUFSIZ, "%s%s",
-										sound,
-                    (char *)g_hash_table_lookup(config, mon_sound));
-		strncpy(sound, tmp, PACKTER_BUFSIZ);
+		packter_addstring_hash(sound, mon_sound);
+		packter_addstring_hash(mesg, mon_pic);
+		packter_addstring(mesg, ",");
     alert = PACKTER_TRUE;
-  }
+	}
 
-	memset((void *)tmp, '\0', PACKTER_BUFSIZ);
-  snprintf(tmp, PACKTER_BUFSIZ, "%s%s<div align=center><font size=-1 color=gray face=arial>%s %.f , %s %.f </font></div>",
-                mesg,
-                (char *)g_hash_table_lookup(config, mon_mesg),
-                (char *)g_hash_table_lookup(config, "MONITOR"),
-								(mon_th),
-                (char *)g_hash_table_lookup(config, "THRESHOLD"),
-                (given_th)
-  				);
+	packter_addstring_hash(mesg, mon_mesg);
+	packter_addstring_hash(mesg, "MONITOR"); packter_addfloat(mesg, mon_th);
+	packter_addstring_hash(mesg, "THRESHOLD"); packter_addfloat(mesg, given_th);
 
-	strncpy(mesg, tmp, PACKTER_BUFSIZ);
-
-	memset((void *)tmp, '\0', PACKTER_BUFSIZ);
-  snprintf(tmp, PACKTER_BUFSIZ, "%s%s",
-								voice,
-                (char *)g_hash_table_lookup(config, mon_voice)
-           );
-	strncpy(voice, tmp, PACKTER_BUFSIZ);
+	packter_addstring_hash(voice, mon_voice);
 	return alert;
+}
+
+void
+packter_addstring_hash(char *buf, char *key)
+{
+	char *val;
+	char tmp[PACKTER_BUFSIZ];
+	memset((void *)tmp, '\0', PACKTER_BUFSIZ);
+
+	if (key != NULL){
+		val = (char *)g_hash_table_lookup(config, key);
+		if (val != NULL && strlen(val) > 0){
+				snprintf(tmp, PACKTER_BUFSIZ, "%s%s",
+										buf, val);
+				strncpy(buf, tmp, PACKTER_BUFSIZ);
+		}
+	}
+}
+
+void
+packter_addstring(char *buf, char *val)
+{
+	char tmp[PACKTER_BUFSIZ];
+	memset((void *)tmp, '\0', PACKTER_BUFSIZ);
+
+	if (val != NULL){
+			snprintf(tmp, PACKTER_BUFSIZ, "%s%s",
+										buf, val);
+			strncpy(buf, tmp, PACKTER_BUFSIZ);
+	}
+	return;
+}
+
+void
+packter_addfloat(char *buf, float val)
+{
+	char tmp[PACKTER_BUFSIZ];
+	memset((void *)tmp, '\0', PACKTER_BUFSIZ);
+
+	snprintf(tmp, PACKTER_BUFSIZ, "%s %.f",
+								buf,
+								val);
+	strncpy(buf, tmp, PACKTER_BUFSIZ);
+
+	return;
+}
+
+void
+generate_hash(unsigned char *packet, int caplen, char *mesgbuf)
+{
+  struct ip *ip;
+  int hdrlen;
+  ip = (struct ip *)packet;
+  MD5_CTX context;
+  unsigned char digest[16];
+
+  hdrlen = ip->ip_hl * 4;
+  if (hdrlen > IP_HDRLEN){
+    memset((void *)(packet + IP_HDRLEN), 0, (hdrlen - IP_HDRLEN));
+  }
+  ip->ip_tos = 0x0;
+  ip->ip_len = 0x0;
+  ip->ip_off = 0x0;
+  ip->ip_ttl = 0x0;
+  ip->ip_sum = 0x0;
+
+  MD5_Init(&context);
+  MD5_Update(&context, (unsigned char *)packet, (unsigned long)(hdrlen + 8));
+  MD5_Final(digest, &context);
+  sprintf(mesgbuf, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+    digest[0], digest[1], digest[2], digest[3],
+    digest[4], digest[5], digest[6], digest[7],
+    digest[8], digest[9], digest[10], digest[11],
+    digest[12], digest[13], digest[14], digest[15]);
+
+}
+
+void generate_hash6(unsigned char *packet, int caplen, char *mesgbuf)
+{
+  struct ip6_hdr *ip6;
+  ip6 = (struct ip6_hdr *)packet;
+  ip6->ip6_vfc = ip6->ip6_vfc & 0xf0;
+  ip6->ip6_hlim = 0x0;
+  MD5_CTX context;
+  unsigned char digest[16];
+
+  MD5_Init(&context);
+  MD5_Update(&context, (unsigned char *)ip6, (unsigned int)(IP6_HDRLEN + 8));
+  MD5_Final(digest, &context);
+
+  sprintf(mesgbuf, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+    digest[0], digest[1], digest[2], digest[3],
+    digest[4], digest[5], digest[6], digest[7],
+    digest[8], digest[9], digest[10], digest[11],
+    digest[12], digest[13], digest[14], digest[15]);
+
 }
