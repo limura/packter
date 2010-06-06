@@ -22,6 +22,7 @@ namespace Packter_viewer
         Vector3 position = new Vector3(0, 0, 0);
         Model model = null;
         bool lightingEnabled = false;
+        bool billboardEnabled = false;
 
         public Board(Model Model)
         {
@@ -40,6 +41,12 @@ namespace Packter_viewer
             get { return position; }
         }
 
+        public bool BillboardEnabled
+        {
+            get { return billboardEnabled; }
+            set { billboardEnabled = value; }
+        }
+
         public float RotationP = 0;
         public float RotationY = 0;
         public float RotationR = 0;
@@ -53,12 +60,21 @@ namespace Packter_viewer
             get { return texture; }
         }
 
-        public void Draw(Matrix view, Viewport viewport, Matrix projection, float scale)
+        public void Draw(Matrix view, Viewport viewport, Matrix projection, float scale, Vector3 cameraPosition, Vector3 cameraTarget)
         {
             Matrix transform = Matrix.Identity;
-            transform *= Matrix.CreateScale(Scale * scale);
-            transform *= Matrix.CreateRotationY(RotationY);
-            transform *= Matrix.CreateTranslation(position);
+            if (billboardEnabled == false)
+            {
+                transform = Matrix.Identity;
+                transform *= Matrix.CreateScale(Scale * scale);
+                transform *= Matrix.CreateRotationY(RotationY);
+                transform *= Matrix.CreateTranslation(position);
+            }
+            else
+            {
+                transform = Matrix.CreateScale(Scale * scale)
+                    * Matrix.CreateBillboard(position, cameraPosition, Vector3.Up, cameraTarget);
+            }
 
             foreach (ModelMesh mesh in model.Meshes)
             {

@@ -33,7 +33,6 @@ namespace WinFormsGraphicsDevice
         ConfigReader configReader = new ConfigReader();
         ContentBuilder contentBuilder;
         ContentManager contentManager;
-        string webBrowserTargetText = null;
         string caractorImageFile = null;
         System.Windows.Forms.Timer webBrowserVisibleChangeTimer = new System.Windows.Forms.Timer();
         System.Windows.Forms.Timer intervalTimer = new System.Windows.Forms.Timer();
@@ -252,13 +251,6 @@ namespace WinFormsGraphicsDevice
         void webBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
             webBrowserDocumentCompleted = true;
-
-            //if (!string.IsNullOrEmpty(webBrowserTargetText) && webBrowser.DocumentText != webBrowserTargetText)
-            //{
-            //    OpenWebBrowser();
-            //    webBrowser.DocumentText = webBrowserTargetText;
-            //    webBrowserTargetText = null;
-            //}
         }
 
         void MessageWindowUpdateHandler(string text)
@@ -292,7 +284,6 @@ namespace WinFormsGraphicsDevice
         private void UnloadHtml()
         {
             CloseWebBrowser();
-            webBrowserTargetText = "";
             webBrowserVisibleChangeTimer.Stop();
         }
         private void LoadHtml(string filename, string txt)
@@ -302,7 +293,6 @@ namespace WinFormsGraphicsDevice
                 UnloadHtml();
                 return;
             }
-            webBrowserTargetText = null;
             webBrowser.DocumentText = txt;
             caractorImageFile = filename;
             OpenWebBrowser();
