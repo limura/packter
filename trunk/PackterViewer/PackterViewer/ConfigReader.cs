@@ -22,6 +22,7 @@ namespace PackterViewer
         float receiverBoardScale = 1.0f;
         string senderBoardTextureFile = null;
         string receiverBoardTextureFile = null;
+        Dictionary<string, string> htmlConvertList = new Dictionary<string, string>();
 
         public float DefaultScale
         {
@@ -76,6 +77,10 @@ namespace PackterViewer
         public string ReceiverBoardTextureFile
         {
             get { return receiverBoardTextureFile; }
+        }
+        public Dictionary<string, string> HtmlConvertList
+        {
+            get { return htmlConvertList; }
         }
 
         bool ConvertToFloat(string str, out float val)
@@ -266,6 +271,19 @@ namespace PackterViewer
                                 if (System.IO.File.Exists(value))
                                 {
                                     receiverBoardTextureFile = value;
+                                }
+                                break;
+                            case "htmlconverttarget":
+                                if(!string.IsNullOrEmpty(value)){
+                                    value = value.Trim();
+                                    if (value.IndexOf(' ') > 0)
+                                    {
+                                        string[] keyValue = value.Split(new char[] { ' ' }, 2);
+                                        if (keyValue.Length == 2)
+                                        {
+                                            htmlConvertList.Add(keyValue[0], keyValue[1]);
+                                        }
+                                    }
                                 }
                                 break;
                             default:

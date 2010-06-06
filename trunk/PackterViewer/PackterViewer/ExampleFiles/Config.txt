@@ -41,3 +41,14 @@
 # Bキー と Fキー の効果を強化する機能の「短い」と判断するための時間(マイクロ秒)。default: 50000(マイクロ秒)
 #TickKeyInputAcceptMicrosecond = 50000
 
+# HtmlConvertTarget
+# PACKTERHTML や PACKTERMSG で入力された IEコンポーネント に渡される文字列を、
+# 文字列１ 文字列２ とあったら、文字列１ のものを 文字列２ に置き換えます。
+# ここの例に示されているものだった場合、
+# <img src="<HOGE>">
+# は、
+# <img src="file:///c:/tmp/img.png">
+# と書き換えられます。
+# また、HtmlConvertTarget は複数指定できます。
+#HtmlConvertTarget = <HOGE> file:///c:/tmp/img.png
+#HtmlConvertTarget = <HAGE> file:///c:/tmp/img2.png
