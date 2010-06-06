@@ -103,6 +103,8 @@ namespace Packter_viewer2
         Dictionary<string, Texture2D> cachedTexture2D = new Dictionary<string, Texture2D>();
         Texture2D caraImageTexture = null;
 
+        Random rnd = new Random();
+
         protected override void Initialize()
         {
             timer = Stopwatch.StartNew();
@@ -236,7 +238,11 @@ namespace Packter_viewer2
             if (targetModel != packetModel || configReader.LoadPacketTarget != "board")
                 pb.LightingEnabled = true;
             packetList.Add(pb);
-            //AddPacketFog(startPoint, endPoint, nowGameTime);
+            if (keyboardState.IsKeyDown(Keys.P))
+            {
+                // Pキーが押されていたら、後ろに怪しい煙をつける
+                AddPacketFog(startPoint, endPoint, nowGameTime);
+            }
         }
 
         protected override void OnCreateControl()
@@ -567,6 +573,14 @@ namespace Packter_viewer2
             {
                 FlyPacket packet = new FlyPacket((float)((n & 0xff) * 0x10000000) / 4294967296.0f
                     , (float)((n & 0xff) * 0x100) / 65536.0f, 0.5f, 0.5f, (byte)(n / 10), "Test Packet", gameTime);
+                AddPacketBoard(packet);
+            }
+            if (nowKeyState.IsKeyDown(Keys.O) == true)
+            {
+                FlyPacket packet = new FlyPacket(
+                    rnd.Next(65535) / 65535.0f, rnd.Next(65535) / 65535.0f
+                    , rnd.Next(65535) / 65535.0f, rnd.Next(65535) / 65535.0f
+                    , (byte)(rnd.Next(10)), "Test Packet", gameTime);
                 AddPacketBoard(packet);
             }
 
