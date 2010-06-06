@@ -56,8 +56,9 @@ namespace Packter_viewer2
         Board senderBoard = null;
         Board receiverBoard = null;
         //ArrayList packetList = new ArrayList();
-        RingBuffer<PacketBoard> packetList = new RingBuffer<PacketBoard>(MaxPacketNum);
+        //RingBuffer<PacketBoard> packetList = new RingBuffer<PacketBoard>(MaxPacketNum);
         // ArrayList drawPacketList = new ArrayList();
+        PacketBoardBuffer packetList = new PacketBoardBuffer(MaxPacketNum);
         
         Model packetModel;
         List<Model> packetModelList = new List<Model>();
@@ -160,6 +161,33 @@ namespace Packter_viewer2
             return null;
         }
 
+        void AddPacketFog(Vector3 startPoint, Vector3 endPoint, GameTime startGameTime)
+        {
+            Model targetModel = contentLoader.GetModel("board");
+            Texture2D targetTexture = contentLoader.GetTexture2D("fog");
+            if (targetModel == null || targetTexture == null)
+            {
+                return;
+            }
+            int fogCount = 20;
+            for (int i = 1; i <= fogCount; i++)
+            {
+
+                TimeSpan addTimeSpan = new TimeSpan(0, 0, 0, 0, flyMillisecond / fogCount / 5 * i);
+                GameTime targetGameTime = new GameTime(
+                        startGameTime.TotalRealTime.Add(addTimeSpan)
+                        , startGameTime.ElapsedRealTime.Add(addTimeSpan)
+                        , startGameTime.TotalGameTime.Add(addTimeSpan)
+                        , startGameTime.ElapsedGameTime.Add(addTimeSpan));
+                PacketBoard pb = new PacketBoard(targetModel, targetTexture
+                    , startPoint, endPoint, targetGameTime,  flyMillisecond, "");
+                pb.Alpha = (float)(Math.Cos(i / (double)fogCount * Math.PI / 2));
+                pb.Scale = defaultScale;
+                pb.NoSelection = true;
+                packetList.Add(pb);
+            }
+        }
+        
         /// <summary>
         /// FlyPacket から、実際に飛んでいく PacketBoard を作成し、表示queueに追加します。
         /// FlyPacket では 0.0～1.0 までで記録されているパケット座標情報を、
@@ -208,6 +236,7 @@ namespace Packter_viewer2
             if (targetModel != packetModel || configReader.LoadPacketTarget != "board")
                 pb.LightingEnabled = true;
             packetList.Add(pb);
+            //AddPacketFog(startPoint, endPoint, nowGameTime);
         }
 
         protected override void OnCreateControl()
@@ -692,12 +721,16 @@ namespace Packter_viewer2
 
             Nullable<float> nearest = null;
             PacketBoard nearPacketBoard = null;
-            int first = BinarySearchPacketBoard(gameTime);
+            int first = packetList.BinarySearchNext(nowTime - flyMillisecond);
             for (int i = 0; i < packetList.Length; i++)
             {
                 PacketBoard pb = packetList[i + first];
                 if (pb != null)
                 {
+                    if (pb.NoSelection == true)
+                    {
+                        continue;
+                    }
                     if (pb.Update(nowTime) != 0)
                     {
                         break; // 表示すべきものがなくなった
@@ -842,79 +875,21 @@ namespace Packter_viewer2
         private void DrawPacketBoards(GameTime gameTime, Matrix view, Viewport viewport, Matrix projection)
         {
             double nowTime = gameTime.TotalGameTime.TotalMilliseconds + addMilliseconds;
-#if false
-            // 表示されるべきもののうち一番古いのものの index を探す
-            int div = packetList.Length / 2;
-            int nowChecking = div - 1;
-            while (div > 0)
-            {
-                PacketBoard pb = packetList[nowChecking];
-                div /= 2;
-                if (pb != null)
-                {
-                    int ret = pb.Update(nowTime);
-                    if (ret > 0)
-                    {
-                        // 表示される時間からすると既に通り過ぎてしまったもの
-                        nowChecking += div;
-                    }
-                    else if (ret < 0)
-                    {
-                        // 表示される時間からすると、まだ表示領域に入っていないもの
-                        nowChecking -= div;
-                    }
-                    else
-                    {
-                        // 表示されるべきもの
-                        // 一つ前が表示されるべきでないものであれば、ここから表示すればよい
-                        if (div > 0)
-                        {
-                            pb = packetList[nowChecking - 1];
-                            if (pb != null && pb.Update(nowTime) > 0)
-                            {
-                                div = 0;
-                            }
-                        }
-                        if (div == 0)
-                        {
-                            // この nowChecking が最初のもの。
-                            for (int i = 0; i < packetList.Length; i++)
-                            {
-                                pb = packetList[i + nowChecking];
-                                if (pb == null || pb.Update(nowTime) != 0)
-                                    return; // 表示すべきものがなくなった
-                                pb.Draw(view, viewport, projection);
-                            }
-                            return;
-                        }
-                        // まだ最初のものをみつけていないかもしれない
-                        nowChecking -= div;
-                    }
-                }
-                else
-                {
-                    nowChecking -= div;
-                }
-                System.Diagnostics.Debug.WriteLine("nowChecking: " + nowChecking);
-            }
-#else
-            int first = BinarySearchPacketBoard(gameTime);
+            int first = packetList.BinarySearchNext(nowTime - flyMillisecond);
             for (int i = 0; i < packetList.Length; i++)
             {
                 PacketBoard pb = packetList[i + first];
-                //hilightPacketBoard
                 if (pb == null || pb.Update(nowTime) != 0)
                     return; // 表示すべきものがなくなった
                 if (hilightPacketBoard == pb)
                 {
-                    pb.Draw(view, viewport, projection, 2.0f);
+                    pb.Draw(view, viewport, projection, 2.0f, this.cameraPosition, this.cameraTarget);
                 }
                 else
                 {
-                    pb.Draw(view, viewport, projection, 1.0f);
+                    pb.Draw(view, viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
                 }
             }
-#endif
         }
 
         /// <summary>
@@ -961,20 +936,20 @@ namespace Packter_viewer2
 
             if (showMyShip)
             {
-                myship.Draw(view, GraphicsDevice.Viewport, projection, 1.0f);
-                myship_wake.Draw(view, GraphicsDevice.Viewport, projection, 1.0f);
+                myship.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
+                myship_wake.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
             }
             if (cameraPosition.Z > 0)
             {
-                senderBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f);
+                senderBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
                 DrawPacketBoards(gameTime, view, GraphicsDevice.Viewport, projection);
-                receiverBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f);
+                receiverBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
             }
             else
             {
-                receiverBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f);
+                receiverBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
                 DrawPacketBoards(gameTime, view, GraphicsDevice.Viewport, projection);
-                senderBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f);
+                senderBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
             }
 
             this.spriteBatch.Begin();

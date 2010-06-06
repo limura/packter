@@ -18,6 +18,7 @@ namespace Packter_viewer
         double startTimeMillisecond;
         float flyTimeMillisecond;
         string description;
+        bool noSelection = false;
 
         Board board;
         
@@ -43,6 +44,15 @@ namespace Packter_viewer
         }
 
         /// <summary>
+        /// マウスに感知されるかどうかを指定します
+        /// </summary>
+        public bool NoSelection
+        {
+            get { return noSelection; }
+            set { noSelection = value; }
+        }
+
+        /// <summary>
         /// 指示された時間に表示されるべきかどうかを調べ、表示されるべきであれば自分の座標を更新します
         /// </summary>
         /// <param name="nowGameTimeMilliseconds">表示される時間</param>
@@ -62,9 +72,9 @@ namespace Packter_viewer
             return 0;
         }
 
-        public void Draw(Matrix view, Viewport viewport, Matrix projection, float scale)
+        public void Draw(Matrix view, Viewport viewport, Matrix projection, float scale, Vector3 cameraPosition, Vector3 cameraTarget)
         {
-            board.Draw(view, viewport, projection, scale);
+            board.Draw(view, viewport, projection, scale, cameraPosition, cameraTarget);
         }
 
         public BoundingSphere BoundingSphere
@@ -84,6 +94,17 @@ namespace Packter_viewer
         {
             get { return board.LightingEnabled; }
             set { board.LightingEnabled = value; }
+        }
+
+        public double CreatedTimeMillisecond
+        {
+            get { return startTimeMillisecond; }
+        }
+
+        public float Alpha
+        {
+            get { return board.Alpha; }
+            set { board.Alpha = value; }
         }
     }
 }
