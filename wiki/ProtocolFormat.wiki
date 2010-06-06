@@ -1,0 +1,16 @@
+# packter protocol format
+
+= Abstract =
+
+This article specified a protocol format between Packter Viewer and Packter Agent. Remark that Packter Viewer is a multi-purpose traffic visualizer and Packter Agent is a commander for Packter Viewer. 
+
+= Details =
+== PACKTER ==
+This command is used for drawing flying objects.The format is as follows.
+{{{
+PACKTER
+SRCIP,DSTIP,SRCPORT,DSTPORT,FLAG,BUFF
+}}}
+
+== PACKTERMSG ==
+PACKTERMSG is used for showing message 
