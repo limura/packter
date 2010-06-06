@@ -124,6 +124,12 @@ namespace WinFormsGraphicsDevice
                         }
                         if (!string.IsNullOrEmpty(targetHtml))
                         {
+                            // ’†‚É“ü‚Á‚Ä‚¢‚é•¶Žš—ñ‚ð’u‚«Š·‚¦‚é
+                            Dictionary<string, string> convertList = configReader.HtmlConvertList;
+                            foreach (string key in convertList.Keys)
+                            {
+                                targetHtml = targetHtml.Replace(key, convertList[key]);
+                            }
                             LoadHtml(imgFileName, targetHtml);
                         }
 
