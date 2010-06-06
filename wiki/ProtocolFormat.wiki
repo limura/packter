@@ -48,9 +48,9 @@ HTMLMESSAEG is a string and is along with HTML format. Packet Viewer shows the m
 For example,
 {{{
 PACKTERMSG
-<html><body><b>foo</b></body></html>
+<html><body><b>ABCDEFG</b></body></html>
 }}}
-Packter Viewer shows *for*.
+Packter Viewer shows *ABCDEFG*.
 
 == PACKTERSE ==
 This command is used for playing a sound effect file. The format is as follows.
@@ -79,3 +79,17 @@ PACKTERSOUND
 60,bgm01.wav
 }}}
 Packter Viewer plays ``bgm01.wav'' till 60 seconds past. When the play time of ``bgm01.wav'' is lesser than 60, bgm01.wav will be repeated till 60 seconds past. 
+
+== PACKTERVOICE ==
+This command is used for playing some voice. For using this feature, Packter Viewer should be configured to use an external text reading software. 
+{{{
+PACKTERVOICE
+SOUNDTEXT
+}}
+SOUNDTEXT is a string and designates a text which is read by the external software.
+For example
+{{{
+PACKTERVOICE
+/option /parameter ABCDEFG
+}}
+Pacter Viewer calls the external software with "/option /parameter ABCDEFG". 
