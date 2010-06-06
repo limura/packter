@@ -50,5 +50,17 @@
 # <img src="file:///c:/tmp/img.png">
 # と書き換えられます。
 # また、HtmlConvertTarget は複数指定できます。
+# default は無指定です。
 #HtmlConvertTarget = <HOGE> file:///c:/tmp/img.png
 #HtmlConvertTarget = <HAGE> file:///c:/tmp/img2.png
+
+# HtmlConvertToCurrentDirTarget
+# PACKTERHTML や PACKTERMSG で入力された IEコンポーネント に渡される文字列のうち、
+# ここで指定された文字列を current directory を示すURI に変換します。
+# たとえば、current directory が c:/tmp であれば、
+# file:///c:/tmp/ に変換されます。(最後に / が入ります)
+# default は null です。
+#HtmlConvertToCurrentDirTarget = <CURRENTDIR>
+
+
+

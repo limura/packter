@@ -23,6 +23,7 @@ namespace PackterViewer
         string senderBoardTextureFile = null;
         string receiverBoardTextureFile = null;
         Dictionary<string, string> htmlConvertList = new Dictionary<string, string>();
+        string htmlConvertToCurrentDirTarget = null;
 
         public float DefaultScale
         {
@@ -81,6 +82,10 @@ namespace PackterViewer
         public Dictionary<string, string> HtmlConvertList
         {
             get { return htmlConvertList; }
+        }
+        public string HtmlConvertToCurrentDirTarget
+        {
+            get { return htmlConvertToCurrentDirTarget; }
         }
 
         bool ConvertToFloat(string str, out float val)
@@ -158,6 +163,12 @@ namespace PackterViewer
                     if (key == "/receiverboardtexturefile" && System.IO.File.Exists(value))
                     {
                         receiverBoardTextureFile = value;
+                        i++; continue;
+                    }
+
+                    if (key == "/htmlconverttocurrentdirtarget" && !string.IsNullOrEmpty(value))
+                    {
+                        htmlConvertToCurrentDirTarget = value;
                         i++; continue;
                     }
                 }
@@ -284,6 +295,13 @@ namespace PackterViewer
                                             htmlConvertList.Add(keyValue[0], keyValue[1]);
                                         }
                                     }
+                                }
+                                break;
+                            case "htmlconverttocurrentdirtarget":
+                                value = value.Trim();
+                                if (!string.IsNullOrEmpty(value))
+                                {
+                                    htmlConvertToCurrentDirTarget = value;
                                 }
                                 break;
                             default:

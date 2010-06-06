@@ -37,7 +37,6 @@ namespace WinFormsGraphicsDevice
         System.Windows.Forms.Timer webBrowserVisibleChangeTimer = new System.Windows.Forms.Timer();
         System.Windows.Forms.Timer intervalTimer = new System.Windows.Forms.Timer();
         System.Windows.Forms.Timer bgmTimer = new System.Windows.Forms.Timer();
-        System.Uri imgUri;
         System.Media.SoundPlayer bgmSoundPlayer = null;
 
         bool webBrowserDocumentCompleted = false;
@@ -65,7 +64,6 @@ namespace WinFormsGraphicsDevice
             bgmTimer.Tick += new System.EventHandler(bgmTimer_Tick);
 
             webBrowser.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(webBrowser_DocumentCompleted);
-            imgUri = new System.Uri(System.IO.Directory.GetCurrentDirectory() /* + "../../../../Content/" */);
             webBrowser.Navigate("about:blank");
         }
 
@@ -129,6 +127,12 @@ namespace WinFormsGraphicsDevice
                             foreach (string key in convertList.Keys)
                             {
                                 targetHtml = targetHtml.Replace(key, convertList[key]);
+                            }
+                            string dirTarget = configReader.HtmlConvertToCurrentDirTarget;
+                            if (!string.IsNullOrEmpty(dirTarget))
+                            {
+                                System.Uri currentDirUri = new System.Uri(System.IO.Directory.GetCurrentDirectory());
+                                targetHtml = targetHtml.Replace(dirTarget, currentDirUri.AbsolutePath + "/");
                             }
                             LoadHtml(imgFileName, targetHtml);
                         }
