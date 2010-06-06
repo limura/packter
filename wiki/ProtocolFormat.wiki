@@ -85,11 +85,11 @@ This command is used for playing some voice. For using this feature, Packter Vie
 {{{
 PACKTERVOICE
 SOUNDTEXT
-}}
+}}}
 SOUNDTEXT is a string and designates a text which is read by the external software.
 For example
 {{{
 PACKTERVOICE
 /option /parameter ABCDEFG
-}}
+}}}
 Pacter Viewer calls the external software with "/option /parameter ABCDEFG". 
