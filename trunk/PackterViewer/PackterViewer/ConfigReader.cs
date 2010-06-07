@@ -24,6 +24,9 @@ namespace PackterViewer
         string receiverBoardTextureFile = null;
         Dictionary<string, string> htmlConvertList = new Dictionary<string, string>();
         string htmlConvertToCurrentDirTarget = null;
+        bool skydomeEnabled = false;
+        string skydomeTexture = null;
+        Microsoft.Xna.Framework.Graphics.Color bgColor = Microsoft.Xna.Framework.Graphics.Color.CornflowerBlue;
 
         public float DefaultScale
         {
@@ -86,6 +89,18 @@ namespace PackterViewer
         public string HtmlConvertToCurrentDirTarget
         {
             get { return htmlConvertToCurrentDirTarget; }
+        }
+        public bool SkydomeEnabled
+        {
+            get { return skydomeEnabled; }
+        }
+        public string SkydomeTexture
+        {
+            get { return skydomeTexture; }
+        }
+        public Microsoft.Xna.Framework.Graphics.Color BGColor
+        {
+            get { return bgColor; }
         }
 
         bool ConvertToFloat(string str, out float val)
@@ -171,6 +186,24 @@ namespace PackterViewer
                         htmlConvertToCurrentDirTarget = value;
                         i++; continue;
                     }
+
+                    if (key == "/skydometexture" && System.IO.File.Exists(value))
+                    {
+                        skydomeEnabled = true;
+                        skydomeTexture = value;
+                        i++; continue;
+                    }
+                    if (key == "/bgcolor")
+                    {
+                        bgColor = PhaseColor(value, bgColor);
+                        i++; continue;
+                    }
+                }
+
+                if (key == "/enableskydome")
+                {
+                    skydomeEnabled = true;
+                    continue;
                 }
 
                 if (System.IO.File.Exists(args[i]))
@@ -304,6 +337,22 @@ namespace PackterViewer
                                     htmlConvertToCurrentDirTarget = value;
                                 }
                                 break;
+
+                            case "enableskydome":
+                                if(!string.IsNullOrEmpty(value) && value.ToLower() == "true"){
+                                    skydomeEnabled = true;
+                                }
+                                break;
+                            case "skydometexture":
+                                if (!string.IsNullOrEmpty(value) && System.IO.File.Exists(value))
+                                {
+                                    skydomeEnabled = true;
+                                    skydomeTexture = value;
+                                }
+                                break;
+                            case "bgcolor":
+                                bgColor = PhaseColor(value, bgColor);
+                                break;
                             default:
                                 break;
                         }
@@ -328,6 +377,21 @@ namespace PackterViewer
                     break;
                 default:
                     break;
+            }
+        }
+
+        Microsoft.Xna.Framework.Graphics.Color PhaseColor(string value, Microsoft.Xna.Framework.Graphics.Color currentColor)
+        {
+            try
+            {
+                byte r = Convert.ToByte(value.Substring(0, 2), 16);
+                byte g = Convert.ToByte(value.Substring(2, 2), 16);
+                byte b = Convert.ToByte(value.Substring(4, 2), 16);
+                return new Microsoft.Xna.Framework.Graphics.Color(r, g, b);
+            }
+            catch
+            {
+                return currentColor;
             }
         }
     }

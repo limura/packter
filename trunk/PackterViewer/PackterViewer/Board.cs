@@ -29,6 +29,11 @@ namespace Packter_viewer
             model = Model;
         }
 
+        public Model Model
+        {
+            get { return model; }
+        }
+
         public bool LightingEnabled
         {
             get { return lightingEnabled; }
@@ -104,6 +109,30 @@ namespace Packter_viewer
                     effect.Alpha = Alpha;
                     effect.Projection = projection;
                     effect.GraphicsDevice.RenderState.AlphaBlendEnable = true;
+                }
+                mesh.Draw();
+            }
+        }
+        
+        /// <summary>
+        /// Skybox として表示します。このmethodを呼び出す前に GraphicsDevice.RenderState.DepthBufferEnable = false; にしておく必要があります
+        /// </summary>
+        public void DrawSkybox(Matrix view, Viewport viewport, Matrix projection, float scale, Vector3 cameraPosition, Vector3 cameraTarget)
+        {
+
+            Matrix[] skyModelTransforms = new Matrix[model.Bones.Count];
+            model.CopyAbsoluteBoneTransformsTo(skyModelTransforms);
+            foreach (ModelMesh mesh in model.Meshes)
+            {
+                foreach (BasicEffect currentEffect in mesh.Effects)
+                {
+                    Matrix worldMatrix = skyModelTransforms[mesh.ParentBone.Index]
+                        * Matrix.CreateTranslation(cameraPosition);
+                    currentEffect.World = worldMatrix;
+                    currentEffect.View = view;
+                    currentEffect.Projection = projection;
+                    currentEffect.LightingEnabled = false;
+                    currentEffect.TextureEnabled = true;
                 }
                 mesh.Draw();
             }
