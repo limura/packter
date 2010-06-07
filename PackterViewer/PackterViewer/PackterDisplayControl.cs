@@ -62,6 +62,7 @@ namespace Packter_viewer2
         
         Model packetModel;
         List<Model> packetModelList = new List<Model>();
+        Board skyModel = null;
 
         //Vector3 cameraPosition = new Vector3(-128, 250, 480);
         Vector3 cameraPosition = new Vector3(-321, 22, 304);
@@ -83,9 +84,6 @@ namespace Packter_viewer2
 
         Texture2D v4Texture = null;
         
-        Board myship = null;
-        Board myship_wake = null;
-        bool showMyShip = false;
         bool disableShowV4 = false;
 
         /// <summary>
@@ -99,8 +97,6 @@ namespace Packter_viewer2
         GameTime currentGameTime;
         TimeSpan acceptGapTimeSpan = new TimeSpan(50000);
 
-        Dictionary<string, Model> cachedModel = new Dictionary<string, Model>();
-        Dictionary<string, Texture2D> cachedTexture2D = new Dictionary<string, Texture2D>();
         Texture2D caraImageTexture = null;
 
         Random rnd = new Random();
@@ -134,33 +130,6 @@ namespace Packter_viewer2
         public void writeString(string[] Args)
         {
             return;
-        }
-
-        Texture2D GetCachedTexture2D(string filename)
-        {
-            if (filename == null)
-            {
-                return null;
-            }
-            if (cachedTexture2D.ContainsKey(filename))
-            {
-                return cachedTexture2D[filename];
-            }
-            Texture2D texture = null;
-            try
-            {
-                texture = Texture2D.FromFile(GraphicsDevice, filename);
-            }
-            catch
-            {
-                texture = null;
-            }
-            if (texture != null)
-            {
-                cachedTexture2D[filename] = texture;
-                return texture;
-            }
-            return null;
         }
 
         void AddPacketFog(Vector3 startPoint, Vector3 endPoint, GameTime startGameTime)
@@ -295,6 +264,22 @@ namespace Packter_viewer2
 
             font = contentLoader.GetSpriteFont("font");
             v4Texture = contentLoader.GetTexture2D("v4");
+
+            if (configReader.SkydomeEnabled)
+            {
+                Model skyModelTmp = contentLoader.GetModel("skydome");
+                if (skyModelTmp != null)
+                {
+                    skyModel = new Board(skyModelTmp);
+                    skyModel.Position = new Vector3(0, 0, 0);
+                    skyModel.Scale = 2000.0f;
+                    Texture2D tmpTexture = contentLoader.GetTexture2D(configReader.SkydomeTexture);
+                    if (tmpTexture != null)
+                    {
+                        skyModel.Texture = tmpTexture;
+                    }
+                }
+            }
 
             switch (configReader.LoadPacketTarget)
             {
@@ -509,10 +494,6 @@ namespace Packter_viewer2
                     statusDraw = true;
             }
 
-            if (nowKeyState.IsKeyDown(Keys.T) && nowKeyState.IsKeyDown(Keys.S) && nowKeyState.IsKeyDown(Keys.E))
-                showMyShip = true;
-            else
-                showMyShip = false;
             if (nowKeyState.IsKeyDown(Keys.V) && nowKeyState.IsKeyDown(Keys.NumPad4))
                 disableShowV4 = true;
             else
@@ -792,7 +773,7 @@ namespace Packter_viewer2
 
         public void SetCaraImageTexture(string filename)
         {
-            caraImageTexture = GetCachedTexture2D(filename);
+            caraImageTexture = contentLoader.GetTexture2D(filename);
         }
 
         /// packter sender から送信されたパケットのリストを読み込んでいるところ。
@@ -919,7 +900,7 @@ namespace Packter_viewer2
             {
                 return;
             }
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(configReader.BGColor);
             //GraphicsDevice.Clear(Color.Bisque);
 
             // 深度バッファを有効にする
@@ -947,12 +928,13 @@ namespace Packter_viewer2
             transform *= Matrix.CreateRotationY(0.0f);
             transform *= Matrix.CreateTranslation(new Vector3(2.0f, 0.0f, 0.0f));
 
-
-            if (showMyShip)
+            if (skyModel != null)
             {
-                myship.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
-                myship_wake.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
+                this.GraphicsDevice.RenderState.DepthBufferEnable = false;
+                skyModel.DrawSkybox(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
+                this.GraphicsDevice.RenderState.DepthBufferEnable = true;
             }
+
             if (cameraPosition.Z > 0)
             {
                 senderBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);

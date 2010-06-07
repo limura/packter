@@ -62,5 +62,18 @@
 # default は null です。
 #HtmlConvertToCurrentDirTarget = <CURRENTDIR>
 
+# BgColor
+# 背景色を設定します。RRGGBB の16進数で指定してください。
+# 後述する EnableSkyDome か SkyDomeTexture の指定がされると無視されます
+#BgColor = 002266
 
+# EnableSkyDome
+# "true" が指定された場合、標準で用意されているテクスチャを用いて背景を描きます。
+#EnableSkyDome = true
+
+# SkyDomeTexture
+# skydome に用いるテクスチャを指定します。
+# テクスチャの load に成功した場合、BgColor の指定は無視され、
+# 背景として load されたテクスチャが利用されます
+#SkyDomeTexture = texture.png
 
