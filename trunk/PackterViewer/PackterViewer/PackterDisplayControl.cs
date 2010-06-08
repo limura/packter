@@ -101,6 +101,8 @@ namespace Packter_viewer2
 
         Random rnd = new Random();
 
+        bool demoMode = false;
+
         protected override void Initialize()
         {
             timer = Stopwatch.StartNew();
@@ -152,9 +154,10 @@ namespace Packter_viewer2
                         , startGameTime.ElapsedGameTime.Add(addTimeSpan));
                 PacketBoard pb = new PacketBoard(targetModel, targetTexture
                     , startPoint, endPoint, targetGameTime,  flyMillisecond, "");
-                pb.Alpha = (float)(Math.Cos(i / (double)fogCount * Math.PI / 2));
+                pb.Alpha = (float)(Math.Cos(i / (double)fogCount * Math.PI / 2) * 0.25);
                 pb.Scale = defaultScale;
                 pb.NoSelection = true;
+                pb.BillboardEnabled = true;
                 packetList.Add(pb);
             }
         }
@@ -273,6 +276,7 @@ namespace Packter_viewer2
                     skyModel = new Board(skyModelTmp);
                     skyModel.Position = new Vector3(0, 0, 0);
                     skyModel.Scale = 2000.0f;
+                    skyModel.SkyBoxEnabled = true;
                     Texture2D tmpTexture = contentLoader.GetTexture2D(configReader.SkydomeTexture);
                     if (tmpTexture != null)
                     {
@@ -493,6 +497,13 @@ namespace Packter_viewer2
                 else
                     statusDraw = true;
             }
+            if (JustNowKeyDown(nowKeyState, Keys.R))
+            {
+                if (demoMode == true)
+                    demoMode = false;
+                else
+                    demoMode = true;
+            }
 
             if (nowKeyState.IsKeyDown(Keys.V) && nowKeyState.IsKeyDown(Keys.NumPad4))
                 disableShowV4 = true;
@@ -513,14 +524,18 @@ namespace Packter_viewer2
             }
             else
 #endif
+            if (demoMode == true && stopedGameTime == null)
+            {
+                xDelta = (float)gameTime.ElapsedGameTime.TotalMilliseconds / 5000.0f;
+            }
             if (nowKeyState.IsKeyDown(Keys.Left))
             {
-                xDelta = 0.08f;
+                xDelta += 0.08f;
             }else if(nowKeyState.IsKeyDown(Keys.Right))
             {
-                xDelta = -0.08f;
+                xDelta += -0.08f;
             }
-            else if(nowKeyState.IsKeyDown(Keys.Up))
+            if(nowKeyState.IsKeyDown(Keys.Up))
             {
                 yDelta = -0.05f;
             }
@@ -888,6 +903,46 @@ namespace Packter_viewer2
         }
 
         /// <summary>
+        /// packetList に保存されているパケットの中から表示すべきパケットを二分探索で検索しつつ、登録されている時間順と逆向きに表示する
+        /// </summary>
+        /// <param name="gameTime">Draw() に渡された GameTime</param>
+        /// <param name="view">表示に使うビュー行列</param>
+        /// <param name="viewport">表示に使うビューポート</param>
+        /// <param name="projection">表示に使う視線行列</param>
+        private void DrawPacketBoardsReverse(GameTime gameTime, Matrix view, Viewport viewport, Matrix projection)
+        {
+            double nowTime = gameTime.TotalGameTime.TotalMilliseconds + addMilliseconds;
+            int first = packetList.BinarySearchPrev(nowTime + flyMillisecond);
+            while (first > 0)
+            {
+                PacketBoard pb = packetList[first];
+                if (pb == null)
+                {
+                    return;
+                }
+                if (pb.Update(nowTime) == 0)
+                {
+                    break;
+                }
+                first--;
+            }
+            for (int i = first; i > 0; i--)
+            {
+                PacketBoard pb = packetList[i];
+                if (pb == null || pb.Update(nowTime) != 0)
+                    return; // 表示すべきものがなくなった
+                if (hilightPacketBoard == pb)
+                {
+                    pb.Draw(view, viewport, projection, 2.0f, this.cameraPosition, this.cameraTarget);
+                }
+                else
+                {
+                    pb.Draw(view, viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
+                }
+            }
+        }
+
+        /// <summary>
         /// This is called when the game should draw itself.
         /// そのときのゲーム時間のものを表示する。
         /// ぶっちゃけ呪文の塊
@@ -931,14 +986,14 @@ namespace Packter_viewer2
             if (skyModel != null)
             {
                 this.GraphicsDevice.RenderState.DepthBufferEnable = false;
-                skyModel.DrawSkybox(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
+                skyModel.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
                 this.GraphicsDevice.RenderState.DepthBufferEnable = true;
             }
 
             if (cameraPosition.Z > 0)
             {
                 senderBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
-                DrawPacketBoards(gameTime, view, GraphicsDevice.Viewport, projection);
+                DrawPacketBoardsReverse(gameTime, view, GraphicsDevice.Viewport, projection);
                 receiverBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
             }
             else

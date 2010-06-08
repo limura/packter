@@ -106,5 +106,11 @@ namespace Packter_viewer
             get { return board.Alpha; }
             set { board.Alpha = value; }
         }
+
+        public bool BillboardEnabled
+        {
+            get { return board.BillboardEnabled; }
+            set { board.BillboardEnabled = value; }
+        }
     }
 }

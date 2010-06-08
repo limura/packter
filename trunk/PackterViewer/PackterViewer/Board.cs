@@ -23,6 +23,7 @@ namespace Packter_viewer
         Model model = null;
         bool lightingEnabled = false;
         bool billboardEnabled = false;
+        bool skyboxEnabled = false;
 
         public Board(Model Model)
         {
@@ -52,6 +53,12 @@ namespace Packter_viewer
             set { billboardEnabled = value; }
         }
 
+        public bool SkyBoxEnabled
+        {
+            get { return skyboxEnabled; }
+            set { skyboxEnabled = value; }
+        }
+
         public float RotationP = 0;
         public float RotationY = 0;
         public float RotationR = 0;
@@ -67,6 +74,11 @@ namespace Packter_viewer
 
         public void Draw(Matrix view, Viewport viewport, Matrix projection, float scale, Vector3 cameraPosition, Vector3 cameraTarget)
         {
+            if (skyboxEnabled)
+            {
+                DrawSkybox(view, viewport, projection, scale, cameraPosition, cameraTarget);
+                return;
+            }
             Matrix transform = Matrix.Identity;
             if (billboardEnabled == false)
             {
@@ -77,8 +89,9 @@ namespace Packter_viewer
             }
             else
             {
-                transform = Matrix.CreateScale(Scale * scale)
+                transform = Matrix.Identity * Matrix.CreateScale(Scale * scale)
                     * Matrix.CreateBillboard(position, cameraPosition, Vector3.Up, cameraTarget);
+                    //* Matrix.CreateTranslation(position);
             }
 
             foreach (ModelMesh mesh in model.Meshes)
@@ -117,7 +130,7 @@ namespace Packter_viewer
         /// <summary>
         /// Skybox として表示します。このmethodを呼び出す前に GraphicsDevice.RenderState.DepthBufferEnable = false; にしておく必要があります
         /// </summary>
-        public void DrawSkybox(Matrix view, Viewport viewport, Matrix projection, float scale, Vector3 cameraPosition, Vector3 cameraTarget)
+        void DrawSkybox(Matrix view, Viewport viewport, Matrix projection, float scale, Vector3 cameraPosition, Vector3 cameraTarget)
         {
 
             Matrix[] skyModelTransforms = new Matrix[model.Bones.Count];
