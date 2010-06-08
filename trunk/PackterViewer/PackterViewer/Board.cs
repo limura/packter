@@ -146,6 +146,10 @@ namespace Packter_viewer
                     currentEffect.Projection = projection;
                     currentEffect.LightingEnabled = false;
                     currentEffect.TextureEnabled = true;
+                    if (texture != null)
+                    {
+                        currentEffect.Texture = texture;
+                    }
                 }
                 mesh.Draw();
             }
