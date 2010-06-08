@@ -64,7 +64,7 @@ namespace Packter_viewer
             //ReadData(Encoding.UTF8.GetBytes("PACKTER\n0.0.0.0,255.255.255.255,0,65535,misairu,0"));
             //ReadData(Encoding.UTF8.GetBytes("PACKTERVOICE\n/W:ぱくたーが起動したよ？"));
             //ReadData(Encoding.UTF8.GetBytes("PACKTERVOICE\n/T:3 /W:ハロー"));
-            ReadData(Encoding.UTF8.GetBytes("PACKTERSKYDOMETEXTURE\npic01.png"));
+            //ReadData(Encoding.UTF8.GetBytes("PACKTERSKYDOMETEXTURE\npic01.png"));
 #endif
 #endif
         }
