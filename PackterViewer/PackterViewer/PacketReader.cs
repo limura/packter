@@ -26,6 +26,7 @@ namespace Packter_viewer
         public const string SOUNDTriggerString = "PACKTERSOUND";
         public const string VOICETriggerString = "PACKTERVOICE";
         public const string SETriggerString = "PACKTERSE";
+        public const string SKYDOMETextureTriggerString = "PACKTERSKYDOMETEXTURE";
 
         Dictionary<string, List<string> > packterStringQueue = new Dictionary<string, List<string> >();
 
@@ -63,6 +64,7 @@ namespace Packter_viewer
             //ReadData(Encoding.UTF8.GetBytes("PACKTER\n0.0.0.0,255.255.255.255,0,65535,misairu,0"));
             //ReadData(Encoding.UTF8.GetBytes("PACKTERVOICE\n/W:ぱくたーが起動したよ？"));
             //ReadData(Encoding.UTF8.GetBytes("PACKTERVOICE\n/T:3 /W:ハロー"));
+            ReadData(Encoding.UTF8.GetBytes("PACKTERSKYDOMETEXTURE\npic01.png"));
 #endif
 #endif
         }
@@ -110,6 +112,7 @@ namespace Packter_viewer
                 case PacketReader.SOUNDTriggerString:  // soundFileName
                 case PacketReader.VOICETriggerString: // ゆっくりボイス
                 case PacketReader.SETriggerString: // SE
+                case PacketReader.SKYDOMETextureTriggerString: // SkydomeTexture
                     if(packterStringQueue.ContainsKey(firstLine) == false){
                         packterStringQueue[firstLine] = new List<string>();
                     }

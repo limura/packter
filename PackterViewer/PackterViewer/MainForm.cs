@@ -208,6 +208,15 @@ namespace WinFormsGraphicsDevice
                                 PlayAudio(targetList[targetList.Count - 1]);
                             }
                         }
+
+                        if (msg.ContainsKey(PacketReader.SKYDOMETextureTriggerString)) // SkyDomeTexture
+                        {
+                            List<string> targetList = msg[PacketReader.SKYDOMETextureTriggerString];
+                            if (targetList.Count > 0 && !string.IsNullOrEmpty(targetList[targetList.Count - 1]))
+                            {
+                                packterDisplayControl.SetSkydomeTexture(targetList[targetList.Count - 1]);
+                            }
+                        }
                     }
                 }
 

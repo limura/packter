@@ -63,6 +63,7 @@ namespace Packter_viewer2
         Model packetModel;
         List<Model> packetModelList = new List<Model>();
         Board skyModel = null;
+        Board skyModelOriginal = null;
 
         //Vector3 cameraPosition = new Vector3(-128, 250, 480);
         Vector3 cameraPosition = new Vector3(-321, 22, 304);
@@ -270,10 +271,10 @@ namespace Packter_viewer2
 
             if (configReader.SkydomeEnabled)
             {
-                Model skyModelTmp = contentLoader.GetModel("skydome");
-                if (skyModelTmp != null)
+                Model tmpModel = contentLoader.GetModel("skydome");
+                if (tmpModel != null)
                 {
-                    skyModel = new Board(skyModelTmp);
+                    skyModel = skyModelOriginal = new Board(tmpModel);
                     skyModel.Position = new Vector3(0, 0, 0);
                     skyModel.Scale = 2000.0f;
                     skyModel.SkyBoxEnabled = true;
@@ -1085,6 +1086,22 @@ namespace Packter_viewer2
         {
             get { return statusDraw; }
             set { statusDraw = value; }
+        }
+
+        public void SetSkydomeTexture(string filename)
+        {
+            mutex.WaitOne();
+            Texture2D texture = contentLoader.GetTexture2D(filename);
+            if (texture != null && skyModelOriginal != null)
+            {
+                skyModelOriginal.Texture = texture;
+                skyModel = skyModelOriginal;
+            }
+            else
+            {
+                skyModel = null;
+            }
+            mutex.ReleaseMutex();
         }
 
 #if true
