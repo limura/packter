@@ -42,21 +42,21 @@ namespace WinFormsGraphicsDevice
             this.basePanel.Controls.Add(this.webBrowser);
             this.basePanel.Controls.Add(this.packterDisplayControl);
             this.basePanel.Location = new System.Drawing.Point(0, 0);
-            this.basePanel.Margin = new System.Windows.Forms.Padding(2);
+            this.basePanel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.basePanel.Name = "basePanel";
-            this.basePanel.Size = new System.Drawing.Size(631, 484);
+            this.basePanel.Size = new System.Drawing.Size(841, 605);
             this.basePanel.TabIndex = 0;
             // 
             // webBrowser
             // 
             this.webBrowser.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.webBrowser.Location = new System.Drawing.Point(0, 325);
-            this.webBrowser.Margin = new System.Windows.Forms.Padding(2);
-            this.webBrowser.MinimumSize = new System.Drawing.Size(15, 16);
+            this.webBrowser.Location = new System.Drawing.Point(0, 406);
+            this.webBrowser.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.webBrowser.MinimumSize = new System.Drawing.Size(20, 20);
             this.webBrowser.Name = "webBrowser";
             this.webBrowser.ScrollBarsEnabled = false;
-            this.webBrowser.Size = new System.Drawing.Size(629, 157);
+            this.webBrowser.Size = new System.Drawing.Size(839, 196);
             this.webBrowser.TabIndex = 5;
             this.webBrowser.Visible = false;
             // 
@@ -66,9 +66,10 @@ namespace WinFormsGraphicsDevice
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.packterDisplayControl.Location = new System.Drawing.Point(0, 0);
-            this.packterDisplayControl.Margin = new System.Windows.Forms.Padding(2);
+            this.packterDisplayControl.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.packterDisplayControl.Name = "packterDisplayControl";
-            this.packterDisplayControl.Size = new System.Drawing.Size(631, 484);
+            this.packterDisplayControl.Size = new System.Drawing.Size(841, 605);
+            this.packterDisplayControl.StatusDraw = false;
             this.packterDisplayControl.TabIndex = 6;
             this.packterDisplayControl.Text = "packterDisplayControl1";
             this.packterDisplayControl.KeyUp += new System.Windows.Forms.KeyEventHandler(this.packterDisplayControl_KeyUp);
@@ -77,13 +78,13 @@ namespace WinFormsGraphicsDevice
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(629, 482);
+            this.ClientSize = new System.Drawing.Size(839, 602);
             this.Controls.Add(this.basePanel);
-            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.Name = "MainForm";
-            this.Text = "Packter_viewer";
+            this.Text = "Packter_viewer (http://www.packter.net)";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.basePanel.ResumeLayout(false);
             this.ResumeLayout(false);
