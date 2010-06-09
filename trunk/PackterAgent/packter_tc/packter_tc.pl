@@ -14,10 +14,12 @@ my $pt_port = 11300;
 
 my $config_file = "/usr/local/etc/packter.conf";
 my $enable_sound = 0;
+my $enable_debug = 0;
 
 my $pt_msg_h = "PACKTERMSG";
 my $pt_sound_h = "PACKTERSOUND";
 my $pt_voice_h = "PACKTERVOICE";
+my $pt_sky_h = "PACKTERSKYDOMETEXTURE";
 
 my %config = ();
 
@@ -29,14 +31,15 @@ GetOptions(
 	'listen=s' => \$my_host,
 	'viewer=s' => \$pt_host,
 	'config=s' => \$config_file,
-	'sound' => \$enable_sound 
+	'sound' => \$enable_sound,
+	'debug' => \$enable_debug
 );
 
 &main;
 
 sub main {
 	my ($src, $dst, $sport, $dport, $flag, $hash);
-	my ($msg, $sound, $voice);
+	my ($msg, $sound, $voice, $skydome);
 	if ($my_host eq "" || $dp_host eq "" || $pt_host eq ""){
 		&usage();
 	}
@@ -78,7 +81,11 @@ sub main {
 									$hash
 							);
 				send(PACKTER, $msg, 0, $pt_addr);
-				printf("MSG:%s\n", $msg);
+
+				if ($enable_debug){
+					printf("PACKTER-MSG: %s\n", $msg);
+				}
+
 				if ($enable_sound){
 					$voice = sprintf("%s\n%s%s%s",
 									$pt_voice_h,
@@ -87,6 +94,9 @@ sub main {
 									$config{'IPTB_OPT_VOICE_FOOT'}
 									);
 					send(PACKTER, $voice, 0, $pt_addr);
+					if ($enable_debug){
+						printf("PACKTER-VOICE: %s\n", $voice);
+					}
 
 					$sound = sprintf("%s\n%s%s",
 									$pt_sound_h,
@@ -94,6 +104,18 @@ sub main {
 									$config{'IPTB_START_SOUND'}
 									);
 					send(PACKTER, $sound, 0, $pt_addr);
+					if ($enable_debug){
+						printf("PACKTER-SOUND: %s\n", $sound);
+					}
+
+					$skydome = sprintf("%s\n%s",
+									$pt_sky_h,
+									$config{'IPTB_SKYDOME_START'}
+									);	
+					send(PACKTER, $skydome, 0, $pt_addr);
+					if ($enable_debug){
+						printf("PACKTER-SKYDOME: %s\n", $skydome);
+					}
 				}
 				sleep 10;	
 			}
@@ -190,18 +212,31 @@ sub main {
 
 							if ($msg ne ""){
 								send(PACKTER, $msg, 0, $pt_addr);
-								print "send $msg\n";
+								print "PACKTER-MSG: $msg\n";
 							}
 
 							if ($enable_sound){
 								if ($sound ne ""){
 									send(PACKTER, $sound, 0, $pt_addr);
-									print "send $sound\n";
+									if ($enable_debug){
+										print "PACKTER-SOUND: $sound\n";
+									}
 								}
 					
 								if ($voice ne ""){
 									send(PACKTER, $voice, 0, $pt_addr);
-									print "send $voice\n";
+									if ($enable_debug){
+										print "PAKCTER-VOICE: $voice\n";
+									}
+								}
+
+								$skydome = sprintf("%s\n%s",
+									$pt_sky_h,
+									$config{'IPTB_SKYDOME_DONE'}
+									);	
+								send(PACKTER, $skydome, 0, $pt_addr);
+								if ($enable_debug){
+									print "PAKCTER-SKYDOME: $skydome\n";
 								}
 							}
 						}
