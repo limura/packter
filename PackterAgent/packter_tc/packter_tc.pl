@@ -32,7 +32,7 @@ GetOptions(
 	'viewer=s' => \$pt_host,
 	'config=s' => \$config_file,
 	'sound' => \$enable_sound,
-	'debug' => \$enable_debug
+	'message' => \$enable_debug
 );
 
 &main;

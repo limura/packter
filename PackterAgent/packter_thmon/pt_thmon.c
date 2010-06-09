@@ -524,6 +524,8 @@ packter_analy()
 	char mesg[PACKTER_BUFSIZ];
 	char sound[PACKTER_BUFSIZ];
 	char voice[PACKTER_BUFSIZ];
+	char skydome[PACKTER_BUFSIZ];
+
 	float diff = 0;
 	float mon_syn, mon_fin, mon_rst, mon_icmp, mon_udp, mon_pps;
 
@@ -543,8 +545,11 @@ packter_analy()
 
 	snprintf(mesg, PACKTER_BUFSIZ, "%s", PACKTER_MSG);
 	snprintf(sound, PACKTER_BUFSIZ, "%s", PACKTER_SOUND);
-	snprintf(voice, PACKTER_BUFSIZ, "%s%s", PACKTER_VOICE, 
-						(char *)g_hash_table_lookup(config, "MON_OPT_VOICE_HEAD"));
+	snprintf(voice, PACKTER_BUFSIZ, "%s", PACKTER_VOICE);
+	packter_addstring_hash(voice, "MON_OPT_VOICE_HEAD");
+
+	snprintf(skydome, PACKTER_BUFSIZ, "%s", PACKTER_SKYDOME);
+	packter_addstring_hash(skydome, "MON_SKYDOME_START");
 
 	printf ("-------------------------\n");
 	printf ("Statistics of %d packet\n", th.count_all);
@@ -590,27 +595,24 @@ packter_analy()
 	}
 
 	if (alert == PACKTER_TRUE){
+    packter_addstring_hash(mesg, "MON_OPT_MSG_FOOT");
 		if (debug == PACKTER_TRUE){
 			printf("Packter-MSG\n%s\n", mesg);
 		}
 		packter_send(mesg);
 
 		if (enable_sound == PACKTER_TRUE){
-			char tmp[PACKTER_BUFSIZ];
-			memset((void *)tmp, '\0', PACKTER_BUFSIZ);
-			snprintf(tmp, PACKTER_BUFSIZ, "%s%s",
-							voice, (char *)g_hash_table_lookup(config, "MON_OPT_VOICE_FOOT"));
-			strncpy(voice, tmp, PACKTER_BUFSIZ);
+			packter_addstring_hash(voice, "MON_OPT_VOICE_FOOT");
 
 			if (debug == PACKTER_TRUE){
 				printf("Packter-VOICE\n%s\n", voice);
-			}
-			packter_send(voice);
-
-			if (debug == PACKTER_TRUE){
 				printf("Packter-SOUND\n%s\n", sound);
+				printf("Packter-SKYDOME\n%s\n", skydome);
 			}
+
 			packter_send(sound);
+			packter_send(skydome);
+			packter_send(voice);
 		}
 	}
 	

@@ -46,6 +46,8 @@ MON_PPS_PIC=male.png
 MON_PPS_SOUND=30000,packter01.wav
 MON_PPS_VOICE=PPS　
 
+MON_SKYDOME_START=texture1.bmp
+
 #
 # その他オプション
 #
@@ -84,5 +86,5 @@ IPTB_FAILED_VOICE=/T:1 /W:トレースバックに失敗しました
 
 IPTB_OPT_HASH=<font color=black face="メイリオ">ハッシュ値：</font>
 
-IPTB_SKYDOME_START=texture1.bmp
+IPTB_SKYDOME_START=texture2.bmp
 IPTB_SKYDOME_DONE=skydometexture.bmp
