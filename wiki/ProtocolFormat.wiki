@@ -1,4 +1,5 @@
 # packter protocol format
+# Last Update: 2010/06/06
 
 = Abstract =
 
@@ -87,9 +88,18 @@ PACKTERVOICE
 SOUNDTEXT
 }}}
 SOUNDTEXT is a string and designates a text which is read by the external software.
-For example
+For example,
 {{{
 PACKTERVOICE
 /option /parameter ABCDEFG
 }}}
 Pacter Viewer calls the external software with "/option /parameter ABCDEFG". 
+
+== PACKTERSKYDOMETEXTURE ==
+This command is used for adding texture for skydome. 
+For example,
+{{{
+PACKTERSKYDOMETEXTURE
+texture1.bmp
+}}}
+PACKTER Viewer draws texture1.bmp for the skydome.
