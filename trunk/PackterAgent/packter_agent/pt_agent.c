@@ -72,6 +72,8 @@ int use6 = PACKTER_FALSE;
 char trace_server[PACKTER_BUFSIZ];
 int trace = PACKTER_FALSE;
 
+/* for Sound */
+int enable_sound = PACKTER_FALSE;
 
 int main(int argc, char *argv[])
 {
@@ -95,9 +97,9 @@ int main(int argc, char *argv[])
 
 	/* getopt */
 #ifdef USE_INET6
-	while ((op = getopt(argc, argv, "v:i:r:p:R:T:s6dh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:i:r:p:R:T:us6dh?")) != -1) 
 #else
-	while ((op = getopt(argc, argv, "v:i:r:p:R:T:sdh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:i:r:p:R:T:usdh?")) != -1) 
 #endif
 	{
 		switch (op) {
@@ -128,7 +130,11 @@ int main(int argc, char *argv[])
 			dumpfile = optarg;
 			break;
 
-		case 's': /* read from snort */
+		case 's': /* sound enable */
+			enable_sound = PACKTER_TRUE;
+			break;
+
+		case 'u': /* read from snort */
 			snort = PACKTER_TRUE;
 			break;
 
@@ -368,13 +374,14 @@ packter_usage(void)
 {
 	printf("usage: %s \n", progname);
 	printf("      -v [ Viewer IP address ]\n");
-	printf("      -p [ Viewer Port number ] (optiona: default 11300)\n");
+	printf("      -p [ Viewer Port number ] (optional: default 11300)\n");
 	printf("      -i [ Monitor device ] (optional)\n");
 	printf("      -r [ Pcap dump file ] (optional)\n");
-	printf("      -s ( Read from Snort's UNIX domain socket: optional)\n");
+	printf("      -u ( Read from Snort's UNIX domain socket: optional)\n");
 	printf("      -d ( Show debug information: optional)\n");
 	printf("      -R [ Random droprate ] (optional)\n");
 	printf("      -T [ Traceback Client ] (optional)\n");
+	printf("      -s ( enable PACKERSE: optional)\n");
 	printf("      [ pcap filter expression ] (optional)\n");
 	printf("      (if -s specified, then [ UNIX domain socket path ]) \n");
 	printf("\n");
@@ -584,6 +591,13 @@ packter_tcp(u_char *p, u_int len, char *srcip, char *dstip, int flag, char *mesg
 	packter_mesg(mesg, srcip, dstip, ntohs(th->th_sport),ntohs(th->th_dport), flag, mesgbuf);
 	packter_send(mesg);
 
+	if (enable_sound == PACKTER_TRUE){
+		char se[PACKTER_BUFSIZ];
+		memset((void *)&se, '\0', PACKTER_BUFSIZ);
+		snprintf(se, PACKTER_BUFSIZ, "%sse%d.wav", PACKTER_SE, flag);
+		packter_send(se);
+	}
+
 	return;
 }
 
@@ -609,6 +623,14 @@ packter_udp(u_char *p, u_int len, char *srcip, char *dstip, int flag, char *mesg
 
 	packter_mesg(mesg, srcip, dstip, ntohs(uh->uh_sport), ntohs(uh->uh_dport), flag, mesgbuf);
 	packter_send(mesg);
+
+	if (enable_sound == PACKTER_TRUE){
+		char se[PACKTER_BUFSIZ];
+		memset((void *)&se, '\0', PACKTER_BUFSIZ);
+		snprintf(se, PACKTER_BUFSIZ, "%sse%d.wav", PACKTER_SE, flag);
+		packter_send(se);
+	}
+
 	return;
 }
 
@@ -634,6 +656,14 @@ packter_icmp(u_char *p, u_int len, char *srcip, char *dstip, int flag, char *mes
 
 	packter_mesg(mesg, srcip, dstip, (ih->icmp_type) * 256, (ih->icmp_code) * 256, flag, mesgbuf);
 	packter_send(mesg);
+
+	if (enable_sound == PACKTER_TRUE){
+		char se[PACKTER_BUFSIZ];
+		memset((void *)&se, '\0', PACKTER_BUFSIZ);
+		snprintf(se, PACKTER_BUFSIZ, "%sse%d.wav", PACKTER_SE, flag);
+		packter_send(se);
+	}
+
 	return;
 }
 
@@ -661,6 +691,14 @@ void packter_icmp6(u_char *p, u_int len, char *srcip, char *dstip, int flag, cha
 							(int)(ih6->icmp6_code) * 256,
 							flag, mesgbuf);
 	packter_send(mesg);
+
+	if (enable_sound == PACKTER_TRUE){
+		char se[PACKTER_BUFSIZ];
+		memset((void *)&se, '\0', PACKTER_BUFSIZ);
+		snprintf(se, PACKTER_BUFSIZ, "%sse%d.wav", PACKTER_SE, flag);
+		packter_send(se);
+	}
+
 	return;
 }
 
