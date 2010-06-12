@@ -886,6 +886,7 @@ int packter_generate_alert(int alert, char *mesg, char *sound, char *voice, char
 		packter_addstring_hash(sound, mon_sound);
 		packter_addstring_hash(mesg, mon_pic);
 		packter_addstring(mesg, ",");
+    packter_addstring_hash(mesg, "MON_OPT_MSG_HEAD");
     alert = PACKTER_TRUE;
 	}
 
