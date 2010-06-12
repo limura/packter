@@ -38,8 +38,10 @@ namespace WinFormsGraphicsDevice
         System.Windows.Forms.Timer intervalTimer = new System.Windows.Forms.Timer();
         System.Windows.Forms.Timer bgmTimer = new System.Windows.Forms.Timer();
         System.Media.SoundPlayer bgmSoundPlayer = null;
-
         bool webBrowserDocumentCompleted = false;
+        System.Threading.Thread seThread = null;
+        System.Threading.Mutex seMutex = new System.Threading.Mutex();
+        List<string> seQueue = new List<string>();
 
         public MainForm(string[] args)
         {
@@ -65,6 +67,9 @@ namespace WinFormsGraphicsDevice
 
             webBrowser.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(webBrowser_DocumentCompleted);
             webBrowser.Navigate("about:blank");
+
+            seThread = new System.Threading.Thread(new System.Threading.ThreadStart(SeThreadMain));
+            seThread.Start();
         }
 
         void bgmTimer_Tick(object sender, System.EventArgs e)
@@ -248,12 +253,36 @@ namespace WinFormsGraphicsDevice
             UnloadHtml();
         }
 
+        void PlayAudio(string filename)
+        {
+            seMutex.WaitOne();
+            seQueue.Add(filename);
+            seMutex.ReleaseMutex();
+        }
+
+        void SeThreadMain()
+        {
+            while (true)
+            {
+                seMutex.WaitOne();
+                List<string> playQueue = seQueue;
+                seQueue = new List<string>();
+                seMutex.ReleaseMutex();
+
+                foreach (string file in playQueue)
+                {
+                    PlayAudioInThread(file);
+                }
+                System.Threading.Thread.Sleep(50);
+            }
+        }
+
         HashSet<object> audioPlayHashSet = new HashSet<object>();
         void stopAudioEventHandler(object obj, System.EventArgs args)
         {
             audioPlayHashSet.Remove(obj);
         }
-        void PlayAudio(string filename)
+        void PlayAudioInThread(string filename)
         {
             if (string.IsNullOrEmpty(filename) || !System.IO.File.Exists(filename))
             {
