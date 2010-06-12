@@ -4,20 +4,25 @@
 # Softalk: PACKTERVOICE で指定された文字列を渡されるコマンド。default: softalk\\softalkw.exe
 #Softalk = softalk\\softalkw.exe
 
+
 # PackterMsgFormat1: PACKTERMSG で渡された文字列部分の前に挿入されるもの。
 # default: <html lang="ja"><body>
 #PackterMsgFormat1 = <html lang="ja"><body>
+PackterMSGFormat1 = <html><head><style type="text/css"><!-- body { font-family: verdana,メイリオ; } --> </style></head><body font-family="verdana,arial,sans-serif"><table><tr><td width="80"></td><td align="left">
 
 # PackterMsgFormat2: PACKTERMSG で渡された文字列部分の後に挿入されるもの
 # default: </body></html>
 #PackterMsgFormat2 = </body></html>
+PackterMSGFormat2 = </tr></table></body></html>
 
 # MsgBoxCloseTimeSec: PACKTERMSG で表示されたメッセージが閉じるまでの時間(秒)。default: 10(秒)
 #MsgBoxCloseTimeSec = 10
+MsgBoxCloseTimeSec = 8
 
 # LoadPacketTarget: 流れるパケットの形状を指定します。ball と board のみが使用できます。
 # 理解できないものは ball として判定されます。default: ball
 #LoadPacketTarget = ball
+LoadPacketTarget = ball
 
 # SenderBoardFile: 送信側に表示されるオブジェクトの .x ファイルを指定します。default では未設定です
 #SenderBoardFile = 
@@ -40,6 +45,7 @@
 # TickKeyInputAcceptMicrosecond: とても短いキー入力(KeyDown -> KeyUp までの時間)が短い場合、
 # Bキー と Fキー の効果を強化する機能の「短い」と判断するための時間(マイクロ秒)。default: 50000(マイクロ秒)
 #TickKeyInputAcceptMicrosecond = 50000
+TickKeyInputAcceptMicrosecond = 50000
 
 # HtmlConvertTarget
 # PACKTERHTML や PACKTERMSG で入力された IEコンポーネント に渡される文字列を、
@@ -53,6 +59,14 @@
 # default は無指定です。
 #HtmlConvertTarget = <HOGE> file:///c:/tmp/img.png
 #HtmlConvertTarget = <HAGE> file:///c:/tmp/img2.png
+HtmlConvertTarget = <pic-m1> <img src="file:///<CURRENTDIR>/pic01.png" height="150" align="top"></td><td width="<HTMLWIDTH>-<HTMLHEIGHT>*2" align="center">
+HtmlConvertTarget = <pic-m2> <img src="file:///<CURRENTDIR>/pic02.png" height="150" align="top"></td><td width="<HTMLWIDTH>-<HTMLHEIGHT>*2" align="center">
+HtmlConvertTarget = <pic-m3> <img src="file:///<CURRENTDIR>/pic03.png" height="150" align="top"></td><td width="<HTMLWIDTH>-<HTMLHEIGHT>*2" align="center">
+HtmlConvertTarget = <pic-m4> <img src="file:///<CURRENTDIR>/pic04.png" height="150" align="top"></td><td width="<HTMLWIDTH>-<HTMLHEIGHT>*2" align="center">
+HtmlConvertTarget = <pic-f1> <img src="file:///<CURRENTDIR>/pic05.png" height="150" align="top"></td><td width="<HTMLWIDTH>-<HTMLHEIGHT>*2" align="center">
+HtmlConvertTarget = <pic-f2> <img src="file:///<CURRENTDIR>/pic06.png" height="150" align="top"></td><td width="<HTMLWIDTH>-<HTMLHEIGHT>*2" align="center">
+HtmlConvertTarget = <pic-f3> <img src="file:///<CURRENTDIR>/pic07.png" height="150" align="top"></td><td width="<HTMLWIDTH>-<HTMLHEIGHT>*2" align="center">
+HtmlConvertTarget = <pic-f4> <img src="file:///<CURRENTDIR>/pic08.png" height="150" align="top"></td><td width="<HTMLWIDTH>-<HTMLHEIGHT>*2" align="center">
 
 # HtmlConvertToCurrentDirTarget
 # PACKTERHTML や PACKTERMSG で入力された IEコンポーネント に渡される文字列のうち、
@@ -61,6 +75,7 @@
 # file:///c:/tmp/ に変換されます。(最後に / が入ります)
 # default は null です。
 #HtmlConvertToCurrentDirTarget = <CURRENTDIR>
+HtmlConvertToCurrentDirTarget = <CURRENTDIR>
 
 # BgColor
 # 背景色を設定します。RRGGBB の16進数で指定してください。
@@ -83,6 +98,7 @@
 # たとえば、現在のWindow幅が 100 であれば、100 に変換されます。
 # default は null です。
 #HtmlConvertToCurrentWidthTarget = <HTMLWIDTH>
+HtmlConvertToCurrentWidthTarget = <HTMLWIDTH>
 
 # HtmlConvertToCurrentHeightTarget
 # PACKTERHTML や PACKTERMSG で入力された IEコンポーネント に渡される文字列のうち、
@@ -90,4 +106,4 @@
 # たとえば、現在のWindow高さが 100 であれば、100 に変換されます。
 # default は null です。
 #HtmlConvertToCurrentHeightTarget = <HTMLHEIGHT>
-
+HtmlConvertToCurrentHeightTarget = <HTMLHEIGHT>
