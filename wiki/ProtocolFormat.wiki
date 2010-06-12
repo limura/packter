@@ -1,9 +1,8 @@
-# packter protocol format
-# Last Update: 2010/06/06
+# packter protocol format (2010/06/13)
 
 = Abstract =
 
-This article specified a protocol format between Packter Viewer and Packter Agent. Packter Viewer, a multi-purpose traffic visualizer, listens for UDP datagrams on UDP port 11300. For drawing flying objects, showing messages, and/or playing sounds, Packter Agent sentds control packter towward Packter Viewer.
+This article specified a protocol format between Packter Viewer and Packter Agent. Packter Viewer, a multi-purpose traffic visualizer, listens for UDP datagrams on UDP port 11300. For drawing flying objects, showing messages, and/or playing sounds, Packter Agent sends a control UDP datagram toward Packter Viewer.
 
 = Details =
 == PACKTER ==
@@ -96,8 +95,12 @@ PACKTERVOICE
 Pacter Viewer calls the external software with "/option /parameter ABCDEFG". 
 
 == PACKTERSKYDOMETEXTURE ==
-This command is used for adding texture for skydome. 
-For example,
+This command is used for adding texture for skydome. The format is as follows.
+{{{
+PACKTERVOICE
+TEXTUREFILE
+}}}
+TEXTUREFILE is the filename of the SkyDome's texture. For example,
 {{{
 PACKTERSKYDOMETEXTURE
 texture1.bmp
