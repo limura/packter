@@ -887,11 +887,28 @@ namespace Packter_viewer2
         {
             double nowTime = gameTime.TotalGameTime.TotalMilliseconds + addMilliseconds;
             int first = packetList.BinarySearchNext(nowTime - flyMillisecond);
+            List<PacketBoard> sortTargets = new List<PacketBoard>();
             for (int i = 0; i < packetList.Length; i++)
             {
                 PacketBoard pb = packetList[i + first];
                 if (pb == null || pb.Update(nowTime) != 0)
-                    return; // 表示すべきものがなくなった
+                    break; // 表示すべきものがなくなった
+                sortTargets.Add(pb);
+#if true
+                if (hilightPacketBoard == pb)
+                {
+                    pb.Draw(view, viewport, projection, 2.0f, this.cameraPosition, this.cameraTarget);
+                }
+                else
+                {
+                    pb.Draw(view, viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
+                }
+#endif
+            }
+#if false
+            sortTargets.Sort();
+            foreach (PacketBoard pb in sortTargets)
+            {
                 if (hilightPacketBoard == pb)
                 {
                     pb.Draw(view, viewport, projection, 2.0f, this.cameraPosition, this.cameraTarget);
@@ -901,6 +918,7 @@ namespace Packter_viewer2
                     pb.Draw(view, viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
                 }
             }
+#endif
         }
 
         /// <summary>
@@ -994,7 +1012,7 @@ namespace Packter_viewer2
             if (cameraPosition.Z > 0)
             {
                 senderBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
-                DrawPacketBoardsReverse(gameTime, view, GraphicsDevice.Viewport, projection);
+                DrawPacketBoards(gameTime, view, GraphicsDevice.Viewport, projection);
                 receiverBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
             }
             else
