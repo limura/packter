@@ -97,7 +97,7 @@ Pacter Viewer calls the external software with "/option /parameter ABCDEFG".
 == PACKTERSKYDOMETEXTURE ==
 This command is used for adding texture for skydome. The format is as follows.
 {{{
-PACKTERVOICE
+PACKTERSKYDOMETEXTURE
 TEXTUREFILE
 }}}
 TEXTUREFILE is the filename of the SkyDome's texture. For example,
