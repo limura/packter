@@ -381,6 +381,10 @@ namespace WinFormsGraphicsDevice
             intervalTimer.Stop();
             webBrowserVisibleChangeTimer.Dispose();
             intervalTimer.Dispose();
+            if (seThread != null)
+            {
+                seThread.Abort();
+            }
         }
     }
 }
