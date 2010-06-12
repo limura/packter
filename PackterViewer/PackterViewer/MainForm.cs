@@ -134,6 +134,16 @@ namespace WinFormsGraphicsDevice
                                 System.Uri currentDirUri = new System.Uri(System.IO.Directory.GetCurrentDirectory());
                                 targetHtml = targetHtml.Replace(dirTarget, currentDirUri.AbsolutePath + "/");
                             }
+                            string widthTarget = configReader.HtmlConvertToCurrentWidthTarget;
+                            if (!string.IsNullOrEmpty(widthTarget))
+                            {
+                                targetHtml = targetHtml.Replace(widthTarget, webBrowser.Width.ToString());
+                            }
+                            string heightTarget = configReader.HtmlConvertToCurrentHeightTarget;
+                            if (!string.IsNullOrEmpty(heightTarget))
+                            {
+                                targetHtml = targetHtml.Replace(heightTarget, webBrowser.Height.ToString());
+                            }
                             LoadHtml(imgFileName, targetHtml);
                         }
 

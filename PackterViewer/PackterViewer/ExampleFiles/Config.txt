@@ -77,3 +77,17 @@
 # 背景として load されたテクスチャが利用されます
 #SkyDomeTexture = texture.png
 
+# HtmlConvertToCurrentWidthTarget
+# PACKTERHTML や PACKTERMSG で入力された IEコンポーネント に渡される文字列のうち、
+# ここで指定された文字列を IEコンポーネントの width に変換します。
+# たとえば、現在のWindow幅が 100 であれば、100 に変換されます。
+# default は null です。
+#HtmlConvertToCurrentWidthTarget = <HTMLWIDTH>
+
+# HtmlConvertToCurrentHeightTarget
+# PACKTERHTML や PACKTERMSG で入力された IEコンポーネント に渡される文字列のうち、
+# ここで指定された文字列を IEコンポーネントの height に変換します。
+# たとえば、現在のWindow高さが 100 であれば、100 に変換されます。
+# default は null です。
+#HtmlConvertToCurrentHeightTarget = <HTMLHEIGHT>
+

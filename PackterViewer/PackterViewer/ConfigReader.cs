@@ -27,6 +27,8 @@ namespace PackterViewer
         bool skydomeEnabled = false;
         string skydomeTexture = null;
         Microsoft.Xna.Framework.Graphics.Color bgColor = Microsoft.Xna.Framework.Graphics.Color.CornflowerBlue;
+        string htmlConvertToCurrentWidthTarget = null;
+        string htmlConvertToCurrentHeightTarget = null;
 
         public float DefaultScale
         {
@@ -101,6 +103,14 @@ namespace PackterViewer
         public Microsoft.Xna.Framework.Graphics.Color BGColor
         {
             get { return bgColor; }
+        }
+        public string HtmlConvertToCurrentWidthTarget
+        {
+            get { return htmlConvertToCurrentWidthTarget; }
+        }
+        public string HtmlConvertToCurrentHeightTarget
+        {
+            get { return htmlConvertToCurrentHeightTarget; }
         }
 
         bool ConvertToFloat(string str, out float val)
@@ -196,6 +206,18 @@ namespace PackterViewer
                     if (key == "/bgcolor")
                     {
                         bgColor = PhaseColor(value, bgColor);
+                        i++; continue;
+                    }
+
+                    if (key == "/htmlconverttocurrentwidthtarget" && !string.IsNullOrEmpty(value))
+                    {
+                        htmlConvertToCurrentWidthTarget = value;
+                        i++; continue;
+                    }
+
+                    if (key == "/htmlconverttocurrentheighttarget" && !string.IsNullOrEmpty(value))
+                    {
+                        htmlConvertToCurrentHeightTarget = value;
                         i++; continue;
                     }
                 }
@@ -353,6 +375,23 @@ namespace PackterViewer
                             case "bgcolor":
                                 bgColor = PhaseColor(value, bgColor);
                                 break;
+
+                            case "htmlconverttocurrentwidthtarget":
+                                value = value.Trim();
+                                if (!string.IsNullOrEmpty(value))
+                                {
+                                    htmlConvertToCurrentWidthTarget = value;
+                                }
+                                break;
+
+                            case "htmlconverttocurrentheighttarget":
+                                value = value.Trim();
+                                if (!string.IsNullOrEmpty(value))
+                                {
+                                    htmlConvertToCurrentHeightTarget = value;
+                                }
+                                break;
+
                             default:
                                 break;
                         }

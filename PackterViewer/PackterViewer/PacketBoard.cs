@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Packter_viewer
 {
-    class PacketBoard
+    class PacketBoard : IComparable<PacketBoard>
     {
         Vector3 startPoint;
         Vector3 endPoint;
@@ -112,5 +112,32 @@ namespace Packter_viewer
             get { return board.BillboardEnabled; }
             set { board.BillboardEnabled = value; }
         }
+
+        public int CompareTo(PacketBoard x)
+        {
+            return PacketBoard.Compare(this, x);
+        }
+        public static int Compare(Object x, Object y)
+        {
+            try
+            {
+                PacketBoard a = (PacketBoard)x;
+                PacketBoard b = (PacketBoard)y;
+                if (a.board.Position.Z == b.board.Position.Z)
+                {
+                    return 0;
+                }
+                if (a.board.Position.Z > b.board.Position.Z)
+                {
+                    return 1;
+                }
+                return -1;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
     }
 }
