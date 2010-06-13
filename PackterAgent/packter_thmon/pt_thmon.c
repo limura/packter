@@ -40,7 +40,6 @@
 
 #include <pcap.h>
 #include <glib.h>
-#include <gnet.h>
 #include <openssl/md5.h>
 
 #include "pt.h"

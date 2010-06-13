@@ -40,7 +40,6 @@
 
 #include <pcap.h>
 
-#include <gnet.h>
 #include <openssl/md5.h>
 
 #include "pt_ether.h"
@@ -374,7 +373,7 @@ packter_usage(void)
 {
 	printf("usage: %s \n", progname);
 	printf("      -v [ Viewer IP address ]\n");
-	printf("      -p [ Viewer Port number ] (optional: default 11300)\n");
+	printf("      -p [ Viewer Port number ] (optional: default %d)\n", PACKTER_VIEWER_PORT);
 	printf("      -i [ Monitor device ] (optional)\n");
 	printf("      -r [ Pcap dump file ] (optional)\n");
 	printf("      -u ( Read from Snort's UNIX domain socket: optional)\n");
