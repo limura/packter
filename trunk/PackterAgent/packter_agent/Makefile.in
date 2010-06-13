@@ -45,8 +45,7 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_pt_agent_OBJECTS = pt_agent-pt_agent.$(OBJEXT)
 pt_agent_OBJECTS = $(am_pt_agent_OBJECTS)
-am__DEPENDENCIES_1 =
-pt_agent_DEPENDENCIES = $(am__DEPENDENCIES_1)
+pt_agent_DEPENDENCIES =
 pt_agent_LINK = $(CCLD) $(pt_agent_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -82,8 +81,6 @@ EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 GLIB_CFLAGS = @GLIB_CFLAGS@
 GLIB_LIBS = @GLIB_LIBS@
-GNET_CFLAGS = @GNET_CFLAGS@
-GNET_LIBS = @GNET_LIBS@
 GREP = @GREP@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
@@ -148,16 +145,13 @@ sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pt_agent_SOURCES = pt_agent.c
 pt_agent_LDADD = \
-  $(GNET_LIBS) -lpcap -lssl
+  -lpcap -lssl
 
-pt_agent_CFLAGS = \
-  $(GNET_CFLAGS)
-
+pt_agent_CFLAGS = 
 all: all-am
 
 .SUFFIXES:
