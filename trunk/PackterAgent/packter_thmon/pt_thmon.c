@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <time.h>
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -75,7 +76,9 @@ int interval = PACKTER_INTVAL;
 /* sound */
 int enable_sound = PACKTER_FALSE;
 
+/* config */
 GHashTable *config = NULL;
+char *configfile = NULL ;
 
 int main(int argc, char *argv[])
 {
@@ -92,9 +95,6 @@ int main(int argc, char *argv[])
 	int op;
 	int viewer = PACKTER_FALSE;
 	int snort = PACKTER_FALSE;
-
-	/* config */
-	char *configfile = NULL ;
 
 	progname = argv[0];
 
@@ -268,6 +268,7 @@ void packter_init()
 	packter_count_init();
 
 	config = g_hash_table_new((GHashFunc)g_str_hash, (GCompareFunc)g_str_equal);
+	signal(SIGHUP, packter_sig_handler);
 
 	return;
 }
@@ -524,10 +525,10 @@ packter_analy()
 	char sound[PACKTER_BUFSIZ];
 	char voice[PACKTER_BUFSIZ];
 	char skydome[PACKTER_BUFSIZ];
-
 	float diff = 0;
 	float mon_syn, mon_fin, mon_rst, mon_icmp, mon_udp, mon_pps;
 
+	/* Finalize Counter Variable */
 	gettimeofday(&th.stop, NULL);
 	mon_syn = (float)th.count_syn/(float)th.count_all;
 	mon_fin = (float)th.count_fin/(float)th.count_all;
@@ -542,13 +543,11 @@ packter_analy()
 	}
 	mon_pps = (float)th.count_all/(float)diff;
 
+	/* Initialize PACKTER Protocol Header */
 	snprintf(mesg, PACKTER_BUFSIZ, "%s", PACKTER_MSG);
 	snprintf(sound, PACKTER_BUFSIZ, "%s", PACKTER_SOUND);
 	snprintf(voice, PACKTER_BUFSIZ, "%s", PACKTER_VOICE);
-	packter_addstring_hash(voice, "MON_OPT_VOICE_HEAD");
-
 	snprintf(skydome, PACKTER_BUFSIZ, "%s", PACKTER_SKYDOME);
-	packter_addstring_hash(skydome, "MON_SKYDOME_START");
 
 	printf ("-------------------------\n");
 	printf ("Statistics of %d packet\n", th.count_all);
@@ -594,24 +593,29 @@ packter_analy()
 	}
 
 	if (alert == PACKTER_TRUE){
-    packter_addstring_hash(mesg, "MON_OPT_MSG_FOOT");
-		if (debug == PACKTER_TRUE){
-			printf("Packter-MSG\n%s\n", mesg);
+		if (packter_is_exist_key("MON_OPT_MSG_FOOT") == PACKTER_TRUE){
+    	packter_addstring_hash(mesg, "MON_OPT_MSG_FOOT");
 		}
 		packter_send(mesg);
 
 		if (enable_sound == PACKTER_TRUE){
-			packter_addstring_hash(voice, "MON_OPT_VOICE_FOOT");
-
-			if (debug == PACKTER_TRUE){
-				printf("Packter-VOICE\n%s\n", voice);
-				printf("Packter-SOUND\n%s\n", sound);
-				printf("Packter-SKYDOME\n%s\n", skydome);
+			/* PACKTERSOUND uses no footer, but codes are prepared */
+			if (packter_is_exist_key("MON_OPT_SOUND") == PACKTER_TRUE){
+				packter_addstring_hash(voice, "MON_OPT_SOUND");
 			}
-
 			packter_send(sound);
-			packter_send(skydome);
+
+			/* PACKTERVOICE sometimes needs footer */
+			if (packter_is_exist_key("MON_OPT_VOICE_FOOT") == PACKTER_TRUE){
+				packter_addstring_hash(voice, "MON_OPT_VOICE_FOOT");
+			}
 			packter_send(voice);
+
+			/* PACKTER_SKYDOME sends only skydome texture is specified */	
+			if (packter_is_exist_key("MON_SKYDOME_START") == PACKTER_TRUE){
+				packter_addstring_hash(skydome, "MON_SKYDOME_START");
+				packter_send(skydome);
+			}
 		}
 	}
 	
@@ -739,7 +743,7 @@ void packter_send(char *mesg)
 	/* check the limit */
 
 	if (debug == PACKTER_TRUE){
-		printf("%s", mesg);
+		printf("%s\n", mesg);
 	}
 
 #ifdef USE_INET6
@@ -882,18 +886,57 @@ int packter_generate_alert(int alert, char *mesg, char *sound, char *voice, char
 	memset((void *)tmp, '\0', PACKTER_BUFSIZ);
 
   if (alert == PACKTER_FALSE){
-		packter_addstring_hash(sound, mon_sound);
-		packter_addstring_hash(mesg, mon_pic);
+		/* PACKTERSOUND called at once */
+		if (packter_is_exist_key(mon_sound) == PACKTER_TRUE){
+			packter_addstring_hash(sound, mon_sound);
+		}
+
+		/* PIC for PACKTERMESG called at once */
+		if (packter_is_exist_key(mon_pic) == PACKTER_TRUE){
+			packter_addstring_hash(mesg, mon_pic);
+		}
 		packter_addstring(mesg, ",");
-    packter_addstring_hash(mesg, "MON_OPT_MSG_HEAD");
+
+		/* Header for PACKTERMESG called at once */
+		if (packter_is_exist_key("MON_OPT_MSG_HEAD") == PACKTER_TRUE){
+    	packter_addstring_hash(mesg, "MON_OPT_MSG_HEAD");
+		}
+
+		/* Header for PACKTERVOICE called at once */
+		if (packter_is_exist_key("MON_OPT_VOICE_HEAD") == PACKTER_TRUE){
+			packter_addstring_hash(voice, "MON_OPT_VOICE_HEAD");
+		}
+
     alert = PACKTER_TRUE;
 	}
 
-	packter_addstring_hash(mesg, mon_mesg);
-	packter_addstring_hash(mesg, "MONITOR"); packter_addfloat(mesg, mon_th);
-	packter_addstring_hash(mesg, "THRESHOLD"); packter_addfloat(mesg, given_th);
+	/* PACKTERMESG main content */
+	if (packter_is_exist_key(mon_mesg) == PACKTER_TRUE){
+		packter_addstring_hash(mesg, mon_mesg);
+	}
 
-	packter_addstring_hash(voice, mon_voice);
+	/* PACKTERMESG for Observed Variable */
+	if (packter_is_exist_key("MONITOR") == PACKTER_TRUE){
+		packter_addstring_hash(mesg, "MONITOR");
+	}
+	else {
+		packter_addstring(mesg, " Observed:");
+	}
+	packter_addfloat(mesg, mon_th);
+
+	/* PACKTERMESG for Thershold Variable */
+	if (packter_is_exist_key("THRESHOLD") == PACKTER_TRUE){
+		packter_addstring_hash(mesg, "THRESHOLD");
+	}
+	else {
+		packter_addstring(mesg, " Threshold:");
+	}
+	packter_addfloat(mesg, given_th);
+
+	/* PACKTERVOICE */
+	if (packter_is_exist_key(mon_voice) == PACKTER_TRUE){
+		packter_addstring_hash(voice, mon_voice);
+	}
 	return alert;
 }
 
@@ -912,6 +955,34 @@ packter_addstring_hash(char *buf, char *key)
 				strncpy(buf, tmp, PACKTER_BUFSIZ);
 		}
 	}
+}
+
+int
+packter_is_exist_key(char *key)
+{
+	int ret = PACKTER_FALSE;
+	char *val;
+
+	do {
+		if (key == NULL){
+			break;
+		}
+
+		val = (char *)g_hash_table_lookup(config, key);
+		if (val == NULL){
+			break;
+		}
+
+		if (strlen(val) < 1){
+			break;
+		}
+
+		ret = PACKTER_TRUE;
+
+	} while(0);
+
+	return ret;
+
 }
 
 void
@@ -991,4 +1062,22 @@ void generate_hash6(unsigned char *packet, int caplen, char *mesgbuf)
     digest[8], digest[9], digest[10], digest[11],
     digest[12], digest[13], digest[14], digest[15]);
 
+}
+
+void packter_sig_handler(int sig){
+	switch(sig){
+		case SIGHUP:
+			g_hash_table_destroy(config);			
+			config = g_hash_table_new((GHashFunc)g_str_hash, (GCompareFunc)g_str_equal);
+			if (packter_config_parse(configfile) < 0){
+				printf("reload configfile failed\n");
+			}
+			else {
+				printf("reload configfile succeeded\n");
+			}
+			break;
+		default:
+			break;
+	}
+	return;
 }
