@@ -382,7 +382,7 @@ packter_usage(void)
 	printf("      -T [ Traceback Client ] (optional)\n");
 	printf("      -s ( enable PACKERSE: optional)\n");
 	printf("      [ pcap filter expression ] (optional)\n");
-	printf("      (if -s specified, then [ UNIX domain socket path ]) \n");
+	printf("      (if -u specified, then [ UNIX domain socket path ]) \n");
 	printf("\n");
 	printf(" ex) %s -v 192.168.1.1 \"port not 11300 and port not 22\"\n", progname);
 	printf("\n");
