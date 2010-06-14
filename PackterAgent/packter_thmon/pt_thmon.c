@@ -606,7 +606,7 @@ packter_analy()
 
 		if (enable_sound == PACKTER_TRUE){
 			/* PACKTERSOUND uses no footer, but codes are prepared */
-			if (packter_is_exist_key("MON_OPT_SOUND") == PACKTER_TRUE){
+			if (packter_is_exist_key("MON_OPT_SOUND_FOOT") == PACKTER_TRUE){
 				packter_addstring_hash(voice, "MON_OPT_SOUND");
 			}
 			packter_send(sound);
@@ -892,22 +892,39 @@ int packter_generate_alert(int alert, char *mesg, char *sound, char *voice, char
 	memset((void *)tmp, '\0', PACKTER_BUFSIZ);
 
   if (alert == PACKTER_FALSE){
-		/* PACKTERSOUND called at once */
-		if (packter_is_exist_key(mon_sound) == PACKTER_TRUE){
-			packter_addstring_hash(sound, mon_sound);
-		}
+		/*
+		 * PACKTERMESG
+		 * PIC,CONTENT(HEAD+BODY+FOOT)
+		 */
 
 		/* PIC for PACKTERMESG called at once */
 		if (packter_is_exist_key(mon_pic) == PACKTER_TRUE){
 			packter_addstring_hash(mesg, mon_pic);
 		}
 		packter_addstring(mesg, ",");
-
 		/* Header for PACKTERMESG called at once */
 		if (packter_is_exist_key("MON_OPT_MSG_HEAD") == PACKTER_TRUE){
     	packter_addstring_hash(mesg, "MON_OPT_MSG_HEAD");
 		}
 
+		/*
+		 * PACKTERSOUND
+		 * PLAYTIME,FILENAME(HEAD+BODY+FOOT)
+		 */
+
+		/* Header for PACKTERSOUND called at once */
+		if (packter_is_exist_key("MON_OPT_SOUND_HEAD") == PACKTER_TRUE){
+			packter_addstring_hash(voice, "MON_OPT_SOUND_HEAD");
+		}
+		/* PACKTERSOUND called at once */
+		if (packter_is_exist_key(mon_sound) == PACKTER_TRUE){
+			packter_addstring_hash(sound, mon_sound);
+		}
+
+		/*
+		 * PACKTERVOICE
+		 * CONTENT(HEAD+BODY+FOOT)
+		 */		
 		/* Header for PACKTERVOICE called at once */
 		if (packter_is_exist_key("MON_OPT_VOICE_HEAD") == PACKTER_TRUE){
 			packter_addstring_hash(voice, "MON_OPT_VOICE_HEAD");
