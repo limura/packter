@@ -195,6 +195,12 @@ int main(int argc, char *argv[])
 		packter_usage();
 	}
 
+	/* If no threshold specified */
+	if (th.rate_syn < 0 && th.rate_fin < 0 && th.rate_rst < 0 &&
+			th.rate_udp < 0 && th.rate_icmp < 0 && th.rate_pps < 0){
+		printf("*** No threhold is givn : %s will not alert to viewer. ***\n", progname);
+	}
+
 #ifdef USE_INET6
 	if (use6 == PACKTER_TRUE){
 		if ((sock = socket(PF_INET6, SOCK_DGRAM, 0)) < 0){
