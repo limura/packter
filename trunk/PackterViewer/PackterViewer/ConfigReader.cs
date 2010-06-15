@@ -29,6 +29,7 @@ namespace PackterViewer
         Microsoft.Xna.Framework.Graphics.Color bgColor = Microsoft.Xna.Framework.Graphics.Color.CornflowerBlue;
         string htmlConvertToCurrentWidthTarget = null;
         string htmlConvertToCurrentHeightTarget = null;
+        int maxSENum = 10;
 
         public float DefaultScale
         {
@@ -111,6 +112,10 @@ namespace PackterViewer
         public string HtmlConvertToCurrentHeightTarget
         {
             get { return htmlConvertToCurrentHeightTarget; }
+        }
+        public int MaxSENum
+        {
+            get { return maxSENum; }
         }
 
         bool ConvertToFloat(string str, out float val)
@@ -220,6 +225,12 @@ namespace PackterViewer
                         htmlConvertToCurrentHeightTarget = value;
                         i++; continue;
                     }
+
+                    if (key == "/maxsenum" && !string.IsNullOrEmpty(value))
+                    {
+                        maxSENum = int.Parse(value);
+                        i++; continue;
+                    }
                 }
 
                 if (key == "/enableskydome")
@@ -254,7 +265,7 @@ namespace PackterViewer
                         key = key.Trim();
                         key = key.ToLower();
                         float tmpFloat = 0.0f;
-                        //value.Trim();
+                        value = value.Trim();
                         switch (key)
                         {
                             case "size":
@@ -341,7 +352,6 @@ namespace PackterViewer
                                 break;
                             case "htmlconverttarget":
                                 if(!string.IsNullOrEmpty(value)){
-                                    value = value.Trim();
                                     if (value.IndexOf(' ') > 0)
                                     {
                                         string[] keyValue = value.Split(new char[] { ' ' }, 2);
@@ -353,7 +363,6 @@ namespace PackterViewer
                                 }
                                 break;
                             case "htmlconverttocurrentdirtarget":
-                                value = value.Trim();
                                 if (!string.IsNullOrEmpty(value))
                                 {
                                     htmlConvertToCurrentDirTarget = value;
@@ -361,23 +370,31 @@ namespace PackterViewer
                                 break;
 
                             case "enableskydome":
-                                if(!string.IsNullOrEmpty(value) && value.ToLower() == "true"){
-                                    skydomeEnabled = true;
+                                if(!string.IsNullOrEmpty(value)){
+                                    if (value.ToLower() == "true")
+                                    {
+                                        skydomeEnabled = true;
+                                    }
                                 }
                                 break;
                             case "skydometexture":
-                                if (!string.IsNullOrEmpty(value) && System.IO.File.Exists(value))
+                                if (!string.IsNullOrEmpty(value))
                                 {
-                                    skydomeEnabled = true;
-                                    skydomeTexture = value;
+                                    if (System.IO.File.Exists(value))
+                                    {
+                                        skydomeEnabled = true;
+                                        skydomeTexture = value;
+                                    }
                                 }
                                 break;
                             case "bgcolor":
-                                bgColor = PhaseColor(value, bgColor);
+                                if (!string.IsNullOrEmpty(value))
+                                {
+                                    bgColor = PhaseColor(value, bgColor);
+                                }
                                 break;
 
                             case "htmlconverttocurrentwidthtarget":
-                                value = value.Trim();
                                 if (!string.IsNullOrEmpty(value))
                                 {
                                     htmlConvertToCurrentWidthTarget = value;
@@ -385,10 +402,20 @@ namespace PackterViewer
                                 break;
 
                             case "htmlconverttocurrentheighttarget":
-                                value = value.Trim();
                                 if (!string.IsNullOrEmpty(value))
                                 {
                                     htmlConvertToCurrentHeightTarget = value;
+                                }
+                                break;
+                                
+                            case "maxsenum":
+                                if (!string.IsNullOrEmpty(value))
+                                {
+                                    int num = int.Parse(value);
+                                    if (num > 0)
+                                    {
+                                        maxSENum = num;
+                                    }
                                 }
                                 break;
 
