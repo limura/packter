@@ -42,6 +42,7 @@ namespace WinFormsGraphicsDevice
         System.Threading.Thread seThread = null;
         System.Threading.Mutex seMutex = new System.Threading.Mutex();
         List<string> seQueue = new List<string>();
+        List<WMPLib.WindowsMediaPlayer> sePlayers = new List<WMPLib.WindowsMediaPlayer>();
 
         public MainForm(string[] args)
         {
@@ -262,6 +263,16 @@ namespace WinFormsGraphicsDevice
 
         void SeThreadMain()
         {
+            for (int i = 0; i < configReader.MaxSENum; i++)
+            {
+                WMPLib.WindowsMediaPlayer player = new WMPLib.WindowsMediaPlayer();
+                if (player != null)
+                {
+                    player.settings.autoStart = true;
+                    sePlayers.Add(player);
+                }
+            }
+
             while (true)
             {
                 seMutex.WaitOne();
@@ -277,33 +288,29 @@ namespace WinFormsGraphicsDevice
             }
         }
 
-        HashSet<object> audioPlayHashSet = new HashSet<object>();
-        void stopAudioEventHandler(object obj, System.EventArgs args)
-        {
-            audioPlayHashSet.Remove(obj);
-        }
         void PlayAudioInThread(string filename)
         {
             if (string.IsNullOrEmpty(filename) || !System.IO.File.Exists(filename))
             {
                 return;
             }
-            Microsoft.DirectX.AudioVideoPlayback.Audio audio = null;
-            try
+            for (int i = 0; i < sePlayers.Count; i++)
             {
-                audio = new Microsoft.DirectX.AudioVideoPlayback.Audio(filename);
+                try
+                {
+                    if (sePlayers[i] != null && sePlayers[i].playState != WMPLib.WMPPlayState.wmppsPlaying)
+                    {
+                        sePlayers[i].close();
+                        sePlayers[i].URL = filename;
+                        break;
+                    }
+                }
+                catch (System.Runtime.InteropServices.COMException)
+                {
+                    // –³Ž‹‚·‚é
+                    return;
+                }
             }
-            catch
-            {
-                return;
-            }
-            if (audio == null)
-            {
-                return;
-            }
-            audio.Play();
-            audioPlayHashSet.Add(audio);
-            audio.Ending += new System.EventHandler(stopAudioEventHandler);
         }
 
         void webBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
