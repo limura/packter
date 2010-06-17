@@ -91,3 +91,8 @@
 # default は null です。
 #HtmlConvertToCurrentHeightTarget = <HTMLHEIGHT>
 
+# MaxSENum
+# PACKTERSE で再生するSEで同時に再生出来る数を指定します。
+# default は 10 です。
+#MaxSENum = 10
+
