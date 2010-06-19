@@ -30,6 +30,9 @@ namespace PackterViewer
         string htmlConvertToCurrentWidthTarget = null;
         string htmlConvertToCurrentHeightTarget = null;
         int maxSENum = 10;
+        string xACTFileForAudioEngine = null;
+        string xACTFileForWaveBank = null;
+        string xACTFileForSoundBank = null;
 
         public float DefaultScale
         {
@@ -116,6 +119,22 @@ namespace PackterViewer
         public int MaxSENum
         {
             get { return maxSENum; }
+        }
+        public bool XACTEnabled
+        {
+            get { return xACTFileForAudioEngine != null && xACTFileForSoundBank != null && xACTFileForWaveBank != null; }
+        }
+        public string XACTFileForAudioEngine
+        {
+            get { return xACTFileForAudioEngine; }
+        }
+        public string XACTFileForWaveBank
+        {
+            get { return xACTFileForWaveBank; }
+        }
+        public string XACTFileForSoundBank
+        {
+            get { return xACTFileForSoundBank; }
         }
 
         bool ConvertToFloat(string str, out float val)
@@ -416,6 +435,24 @@ namespace PackterViewer
                                     {
                                         maxSENum = num;
                                     }
+                                }
+                                break;
+                            case "xactfileforaudioengine":
+                                if (!string.IsNullOrEmpty(value) && System.IO.File.Exists(value))
+                                {
+                                    xACTFileForAudioEngine = value;
+                                }
+                                break;
+                            case "xactfileforwavebank":
+                                if (!string.IsNullOrEmpty(value) && System.IO.File.Exists(value))
+                                {
+                                    xACTFileForWaveBank = value;
+                                }
+                                break;
+                            case "xactfileforsoundbank":
+                                if (!string.IsNullOrEmpty(value) && System.IO.File.Exists(value))
+                                {
+                                    xACTFileForSoundBank = value;
                                 }
                                 break;
 

@@ -43,6 +43,9 @@ namespace WinFormsGraphicsDevice
         System.Threading.Mutex seMutex = new System.Threading.Mutex();
         List<string> seQueue = new List<string>();
         List<WMPLib.WindowsMediaPlayer> sePlayers = new List<WMPLib.WindowsMediaPlayer>();
+        Microsoft.Xna.Framework.Audio.AudioEngine audioEngine = null;
+        Microsoft.Xna.Framework.Audio.WaveBank waveBank = null;
+        Microsoft.Xna.Framework.Audio.SoundBank soundBank = null;
 
         public MainForm(string[] args)
         {
@@ -71,6 +74,22 @@ namespace WinFormsGraphicsDevice
 
             seThread = new System.Threading.Thread(new System.Threading.ThreadStart(SeThreadMain));
             seThread.Start();
+
+            if (configReader.XACTEnabled)
+            {
+                audioEngine = new Microsoft.Xna.Framework.Audio.AudioEngine(configReader.XACTFileForAudioEngine);
+                waveBank = new Microsoft.Xna.Framework.Audio.WaveBank(audioEngine, configReader.XACTFileForWaveBank);
+                soundBank = new Microsoft.Xna.Framework.Audio.SoundBank(audioEngine, configReader.XACTFileForSoundBank);
+            }
+
+            System.Windows.Forms.Application.Idle += delegate
+            {
+                Invalidate();
+                if (audioEngine != null)
+                {
+                    audioEngine.Update();
+                }
+            };
         }
 
         void bgmTimer_Tick(object sender, System.EventArgs e)
@@ -256,9 +275,21 @@ namespace WinFormsGraphicsDevice
 
         void PlayAudio(string filename)
         {
-            seMutex.WaitOne();
-            seQueue.Add(filename);
-            seMutex.ReleaseMutex();
+            if (soundBank != null && !string.IsNullOrEmpty(filename))
+            {
+                try
+                {
+                    soundBank.PlayCue(filename);
+                    return;
+                }
+                catch
+                {
+                    // soundBank ‚É–³‚¯‚ê‚Î WindowsMediaPlayer‘¤‚Å–Â‚ç‚·
+                    seMutex.WaitOne();
+                    seQueue.Add(filename);
+                    seMutex.ReleaseMutex();
+                }
+            }
         }
 
         void SeThreadMain()
