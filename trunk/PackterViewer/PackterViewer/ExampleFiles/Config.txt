@@ -96,3 +96,16 @@
 # default は 10 です。
 #MaxSENum = 10
 
+# SE Settings
+# PACKTERSE で再生される音声を XACT で作成したものを使う場合、以下の三つのファイルを指定する必要があります。
+# XACTFileForAudioEngine AudioEngine に渡される XACT DataFile (.xgs)
+# XACTFileForWaveBank WaveBank に渡される XACT DataFile (.xwb)
+# XACTFileForSoundBank SoundBank に渡される XACT DataFile (.xsb)
+# default ではそれぞれ null です。
+# ここで指定されたサウンドを鳴らす場合には PACKTERSE には Cue Name で指定してください。
+# また、XACT での同時再生数は MaxSENum にはよらず、環境依存です。
+#XACTFileForAudioEngine = SoundProject.xgs
+#XACTFileForWaveBank = Wave Bank.xwb
+#XACTFileForSoundBank = Sound Bank.xsb
+
+
