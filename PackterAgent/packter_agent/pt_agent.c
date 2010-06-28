@@ -593,7 +593,7 @@ packter_tcp(u_char *p, u_int len, char *srcip, char *dstip, int flag, char *mesg
 	if (enable_sound == PACKTER_TRUE){
 		char se[PACKTER_BUFSIZ];
 		memset((void *)&se, '\0', PACKTER_BUFSIZ);
-		snprintf(se, PACKTER_BUFSIZ, "%sse%d.wav", PACKTER_SE, flag);
+		snprintf(se, PACKTER_BUFSIZ, "%sse%02d", PACKTER_SE, flag + 1);
 		packter_send(se);
 	}
 
@@ -626,7 +626,7 @@ packter_udp(u_char *p, u_int len, char *srcip, char *dstip, int flag, char *mesg
 	if (enable_sound == PACKTER_TRUE){
 		char se[PACKTER_BUFSIZ];
 		memset((void *)&se, '\0', PACKTER_BUFSIZ);
-		snprintf(se, PACKTER_BUFSIZ, "%sse%d.wav", PACKTER_SE, flag);
+		snprintf(se, PACKTER_BUFSIZ, "%sse%02d", PACKTER_SE, flag + 1);
 		packter_send(se);
 	}
 
@@ -659,7 +659,7 @@ packter_icmp(u_char *p, u_int len, char *srcip, char *dstip, int flag, char *mes
 	if (enable_sound == PACKTER_TRUE){
 		char se[PACKTER_BUFSIZ];
 		memset((void *)&se, '\0', PACKTER_BUFSIZ);
-		snprintf(se, PACKTER_BUFSIZ, "%sse%d.wav", PACKTER_SE, flag);
+		snprintf(se, PACKTER_BUFSIZ, "%sse%02d", PACKTER_SE, flag + 1);
 		packter_send(se);
 	}
 
@@ -694,7 +694,7 @@ void packter_icmp6(u_char *p, u_int len, char *srcip, char *dstip, int flag, cha
 	if (enable_sound == PACKTER_TRUE){
 		char se[PACKTER_BUFSIZ];
 		memset((void *)&se, '\0', PACKTER_BUFSIZ);
-		snprintf(se, PACKTER_BUFSIZ, "%sse%d.wav", PACKTER_SE, flag);
+		snprintf(se, PACKTER_BUFSIZ, "%sse%02d", PACKTER_SE, flag + 1);
 		packter_send(se);
 	}
 
