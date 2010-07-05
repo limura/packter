@@ -237,9 +237,41 @@ namespace Packter_viewer2
         // んで、存在しなかったら board.x の Model を入れる。
         private void LoadPacketModelList(Model defaultModel)
         {
-            for(int num = 0; num < 10; num++)
+            int maxNum = 10; // 最低でも 10 は初期に定義される
+            while (true)
             {
-                string targetFileName = string.Format("packter{0,0:D2}.x", num + 1);
+                string targetFileName = "";
+                if (maxNum < 99)
+                {
+                    // 10 から 99 までは 01, 02, 03, ... という感じ
+                    targetFileName = string.Format("packter{0,0:D2}.x", maxNum + 1);
+                }
+                else
+                {
+                    // 100 からは 100, 101, ..., 999, 1000, 1001, ... という感じ
+                    targetFileName = string.Format("packter{0}.x", maxNum + 1);
+                }
+                if (!System.IO.File.Exists(targetFileName))
+                {
+                    break;
+                }
+                maxNum++;
+            }
+            if (maxNum < 10)
+            {
+                maxNum = 10;
+            }
+            for(int num = 0; num < maxNum; num++)
+            {
+                string targetFileName = "";
+                if (maxNum < 99)
+                {
+                    targetFileName = string.Format("packter{0,0:D2}.x", num + 1);
+                }
+                else
+                {
+                    targetFileName = string.Format("packter{0}.x", num + 1);
+                }
                 Model tmpModel = contentLoader.GetModel(targetFileName);
                 if (tmpModel != null)
                 {
@@ -577,7 +609,7 @@ namespace Packter_viewer2
                 FlyPacket packet = new FlyPacket(
                     rnd.Next(65535) / 65535.0f, rnd.Next(65535) / 65535.0f
                     , rnd.Next(65535) / 65535.0f, rnd.Next(65535) / 65535.0f
-                    , (byte)(rnd.Next(10)), "Test Packet", gameTime);
+                    , (byte)(rnd.Next(packetModelList.Count)), "Test Packet", gameTime);
                 AddPacketBoard(packet);
             }
 
