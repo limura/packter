@@ -1,109 +1,84 @@
-ï»¿# Size: æµã‚Œã‚‹ãƒ‘ã‚±ãƒƒãƒˆã®å¤§ãã•ã‚’æŒ‡å®šã—ã¾ã™ã€‚default: 8
+#
+# 2010/06/10: ƒCƒxƒ“ƒg‚É‚Äg—p
+# 2010/07/13: ÅV‚Ìİ’è‚É‡‚í‚¹‚Ä‰ü—Ç
+#
+# PackterViewer /EnableSkyDome Config.txt.sample
+# ‚É‚Ä‹N“®
+#
+
+# Size: —¬‚ê‚éƒpƒPƒbƒg‚Ì‘å‚«‚³‚ğw’è‚µ‚Ü‚·Bdefault: 8
 #Size = 8
 
-# Softalk: PACKTERVOICE ã§æŒ‡å®šã•ã‚ŒãŸæ–‡å­—åˆ—ã‚’æ¸¡ã•ã‚Œã‚‹ã‚³ãƒãƒ³ãƒ‰ã€‚default: softalk\\softalkw.exe
-#Softalk = softalk\\softalkw.exe
+# Softalk: PACKTERVOICE ‚Åw’è‚³‚ê‚½•¶š—ñ‚ğ“n‚³‚ê‚éƒRƒ}ƒ“ƒhBdefault: softalk/softalkw.exe
+#Softalk = softalk/softalkw.exe
+Softalk = softalk\\softalkw.exe
 
-
-# PackterMsgFormat1: PACKTERMSG ã§æ¸¡ã•ã‚ŒãŸæ–‡å­—åˆ—éƒ¨åˆ†ã®å‰ã«æŒ¿å…¥ã•ã‚Œã‚‹ã‚‚ã®ã€‚
+# PackterMsgFormat1: PACKTERMSG ‚Å“n‚³‚ê‚½•¶š—ñ•”•ª‚Ì‘O‚É‘}“ü‚³‚ê‚é‚à‚ÌB
 # default: <html lang="ja"><body>
-#PackterMsgFormat1 = <html lang="ja"><body>
-PackterMSGFormat1 = <html><head><style type="text/css"><!-- body { font-family: verdana,ãƒ¡ã‚¤ãƒªã‚ª; } --> </style></head><body font-family="verdana,arial,sans-serif"><table><tr><td width="80"></td><td align="left">
+PackterMSGFormat1 = <html><head><style type="text/css"><!-- body { font-family: verdana,ƒƒCƒŠƒI; } --> </style></head><body font-family="verdana,arial,sans-serif"><table><tr><td width="80"></td><td align="left">
 
-# PackterMsgFormat2: PACKTERMSG ã§æ¸¡ã•ã‚ŒãŸæ–‡å­—åˆ—éƒ¨åˆ†ã®å¾Œã«æŒ¿å…¥ã•ã‚Œã‚‹ã‚‚ã®
+# PackterMsgFormat2: PACKTERMSG ‚Å“n‚³‚ê‚½•¶š—ñ•”•ª‚ÌŒã‚É‘}“ü‚³‚ê‚é‚à‚Ì
 # default: </body></html>
 #PackterMsgFormat2 = </body></html>
 PackterMSGFormat2 = </tr></table></body></html>
 
-# MsgBoxCloseTimeSec: PACKTERMSG ã§è¡¨ç¤ºã•ã‚ŒãŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãŒé–‰ã˜ã‚‹ã¾ã§ã®æ™‚é–“(ç§’)ã€‚default: 10(ç§’)
+# HtmlConvertTarget: PACKTERMSG ‚Å“n‚³‚ê‚½ HTML ƒƒbƒZ[ƒW‚ğ•ÏŠ·‚·‚é‚à‚Ì
+# default: (‚È‚µ)
+#
+HtmlConvertTarget = <pic-m1> <img src="file:///<CURRENTDIR>/pic01.png" height="150" align="top"></td><td width="1200" align="center">
+HtmlConvertTarget = <pic-m2> <img src="file:///<CURRENTDIR>/pic02.png" height="150" align="top"></td><td width="1200" align="center">
+HtmlConvertTarget = <pic-m3> <img src="file:///<CURRENTDIR>/pic03.png" height="150" align="top"></td><td width="1200" align="center">
+HtmlConvertTarget = <pic-m4> <img src="file:///<CURRENTDIR>/pic04.png" height="150" align="top"></td><td width="1200" align="center">
+HtmlConvertTarget = <pic-f1> <img src="file:///<CURRENTDIR>/pic05.png" height="150" align="top"></td><td width="1200" align="center">
+HtmlConvertTarget = <pic-f2> <img src="file:///<CURRENTDIR>/pic06.png" height="150" align="top"></td><td width="1200" align="center">
+HtmlConvertTarget = <pic-f3> <img src="file:///<CURRENTDIR>/pic07.png" height="150" align="top"></td><td width="1200" align="center">
+HtmlConvertTarget = <pic-f4> <img src="file:///<CURRENTDIR>/pic08.png" height="150" align="top"></td><td width="1200" align="center">
+HtmlConvertToCurrentDirTarget = <CURRENTDIR>
+
+# MsgBoxCloseTimeSec: PACKTERMSG ‚Å•\¦‚³‚ê‚½ƒƒbƒZ[ƒW‚ª•Â‚¶‚é‚Ü‚Å‚ÌŠÔ(•b)Bdefault: 10(•b)
 #MsgBoxCloseTimeSec = 10
 MsgBoxCloseTimeSec = 8
 
-# LoadPacketTarget: æµã‚Œã‚‹ãƒ‘ã‚±ãƒƒãƒˆã®å½¢çŠ¶ã‚’æŒ‡å®šã—ã¾ã™ã€‚ball ã¨ board ã®ã¿ãŒä½¿ç”¨ã§ãã¾ã™ã€‚
-# ç†è§£ã§ããªã„ã‚‚ã®ã¯ ball ã¨ã—ã¦åˆ¤å®šã•ã‚Œã¾ã™ã€‚default: ball
-#LoadPacketTarget = ball
+# LoadPacketTarget: —¬‚ê‚éƒpƒPƒbƒg‚ÌŒ`ó‚ğw’è‚µ‚Ü‚·Bball ‚Æ board ‚Ì‚İ‚ªg—p‚Å‚«‚Ü‚·B
+# —‰ğ‚Å‚«‚È‚¢‚à‚Ì‚Í ball ‚Æ‚µ‚Ä”»’è‚³‚ê‚Ü‚·Bdefault: ball
 LoadPacketTarget = ball
 
-# SenderBoardFile: é€ä¿¡å´ã«è¡¨ç¤ºã•ã‚Œã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® .x ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æŒ‡å®šã—ã¾ã™ã€‚default ã§ã¯æœªè¨­å®šã§ã™
+# SenderBoardFile: ‘—M‘¤‚É•\¦‚³‚ê‚éƒIƒuƒWƒFƒNƒg‚Ì .x ƒtƒ@ƒCƒ‹‚ğw’è‚µ‚Ü‚·Bdefault ‚Å‚Í–¢İ’è‚Å‚·
 #SenderBoardFile = 
 
-# ReceiverBoardFile: å—ä¿¡å´ã«è¡¨ç¤ºã•ã‚Œã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® .x ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æŒ‡å®šã—ã¾ã™ã€‚default ã§ã¯æœªè¨­å®šã§ã™
+# ReceiverBoardFile: óM‘¤‚É•\¦‚³‚ê‚éƒIƒuƒWƒFƒNƒg‚Ì .x ƒtƒ@ƒCƒ‹‚ğw’è‚µ‚Ü‚·Bdefault ‚Å‚Í–¢İ’è‚Å‚·
 #ReceiverBoardFile = 
 
-# SenderBoardScale: é€ä¿¡å´ã«è¡¨ç¤ºã•ã‚Œã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æ‹¡å¤§ç‡ã‚’æŒ‡å®šã—ã¾ã™ã€‚default ã§ã¯ 1.0 ã§ã™
+# SenderBoardScale: ‘—M‘¤‚É•\¦‚³‚ê‚éƒIƒuƒWƒFƒNƒg‚ÌŠg‘å—¦‚ğw’è‚µ‚Ü‚·Bdefault ‚Å‚Í 1.0 ‚Å‚·
 #SenderBoardScale = 1.0
 
-# ReceiverBoardScale: å—ä¿¡å´ã«è¡¨ç¤ºã•ã‚Œã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æ‹¡å¤§ç‡ã‚’æŒ‡å®šã—ã¾ã™ã€‚default ã§ã¯ 1.0 ã§ã™
+# ReceiverBoardScale: óM‘¤‚É•\¦‚³‚ê‚éƒIƒuƒWƒFƒNƒg‚ÌŠg‘å—¦‚ğw’è‚µ‚Ü‚·Bdefault ‚Å‚Í 1.0 ‚Å‚·
 #ReceiverBoardScale = 1.0
 
-# SenderBoardTextureFile: é€ä¿¡å´ã«è¡¨ç¤ºã•ã‚Œã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’æŒ‡å®šã—ã¾ã™ã€‚default ã§ã¯æœªè¨­å®šã§ã™
+# SenderBoardTextureFile: ‘—M‘¤‚É•\¦‚³‚ê‚éƒIƒuƒWƒFƒNƒg‚ÌƒeƒNƒXƒ`ƒƒ‚ğw’è‚µ‚Ü‚·Bdefault ‚Å‚Í–¢İ’è‚Å‚·
 #SenderBoardTextureFile =
 
-# ReceiverBoardTextureFile: å—ä¿¡å´ã«è¡¨ç¤ºã•ã‚Œã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’æŒ‡å®šã—ã¾ã™ã€‚default ã§ã¯æœªè¨­å®šã§ã™
+# ReceiverBoardTextureFile: óM‘¤‚É•\¦‚³‚ê‚éƒIƒuƒWƒFƒNƒg‚ÌƒeƒNƒXƒ`ƒƒ‚ğw’è‚µ‚Ü‚·Bdefault ‚Å‚Í–¢İ’è‚Å‚·
 #ReceiverBoardTextureFile =
 
-# TickKeyInputAcceptMicrosecond: ã¨ã¦ã‚‚çŸ­ã„ã‚­ãƒ¼å…¥åŠ›(KeyDown -> KeyUp ã¾ã§ã®æ™‚é–“)ãŒçŸ­ã„å ´åˆã€
-# Bã‚­ãƒ¼ ã¨ Fã‚­ãƒ¼ ã®åŠ¹æœã‚’å¼·åŒ–ã™ã‚‹æ©Ÿèƒ½ã®ã€ŒçŸ­ã„ã€ã¨åˆ¤æ–­ã™ã‚‹ãŸã‚ã®æ™‚é–“(ãƒã‚¤ã‚¯ãƒ­ç§’)ã€‚default: 50000(ãƒã‚¤ã‚¯ãƒ­ç§’)
-#TickKeyInputAcceptMicrosecond = 50000
+# TickKeyInputAcceptMicrosecond: ‚Æ‚Ä‚à’Z‚¢ƒL[“ü—Í(KeyDown -> KeyUp ‚Ü‚Å‚ÌŠÔ)‚ª’Z‚¢ê‡A
+# BƒL[ ‚Æ FƒL[ ‚ÌŒø‰Ê‚ğ‹­‰»‚·‚é‹@”\‚Ìu’Z‚¢v‚Æ”»’f‚·‚é‚½‚ß‚ÌŠÔ(ƒ}ƒCƒNƒ•b)Bdefault: 50000(ƒ}ƒCƒNƒ•b)
 TickKeyInputAcceptMicrosecond = 50000
 
-# HtmlConvertTarget
-# PACKTERHTML ã‚„ PACKTERMSG ã§å…¥åŠ›ã•ã‚ŒãŸ IEã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ ã«æ¸¡ã•ã‚Œã‚‹æ–‡å­—åˆ—ã‚’ã€
-# æ–‡å­—åˆ—ï¼‘ æ–‡å­—åˆ—ï¼’ ã¨ã‚ã£ãŸã‚‰ã€æ–‡å­—åˆ—ï¼‘ ã®ã‚‚ã®ã‚’ æ–‡å­—åˆ—ï¼’ ã«ç½®ãæ›ãˆã¾ã™ã€‚
-# ã“ã“ã®ä¾‹ã«ç¤ºã•ã‚Œã¦ã„ã‚‹ã‚‚ã®ã ã£ãŸå ´åˆã€
-# <img src="<HOGE>">
-# ã¯ã€
-# <img src="file:///c:/tmp/img.png">
-# ã¨æ›¸ãæ›ãˆã‚‰ã‚Œã¾ã™ã€‚
-# ã¾ãŸã€HtmlConvertTarget ã¯è¤‡æ•°æŒ‡å®šã§ãã¾ã™ã€‚
-# default ã¯ç„¡æŒ‡å®šã§ã™ã€‚
-#HtmlConvertTarget = <HOGE> file:///c:/tmp/img.png
-#HtmlConvertTarget = <HAGE> file:///c:/tmp/img2.png
-HtmlConvertTarget = <pic-m1> <img src="file:///<CURRENTDIR>/pic01.png" height="150" align="top"></td><td width="<HTMLWIDTH>-<HTMLHEIGHT>*2" align="center">
-HtmlConvertTarget = <pic-m2> <img src="file:///<CURRENTDIR>/pic02.png" height="150" align="top"></td><td width="<HTMLWIDTH>-<HTMLHEIGHT>*2" align="center">
-HtmlConvertTarget = <pic-m3> <img src="file:///<CURRENTDIR>/pic03.png" height="150" align="top"></td><td width="<HTMLWIDTH>-<HTMLHEIGHT>*2" align="center">
-HtmlConvertTarget = <pic-m4> <img src="file:///<CURRENTDIR>/pic04.png" height="150" align="top"></td><td width="<HTMLWIDTH>-<HTMLHEIGHT>*2" align="center">
-HtmlConvertTarget = <pic-f1> <img src="file:///<CURRENTDIR>/pic05.png" height="150" align="top"></td><td width="<HTMLWIDTH>-<HTMLHEIGHT>*2" align="center">
-HtmlConvertTarget = <pic-f2> <img src="file:///<CURRENTDIR>/pic06.png" height="150" align="top"></td><td width="<HTMLWIDTH>-<HTMLHEIGHT>*2" align="center">
-HtmlConvertTarget = <pic-f3> <img src="file:///<CURRENTDIR>/pic07.png" height="150" align="top"></td><td width="<HTMLWIDTH>-<HTMLHEIGHT>*2" align="center">
-HtmlConvertTarget = <pic-f4> <img src="file:///<CURRENTDIR>/pic08.png" height="150" align="top"></td><td width="<HTMLWIDTH>-<HTMLHEIGHT>*2" align="center">
 
-# HtmlConvertToCurrentDirTarget
-# PACKTERHTML ã‚„ PACKTERMSG ã§å…¥åŠ›ã•ã‚ŒãŸ IEã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ ã«æ¸¡ã•ã‚Œã‚‹æ–‡å­—åˆ—ã®ã†ã¡ã€
-# ã“ã“ã§æŒ‡å®šã•ã‚ŒãŸæ–‡å­—åˆ—ã‚’ current directory ã‚’ç¤ºã™URI ã«å¤‰æ›ã—ã¾ã™ã€‚
-# ãŸã¨ãˆã°ã€current directory ãŒ c:/tmp ã§ã‚ã‚Œã°ã€
-# file:///c:/tmp/ ã«å¤‰æ›ã•ã‚Œã¾ã™ã€‚(æœ€å¾Œã« / ãŒå…¥ã‚Šã¾ã™)
-# default ã¯ null ã§ã™ã€‚
-#HtmlConvertToCurrentDirTarget = <CURRENTDIR>
-HtmlConvertToCurrentDirTarget = <CURRENTDIR>
+# MaxSENum
+# PACKTERSE ‚ÅÄ¶‚·‚éSE‚Å“¯‚ÉÄ¶o—ˆ‚é”‚ğw’è‚µ‚Ü‚·B
+# default ‚Í 10 ‚Å‚·B
+#MaxSENum = 1
 
-# BgColor
-# èƒŒæ™¯è‰²ã‚’è¨­å®šã—ã¾ã™ã€‚RRGGBB ã®16é€²æ•°ã§æŒ‡å®šã—ã¦ãã ã•ã„ã€‚
-# å¾Œè¿°ã™ã‚‹ EnableSkyDome ã‹ SkyDomeTexture ã®æŒ‡å®šãŒã•ã‚Œã‚‹ã¨ç„¡è¦–ã•ã‚Œã¾ã™
-#BgColor = 002266
-
-# EnableSkyDome
-# "true" ãŒæŒ‡å®šã•ã‚ŒãŸå ´åˆã€æ¨™æº–ã§ç”¨æ„ã•ã‚Œã¦ã„ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ç”¨ã„ã¦èƒŒæ™¯ã‚’æãã¾ã™ã€‚
-#EnableSkyDome = true
-
-# SkyDomeTexture
-# skydome ã«ç”¨ã„ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’æŒ‡å®šã—ã¾ã™ã€‚
-# ãƒ†ã‚¯ã‚¹ãƒãƒ£ã® load ã«æˆåŠŸã—ãŸå ´åˆã€BgColor ã®æŒ‡å®šã¯ç„¡è¦–ã•ã‚Œã€
-# èƒŒæ™¯ã¨ã—ã¦ load ã•ã‚ŒãŸãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒåˆ©ç”¨ã•ã‚Œã¾ã™
-#SkyDomeTexture = texture.png
-
-# HtmlConvertToCurrentWidthTarget
-# PACKTERHTML ã‚„ PACKTERMSG ã§å…¥åŠ›ã•ã‚ŒãŸ IEã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ ã«æ¸¡ã•ã‚Œã‚‹æ–‡å­—åˆ—ã®ã†ã¡ã€
-# ã“ã“ã§æŒ‡å®šã•ã‚ŒãŸæ–‡å­—åˆ—ã‚’ IEã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã® width ã«å¤‰æ›ã—ã¾ã™ã€‚
-# ãŸã¨ãˆã°ã€ç¾åœ¨ã®Windowå¹…ãŒ 100 ã§ã‚ã‚Œã°ã€100 ã«å¤‰æ›ã•ã‚Œã¾ã™ã€‚
-# default ã¯ null ã§ã™ã€‚
-#HtmlConvertToCurrentWidthTarget = <HTMLWIDTH>
-HtmlConvertToCurrentWidthTarget = <HTMLWIDTH>
-
-# HtmlConvertToCurrentHeightTarget
-# PACKTERHTML ã‚„ PACKTERMSG ã§å…¥åŠ›ã•ã‚ŒãŸ IEã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ ã«æ¸¡ã•ã‚Œã‚‹æ–‡å­—åˆ—ã®ã†ã¡ã€
-# ã“ã“ã§æŒ‡å®šã•ã‚ŒãŸæ–‡å­—åˆ—ã‚’ IEã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã® height ã«å¤‰æ›ã—ã¾ã™ã€‚
-# ãŸã¨ãˆã°ã€ç¾åœ¨ã®Windowé«˜ã•ãŒ 100 ã§ã‚ã‚Œã°ã€100 ã«å¤‰æ›ã•ã‚Œã¾ã™ã€‚
-# default ã¯ null ã§ã™ã€‚
-#HtmlConvertToCurrentHeightTarget = <HTMLHEIGHT>
-HtmlConvertToCurrentHeightTarget = <HTMLHEIGHT>
+# SE Settings
+# PACKTERSE ‚ÅÄ¶‚³‚ê‚é‰¹º‚ğ XACT ‚Åì¬‚µ‚½‚à‚Ì‚ğg‚¤ê‡AˆÈ‰º‚ÌO‚Â‚Ìƒtƒ@ƒCƒ‹‚ğw’è‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+# XACTFileForAudioEngine AudioEngine ‚É“n‚³‚ê‚é XACT DataFile (.xgs)
+# XACTFileForWaveBank WaveBank ‚É“n‚³‚ê‚é XACT DataFile (.xwb)
+# XACTFileForSoundBank SoundBank ‚É“n‚³‚ê‚é XACT DataFile (.xsb)
+# default ‚Å‚Í‚»‚ê‚¼‚ê null ‚Å‚·B
+# ‚±‚±‚Åw’è‚³‚ê‚½ƒTƒEƒ“ƒh‚ğ–Â‚ç‚·ê‡‚É‚Í PACKTERSE ‚É‚Í Cue Name ‚Åw’è‚µ‚Ä‚­‚¾‚³‚¢B
+# ‚Ü‚½AXACT ‚Å‚Ì“¯Ä¶”‚Í MaxSENum ‚É‚Í‚æ‚ç‚¸AŠÂ‹«ˆË‘¶‚Å‚·B
+#XACTFileForAudioEngine = Sound Project.xgs
+#XACTFileForWaveBank = Wave Bank.xwb
+#XACTFileForSoundBank = Sound Bank.xsb
