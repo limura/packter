@@ -1,0 +1,11 @@
+Program binary files and source files are distributed under BSD Lisence. 3D Models and pictures are distributed under Creative Commons (CC-BY).  The Packter team would like to thank, in addition to all those who have contributed to the project, the following person and/or organisations.
+
+Kazuya Yuizaki http://xxyui.blog56.fc2.com/
+ * For illustrating PACKTER's characters.
+
+Kain(Nana) http://wikiwiki.jp/orzlabo/
+ * For providing missile meshdata.
+
+Terragen http://www.planetside.co.uk/
+ * For helping us to generate texture of skydome.
+
