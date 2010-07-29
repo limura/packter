@@ -153,7 +153,7 @@ namespace Packter_viewer2
                         , startGameTime.ElapsedRealTime.Add(addTimeSpan)
                         , startGameTime.TotalGameTime.Add(addTimeSpan)
                         , startGameTime.ElapsedGameTime.Add(addTimeSpan));
-                PacketBoard pb = new PacketBoard(targetModel, targetTexture
+                PacketBoard pb = new PacketBoardLay(targetModel, targetTexture
                     , startPoint, endPoint, targetGameTime,  flyMillisecond, "");
                 pb.Alpha = (float)(Math.Cos(i / (double)fogCount * Math.PI / 2) * 0.25);
                 pb.Scale = defaultScale;
@@ -171,13 +171,14 @@ namespace Packter_viewer2
         /// <param name="packet">飛んでいくパケット</param>
         void AddPacketBoard(FlyPacket packet)
         {
+            byte imageNumber = packet.PacketImageNumber;
+            string fileName = packet.PacketImageString;
+            GameTime nowGameTime = packet.CreatedGameTime;
+#if false
             float srcX = packet.SrcAddress;
             float srcY = packet.SrcPort;
             float dstX = packet.DstAddress;
             float dstY = packet.DstPort;
-            byte imageNumber = packet.PacketImageNumber;
-            string fileName = packet.PacketImageString;
-            GameTime nowGameTime = packet.CreatedGameTime;
 
 #if false
             Vector3 startPoint = new Vector3((srcX - 0.5f) * senderBoard.Scale * 2 - defaultScale / 4.0f,
@@ -193,6 +194,7 @@ namespace Packter_viewer2
             
             //System.Diagnostics.Debug.WriteLine("new Packet: " + srcIP + ", " + srcPort + " -> " + endPoint.X + ", " + endPoint.Y + " end: " + endPoint.X + ", " + endPoint.Y);
 
+#endif
             // Model targetModel = packetModel;
             Model targetModel = contentLoader.GetModel(fileName);
             if (targetModel == null)
@@ -204,8 +206,12 @@ namespace Packter_viewer2
             {
                 targetTexture = null;
             }
+#if false
             PacketBoard pb = new PacketBoard(targetModel, targetTexture
                 , startPoint, endPoint, nowGameTime, flyMillisecond, packet.OriginalString);
+#else
+            PacketBoard pb = packet.CreatePacketBoard(targetModel, targetTexture, defaultScale, senderBoard.Position, receiverBoard.Position, flyMillisecond);
+#endif
             pb.Scale = defaultScale;
             // 標準が "board" でないか、標準の model でなければ lighting を true にする
             if (targetModel != packetModel || configReader.LoadPacketTarget != "board")
@@ -214,7 +220,7 @@ namespace Packter_viewer2
             if (keyboardState.IsKeyDown(Keys.P))
             {
                 // Pキーが押されていたら、後ろに怪しい煙をつける
-                AddPacketFog(startPoint, endPoint, nowGameTime);
+                //AddPacketFog(startPoint, endPoint, nowGameTime);
             }
         }
 
@@ -600,16 +606,34 @@ namespace Packter_viewer2
             n++;
             if(JustNowKeyDown(nowKeyState, Keys.A))
             {
-                FlyPacket packet = new FlyPacket((float)((n & 0xff) * 0x10000000) / 4294967296.0f
+                FlyPacket packet = new FlyPacketLay((float)((n & 0xff) * 0x10000000) / 4294967296.0f
                     , (float)((n & 0xff) * 0x100) / 65536.0f, 0.5f, 0.5f, (byte)(n / 10), "Test Packet", gameTime);
                 AddPacketBoard(packet);
             }
             if (nowKeyState.IsKeyDown(Keys.O) == true)
             {
-                FlyPacket packet = new FlyPacket(
+#if false
+                FlyPacket packet = new FlyPacketLay(
                     rnd.Next(65535) / 65535.0f, rnd.Next(65535) / 65535.0f
                     , rnd.Next(65535) / 65535.0f, rnd.Next(65535) / 65535.0f
                     , (byte)(rnd.Next(packetModelList.Count)), "Test Packet", gameTime);
+#else
+                FlyPacket packet = null;
+                if (nowKeyState.IsKeyDown(Keys.LeftShift) == true)
+                {
+                    packet = new FlyPacketBallistic(
+                        rnd.Next(65535) / 65535.0f, 0.0f
+                        , 0.5f, 0.5f
+                        , (byte)(rnd.Next(packetModelList.Count)), "Test Packet", gameTime);
+                }
+                else
+                {
+                    packet = new FlyPacketBallistic(
+                        rnd.Next(65535) / 65535.0f, rnd.Next(65535) / 65535.0f
+                        , 0.5f, 0.5f
+                        , (byte)(rnd.Next(packetModelList.Count)), "Test Packet", gameTime);
+                }
+#endif
                 AddPacketBoard(packet);
             }
 

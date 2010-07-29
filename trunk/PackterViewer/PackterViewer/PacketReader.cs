@@ -27,6 +27,7 @@ namespace Packter_viewer
         public const string VOICETriggerString = "PACKTERVOICE";
         public const string SETriggerString = "PACKTERSE";
         public const string SKYDOMETextureTriggerString = "PACKTERSKYDOMETEXTURE";
+        public const string BallisticTriggerString = "PACKTERBALLISTIC";
 
         Dictionary<string, List<string> > packterStringQueue = new Dictionary<string, List<string> >();
 
@@ -104,9 +105,6 @@ namespace Packter_viewer
             string firstLine = reader.ReadLine();
             switch (firstLine)
             {
-                case PacketReader.BoardTriggerString:
-                    // Ç±ÇÍÇÕç°Ç‹Ç≈ÇÃÉÇÉmÇ»ÇÃÇ≈ÇªÇÃÇ‹Ç‹í Ç∑
-                    break;
                 case PacketReader.HTMLTriggerString: // plain html
                 case PacketReader.MSGTriggerString:  // imgNumber, msgHTML
                 case PacketReader.SOUNDTriggerString:  // soundFileName
@@ -123,19 +121,27 @@ namespace Packter_viewer
                         packterStringQueue[firstLine].Add(splitString[1]);
                     }
                     break;
+                case PacketReader.BallisticTriggerString: // íeìπãOìπ
+                    while (true)
+                    {
+                        FlyPacket packet = new FlyPacketBallistic();
+                        if (packet.SetFromData(reader) == false)
+                            break;
+                        packetQueue.Add(packet);
+                    }
+                    break;
+                case PacketReader.BoardTriggerString: // PACKTER
+                    while (true)
+                    {
+                        FlyPacket packet = new FlyPacketLay();
+                        if (packet.SetFromData(reader) == false)
+                            break;
+                        packetQueue.Add(packet);
+                    }
+                    break;
                 default:
                     // âΩÇ…Ç‡à¯Ç¡Ç©Ç©ÇÁÇ»Ç©Ç¡ÇΩÇÁñ≥éãÇ∑ÇÈ
                     return;
-            }
-            if (firstLine != PacketReader.BoardTriggerString)
-                return;
-
-            while (true)
-            {
-                FlyPacket packet = new FlyPacket();
-                if (packet.SetFromData(reader) == false)
-                    break;
-                packetQueue.Add(packet);
             }
         }
 
