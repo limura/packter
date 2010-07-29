@@ -65,6 +65,8 @@
     <Compile Include="ContentBuilder.cs" />
     <Compile Include="ErrorLogger.cs" />
     <Compile Include="FlyPacket.cs" />
+    <Compile Include="FlyPacketBallistic.cs" />
+    <Compile Include="FlyPacketLay.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -77,6 +79,8 @@
     <Compile Include="GraphicsDeviceService.cs" />
     <Compile Include="ContentLoader.cs" />
     <Compile Include="PacketBoard.cs" />
+    <Compile Include="PacketBoardBallistic.cs" />
+    <Compile Include="PacketBoardLay.cs" />
     <Compile Include="PacketBoardBuffer.cs" />
     <Compile Include="PacketReader.cs" />
     <Compile Include="PackterDisplayControl.cs">

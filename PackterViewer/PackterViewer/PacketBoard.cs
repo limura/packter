@@ -1,143 +1,72 @@
-/*
- * Board class ‚ğg‚Á‚Ä”Âó‚ÌƒeƒNƒXƒ`ƒƒ‚ªn“_‚©‚çI“_‚Ü‚Å”ò‚ñ‚Å‚¢‚­‚Ì‚ğ•\¦‚·‚é‚½‚ß‚Ìclass
- * 
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Åw’è‚³‚ê‚½n“_‚©‚çI“_‚Ü‚ÅAStartTime ‚©‚ç StartTime+FlyTimeMillisecond ‚ÌŠÔ‚Å‚Ü‚Á‚·‚®”ò‚ñ‚Å‚¢‚­B
- */
-using System;
+ï»¿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Packter_viewer
+namespace PackterViewer
 {
-    class PacketBoard : IComparable<PacketBoard>
+    public interface PacketBoard : IComparable<PacketBoard>
     {
-        Vector3 startPoint;
-        Vector3 endPoint;
-        double startTimeMillisecond;
-        float flyTimeMillisecond;
-        string description;
-        bool noSelection = false;
-
-        Board board;
-        
-        public PacketBoard(Model model, Texture2D texture
-            , Vector3 StartPoint, Vector3 EndPoint, GameTime StartTime, float FlyTimeMillisecond
-            , string Description)
+        float Scale
         {
-            board = new Board(model);
-            board.Texture = texture;
-
-            startPoint = StartPoint;
-            endPoint = EndPoint;
-            startTimeMillisecond = StartTime.TotalGameTime.TotalMilliseconds;
-            flyTimeMillisecond = FlyTimeMillisecond;
-            board.Position = StartPoint;
-            description = Description;
-        }
-
-        public float Scale
-        {
-            set { if (board != null) board.Scale = value; }
-            get { if (board != null) return board.Scale; return 0; }
+            set;
+            get;
         }
 
         /// <summary>
-        /// ƒ}ƒEƒX‚ÉŠ´’m‚³‚ê‚é‚©‚Ç‚¤‚©‚ğw’è‚µ‚Ü‚·
+        /// ãƒã‚¦ã‚¹ã«æ„ŸçŸ¥ã•ã‚Œã‚‹ã‹ã©ã†ã‹ã‚’æŒ‡å®šã—ã¾ã™
         /// </summary>
-        public bool NoSelection
+        bool NoSelection
         {
-            get { return noSelection; }
-            set { noSelection = value; }
+            get;
+            set;
         }
 
         /// <summary>
-        /// w¦‚³‚ê‚½ŠÔ‚É•\¦‚³‚ê‚é‚×‚«‚©‚Ç‚¤‚©‚ğ’²‚×A•\¦‚³‚ê‚é‚×‚«‚Å‚ ‚ê‚Î©•ª‚ÌÀ•W‚ğXV‚µ‚Ü‚·
+        /// æŒ‡ç¤ºã•ã‚ŒãŸæ™‚é–“ã«è¡¨ç¤ºã•ã‚Œã‚‹ã¹ãã‹ã©ã†ã‹ã‚’èª¿ã¹ã€è¡¨ç¤ºã•ã‚Œã‚‹ã¹ãã§ã‚ã‚Œã°è‡ªåˆ†ã®åº§æ¨™ã‚’æ›´æ–°ã—ã¾ã™
         /// </summary>
-        /// <param name="nowGameTimeMilliseconds">•\¦‚³‚ê‚éŠÔ</param>
-        /// <returns>•\¦‚³‚ê‚é‚×‚«‚Å‚ ‚Á‚½(0)A•\¦‚³‚ê‚éŠÔ‚æ‚è‚àŒã‚ÌŠÔ‚ğw’è‚³‚ê‚½(1)A•\¦‚³‚ê‚éŠÔ‚æ‚è‚à‘O‚ÌŠÔ‚ğw’è‚³‚ê‚½(-1)</returns>
-        public int Update(double nowGameTimeMilliseconds)
-        {
-            double diffTime = nowGameTimeMilliseconds - startTimeMillisecond;
-            if (diffTime > flyTimeMillisecond)
-                return 1;
-            if(diffTime < 0)
-                return -1;
+        /// <param name="nowGameTimeMilliseconds">è¡¨ç¤ºã•ã‚Œã‚‹æ™‚é–“</param>
+        /// <returns>è¡¨ç¤ºã•ã‚Œã‚‹ã¹ãã§ã‚ã£ãŸ(0)ã€è¡¨ç¤ºã•ã‚Œã‚‹æ™‚é–“ã‚ˆã‚Šã‚‚å¾Œã®æ™‚é–“ã‚’æŒ‡å®šã•ã‚ŒãŸ(1)ã€è¡¨ç¤ºã•ã‚Œã‚‹æ™‚é–“ã‚ˆã‚Šã‚‚å‰ã®æ™‚é–“ã‚’æŒ‡å®šã•ã‚ŒãŸ(-1)</returns>
+        int Update(double nowGameTimeMilliseconds);
 
-            float f = (float)(diffTime / flyTimeMillisecond);
-            board.Position = startPoint + (endPoint - startPoint) * f;
-            //System.Diagnostics.Debug.WriteLine(f + " = " + diffTime + " / " + flyTimeMillisecond
-            //    + " gameTime: " + nowGameTime.TotalGameTime.TotalMilliseconds + " - " + startTimeMillisecond);
-            return 0;
+        void Draw(Matrix view, Viewport viewport, Matrix projection, float scale, Vector3 cameraPosition, Vector3 cameraTarget);
+
+        BoundingSphere BoundingSphere
+        {
+            get;
         }
 
-        public void Draw(Matrix view, Viewport viewport, Matrix projection, float scale, Vector3 cameraPosition, Vector3 cameraTarget)
+        string Description
         {
-            board.Draw(view, viewport, projection, scale, cameraPosition, cameraTarget);
+            get;
         }
 
-        public BoundingSphere BoundingSphere
+        bool LightingEnabled
         {
-            get
-            {
-                return new BoundingSphere(board.Position, board.Scale);
-            }
+            get;
+            set;
         }
 
-        public string Description
+        double CreatedTimeMillisecond
         {
-            get { return description; }
+            get;
         }
 
-        public bool LightingEnabled
+        float Alpha
         {
-            get { return board.LightingEnabled; }
-            set { board.LightingEnabled = value; }
+            get;
+            set;
         }
 
-        public double CreatedTimeMillisecond
+        bool BillboardEnabled
         {
-            get { return startTimeMillisecond; }
+            get;
+            set;
         }
 
-        public float Alpha
-        {
-            get { return board.Alpha; }
-            set { board.Alpha = value; }
-        }
-
-        public bool BillboardEnabled
-        {
-            get { return board.BillboardEnabled; }
-            set { board.BillboardEnabled = value; }
-        }
-
-        public int CompareTo(PacketBoard x)
-        {
-            return PacketBoard.Compare(this, x);
-        }
-        public static int Compare(Object x, Object y)
-        {
-            try
-            {
-                PacketBoard a = (PacketBoard)x;
-                PacketBoard b = (PacketBoard)y;
-                if (a.board.Position.Z == b.board.Position.Z)
-                {
-                    return 0;
-                }
-                if (a.board.Position.Z > b.board.Position.Z)
-                {
-                    return 1;
-                }
-                return -1;
-            }
-            catch
-            {
-                return 0;
-            }
-        }
-
+        //int CompareTo(PacketBoard x);
+        //static int Compare(Object x, Object y);
     }
 }
