@@ -115,6 +115,11 @@ namespace Packter_viewer
             set { board.BillboardEnabled = value; }
         }
 
+        public float PositionZ
+        {
+            get { return board.Position.Z; }
+        }
+
         public int CompareTo(PacketBoard x)
         {
             return PacketBoardLay.Compare(this, x);
@@ -123,13 +128,13 @@ namespace Packter_viewer
         {
             try
             {
-                PacketBoardLay a = (PacketBoardLay)x;
-                PacketBoardLay b = (PacketBoardLay)y;
-                if (a.board.Position.Z == b.board.Position.Z)
+                PacketBoard a = (PacketBoard)x;
+                PacketBoard b = (PacketBoard)y;
+                if (a.PositionZ == b.PositionZ)
                 {
                     return 0;
                 }
-                if (a.board.Position.Z > b.board.Position.Z)
+                if (a.PositionZ > b.PositionZ)
                 {
                     return 1;
                 }

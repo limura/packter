@@ -59,9 +59,10 @@ namespace Packter_viewer
             set { skyboxEnabled = value; }
         }
 
-        public float RotationP = 0;
-        public float RotationY = 0;
-        public float RotationR = 0;
+        //public float RotationP = 0;
+        //public float RotationY = 0;
+        //public float RotationR = 0;
+        public Matrix RotationMatrix = Matrix.CreateRotationY(0);
         public string Text = null;
         public float Alpha = 1.0f;
         public float Scale = 1.0f;
@@ -84,7 +85,7 @@ namespace Packter_viewer
             {
                 transform = Matrix.Identity;
                 transform *= Matrix.CreateScale(Scale * scale);
-                transform *= Matrix.CreateRotationY(RotationY);
+                transform *= RotationMatrix;
                 transform *= Matrix.CreateTranslation(position);
             }
             else

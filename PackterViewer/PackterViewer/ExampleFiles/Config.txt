@@ -108,4 +108,21 @@
 #XACTFileForWaveBank = Wave Bank.xwb
 #XACTFileForSoundBank = Sound Bank.xsb
 
+# ProgramMode
+# 実行モードを切り替えます。
+# SenderReceiver にすると SenderBoard と ReceiverBoard の間でパケットが飛びます
+# Ballistic にすると、床から弾道軌道を取って床に落ちます
+# default は SenderReceiver です
+#ProgramMode = Ballistic
+
+# BallisticMapTextureImage
+# ProgramMode == Ballistic(弾道軌道を取る)時に表示される床になるイメージの絵を指定します。
+#BallisticMapTextureImage = world.png
+
+# BallisticMapMeshFile
+# ProgramMode == Ballistic(弾道軌道を取る)時に表示される床になるメッシュを指定します。
+# BallisticMapTextureImage が指定されている場合には、その絵がこのメッシュに対するテクスチャとして利用されます
+# 逆にいうと、メッシュの中でテクスチャを指定しているようなモデルの場合、BallisticMapTextureImage は指定しないでください。
+#BallisticMapMeshFile = 
+
 

@@ -11,6 +11,8 @@ using System.Collections;
 using System.Threading;
 using System.IO;
 
+using PackterViewer;
+
 namespace Packter_viewer
 {
     class PacketReader : IDisposable
@@ -19,6 +21,8 @@ namespace Packter_viewer
         ArrayList packetQueue = new ArrayList();
         Mutex mutex;
         Thread readerThread = null;
+        
+        ConfigReader.ProgramMode mode = ConfigReader.ProgramMode.SenderReceiver;
 
         public const string BoardTriggerString = "PACKTER";
         public const string HTMLTriggerString = "PACKTERHTML";
@@ -78,6 +82,11 @@ namespace Packter_viewer
                 readerThread = null;
             }
         }
+        
+        public ConfigReader.ProgramMode Mode {
+            set { mode = value; }
+            get { return mode; }
+        }
 
         public FlyPacket[] GetAvailablePackets()
         {
@@ -133,7 +142,16 @@ namespace Packter_viewer
                 case PacketReader.BoardTriggerString: // PACKTER
                     while (true)
                     {
-                        FlyPacket packet = new FlyPacketLay();
+                        FlyPacket packet = null;
+                        switch(mode){
+                            case ConfigReader.ProgramMode.SenderReceiver:
+                            default:
+                                packet = new FlyPacketLay();
+                                break;
+                            case ConfigReader.ProgramMode.Ballistic:
+                                packet = new FlyPacketBallistic();
+                                break;
+                        }
                         if (packet.SetFromData(reader) == false)
                             break;
                         packetQueue.Add(packet);

@@ -66,11 +66,21 @@ namespace Packter_viewer
                 return 1;
             if(diffTime < 0)
                 return -1;
+            double diffTimePlusDelta = diffTime + startTimeMillisecond / 1000;
 
             float sin = (float)Math.Sin(Math.PI * diffTime / flyTimeMillisecond);
             float f = (float)(diffTime / flyTimeMillisecond);
             board.Position = startPoint + (endPoint - startPoint) * f;
             board.Position = new Vector3(board.Position.X, board.Position.Y * sin - 100.0f, board.Position.Z);
+            
+            float sinDelta = (float)Math.Sin(Math.PI * diffTimePlusDelta / flyTimeMillisecond);
+            float fDelta = (float)(diffTimePlusDelta / flyTimeMillisecond);
+            Vector3 delta = startPoint + (endPoint - startPoint) * fDelta;
+            delta = new Vector3(delta.X, delta.Y * sinDelta - 100.0f, delta.Z);
+            delta = (delta - board.Position) * 100;
+            // 向きベクトルを回転行列に変換するのに怪しくビルボードの計算式を使う
+            board.RotationMatrix = Matrix.CreateBillboard(Vector3.Zero, -delta, Vector3.UnitY, delta);
+            
             //System.Diagnostics.Debug.WriteLine(f + " = " + diffTime + " / " + flyTimeMillisecond
             //    + " gameTime: " + nowGameTime.TotalGameTime.TotalMilliseconds + " - " + startTimeMillisecond);
             return 0;
@@ -117,6 +127,11 @@ namespace Packter_viewer
             set { board.BillboardEnabled = value; }
         }
 
+        public float PositionZ
+        {
+            get { return board.Position.Z; }
+        }
+
         public int CompareTo(PacketBoard x)
         {
             return PacketBoardBallistic.Compare(this, x);
@@ -125,13 +140,13 @@ namespace Packter_viewer
         {
             try
             {
-                PacketBoardBallistic a = (PacketBoardBallistic)x;
-                PacketBoardBallistic b = (PacketBoardBallistic)y;
-                if (a.board.Position.Z == b.board.Position.Z)
+                PacketBoard a = (PacketBoardBallistic)x;
+                PacketBoard b = (PacketBoardBallistic)y;
+                if (a.PositionZ == b.PositionZ)
                 {
                     return 0;
                 }
-                if (a.board.Position.Z > b.board.Position.Z)
+                if (a.PositionZ > b.PositionZ)
                 {
                     return 1;
                 }

@@ -55,6 +55,7 @@ namespace Packter_viewer2
 
         Board senderBoard = null;
         Board receiverBoard = null;
+        Board ballisticBoard = null;
         //ArrayList packetList = new ArrayList();
         //RingBuffer<PacketBoard> packetList = new RingBuffer<PacketBoard>(MaxPacketNum);
         // ArrayList drawPacketList = new ArrayList();
@@ -210,7 +211,16 @@ namespace Packter_viewer2
             PacketBoard pb = new PacketBoard(targetModel, targetTexture
                 , startPoint, endPoint, nowGameTime, flyMillisecond, packet.OriginalString);
 #else
-            PacketBoard pb = packet.CreatePacketBoard(targetModel, targetTexture, defaultScale, senderBoard.Position, receiverBoard.Position, flyMillisecond);
+            PacketBoard pb = null;
+            switch(configReader.Mode){
+                case ConfigReader.ProgramMode.Ballistic:
+                    pb = packet.CreatePacketBoard(targetModel, targetTexture, defaultScale, Vector3.Zero, Vector3.Zero, flyMillisecond);
+                    break;
+                case ConfigReader.ProgramMode.SenderReceiver:
+                default:
+                    pb = packet.CreatePacketBoard(targetModel, targetTexture, defaultScale, senderBoard.Position, receiverBoard.Position, flyMillisecond);
+                    break;
+            }
 #endif
             pb.Scale = defaultScale;
             // 標準が "board" でないか、標準の model でなければ lighting を true にする
@@ -336,75 +346,109 @@ namespace Packter_viewer2
             LoadPacketModelList(packetModel);
 
             // sender と receiver の板を load する
-            {
-                Model tmpModel = contentLoader.GetModel(configReader.SenderBoardFile);
-                if (tmpModel == null)
-                {
-                    tmpModel = contentLoader.GetModel("board");
+            switch(configReader.Mode){
+                case ConfigReader.ProgramMode.SenderReceiver:
+                    {
+                        Model tmpModel = contentLoader.GetModel(configReader.SenderBoardFile);
+                        if (tmpModel == null)
+                        {
+                            tmpModel = contentLoader.GetModel("board");
 
-                    senderBoard = new Board(tmpModel);
-                    senderBoard.Position = new Vector3(0, 0, -150);
-                    senderBoard.Scale = 100;
-                    senderBoard.RotationY = (float)Math.PI;
-                    senderBoard.Alpha = 0.3f;
+                            senderBoard = new Board(tmpModel);
+                            senderBoard.Position = new Vector3(0, 0, -150);
+                            senderBoard.Scale = 100;
+                            senderBoard.RotationMatrix = Matrix.CreateRotationY((float)Math.PI);
+                            senderBoard.Alpha = 0.3f;
 
-                    Texture2D t = null;
-                    try
-                    {
-                        t = contentLoader.GetTexture2D("packter_sender.png");
-                    }
-                    catch
-                    {
-                        t = null;
-                    }
-                    if (t == null)
-                    {
-                        t = contentLoader.GetTexture2D("packter_sender");                    
-                    }
-                    senderBoard.Texture = t;
-                }
-                else
-                {
-                    senderBoard = new Board(tmpModel);
-                    senderBoard.Position = new Vector3(0, 0, -150);
-                    senderBoard.Scale = configReader.SenderBoardScale;
-                    senderBoard.LightingEnabled = true;
-                    senderBoard.Texture = contentLoader.GetTexture2D(configReader.SenderBoardTextureFile);
-                }
+                            Texture2D t = null;
+                            try
+                            {
+                                t = contentLoader.GetTexture2D("packter_sender.png");
+                            }
+                            catch
+                            {
+                                t = null;
+                            }
+                            if (t == null)
+                            {
+                                t = contentLoader.GetTexture2D("packter_sender");
+                            }
+                            senderBoard.Texture = t;
+                        }
+                        else
+                        {
+                            senderBoard = new Board(tmpModel);
+                            senderBoard.Position = new Vector3(0, 0, -150);
+                            senderBoard.Scale = configReader.SenderBoardScale;
+                            senderBoard.LightingEnabled = true;
+                            senderBoard.Texture = contentLoader.GetTexture2D(configReader.SenderBoardTextureFile);
+                        }
 
-                tmpModel = contentLoader.GetModel(configReader.ReceiverBoardFile);
-                if (tmpModel == null)
-                {
-                    tmpModel = contentLoader.GetModel("board");
-                    receiverBoard = new Board(tmpModel);
-                    receiverBoard.Position = new Vector3(0, 0, 150);
-                    receiverBoard.RotationY = (float)Math.PI;
-                    receiverBoard.Scale = 100;
-                    receiverBoard.Alpha = 0.3f;
+                        tmpModel = contentLoader.GetModel(configReader.ReceiverBoardFile);
+                        if (tmpModel == null)
+                        {
+                            tmpModel = contentLoader.GetModel("board");
+                            receiverBoard = new Board(tmpModel);
+                            receiverBoard.Position = new Vector3(0, 0, 150);
+                            receiverBoard.RotationMatrix = Matrix.CreateRotationY((float)Math.PI);
+                            receiverBoard.Scale = 100;
+                            receiverBoard.Alpha = 0.3f;
 
-                    Texture2D t = null;
-                    try
-                    {
-                        t = contentLoader.GetTexture2D("packter_receiver.png");
+                            Texture2D t = null;
+                            try
+                            {
+                                t = contentLoader.GetTexture2D("packter_receiver.png");
+                            }
+                            catch
+                            {
+                                t = null;
+                            }
+                            if (t == null)
+                            {
+                                t = contentLoader.GetTexture2D("packter_receiver");
+                            }
+                            receiverBoard.Texture = t;
+                        }
+                        else
+                        {
+                            receiverBoard = new Board(tmpModel);
+                            receiverBoard.Position = new Vector3(0, 0, 150);
+                            receiverBoard.Scale = configReader.ReceiverBoardScale;
+                            receiverBoard.LightingEnabled = true;
+                            receiverBoard.Texture = contentLoader.GetTexture2D(configReader.ReceiverBoardTextureFile);
+                        }
                     }
-                    catch
+                    break;
+                case ConfigReader.ProgramMode.Ballistic:
                     {
-                        t = null;
+                        Model tmpModel = contentLoader.GetModel(configReader.BallisticMapMeshFile);
+                        if (tmpModel == null)
+                        {
+                            tmpModel = contentLoader.GetModel("board");
+                            ballisticBoard = new Board(tmpModel);
+                            ballisticBoard.Position = new Vector3(0, -100, 0);
+                            ballisticBoard.RotationMatrix = Matrix.CreateRotationX((float)Math.PI / 2);
+                            ballisticBoard.Scale = 100;
+
+                            Texture2D t = contentLoader.GetTexture2D(configReader.BallisticMapTextureImage);
+                            if (t == null)
+                            {
+                                t = contentLoader.GetTexture2D("world_ga_worldmap_5_2");
+                            }
+                            ballisticBoard.Texture = t;
+                        }
+                        else
+                        {
+                            ballisticBoard = new Board(tmpModel);
+                            ballisticBoard.Position = new Vector3(0, -100, 0);
+                            ballisticBoard.Scale = configReader.BallisticMapMeshScale;
+                            ballisticBoard.LightingEnabled = true;
+                            ballisticBoard.Texture = contentLoader.GetTexture2D(configReader.BallisticMapTextureImage);
+                        }
                     }
-                    if (t == null)
-                    {
-                        t = contentLoader.GetTexture2D("packter_receiver");
-                    }
-                    receiverBoard.Texture = t;
-                }
-                else
-                {
-                    receiverBoard = new Board(tmpModel);
-                    receiverBoard.Position = new Vector3(0, 0, 150);
-                    receiverBoard.Scale = configReader.ReceiverBoardScale;
-                    receiverBoard.LightingEnabled = true;
-                    receiverBoard.Texture = contentLoader.GetTexture2D(configReader.ReceiverBoardTextureFile);
-                }
+                    break;
+                default:
+                    break;
             }
 
 #if false
@@ -443,6 +487,7 @@ namespace Packter_viewer2
             try
             {
                 packetReader_v6 = new Packter_viewer.PacketReader(new IPEndPoint(IPAddress.IPv6Any, 11300));
+                packetReader_v6.Mode = configReader.Mode;
             }
             catch
             {
@@ -451,6 +496,7 @@ namespace Packter_viewer2
             try
             {
                 packetReader_v4 = new Packter_viewer.PacketReader(new IPEndPoint(IPAddress.Any, 11300));
+                packetReader_v4.Mode = configReader.Mode;
             }
             catch
             {
@@ -1067,15 +1113,23 @@ namespace Packter_viewer2
 
             if (cameraPosition.Z > 0)
             {
-                senderBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
+                if(ballisticBoard != null)
+                    ballisticBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
+                if (senderBoard != null)
+                    senderBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
                 DrawPacketBoards(gameTime, view, GraphicsDevice.Viewport, projection);
-                receiverBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
+                if(receiverBoard != null)
+                    receiverBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
             }
             else
             {
-                receiverBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
+                if (receiverBoard != null)
+                    receiverBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
                 DrawPacketBoards(gameTime, view, GraphicsDevice.Viewport, projection);
-                senderBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
+                if (senderBoard != null)
+                    senderBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
+                if (ballisticBoard != null)
+                    ballisticBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
             }
 
             this.spriteBatch.Begin();
