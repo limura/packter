@@ -33,6 +33,16 @@ namespace PackterViewer
         string xACTFileForAudioEngine = null;
         string xACTFileForWaveBank = null;
         string xACTFileForSoundBank = null;
+        string ballisticMapTextureImage = "world_ga_worldmap_5_2";
+        string ballisticMapMeshFile = null;
+        float ballisticMapMeshScale = 1.0f;
+
+        public enum ProgramMode
+        {
+            SenderReceiver,
+            Ballistic,
+        };
+        ProgramMode programMode = ProgramMode.SenderReceiver;
 
         public float DefaultScale
         {
@@ -135,6 +145,22 @@ namespace PackterViewer
         public string XACTFileForSoundBank
         {
             get { return xACTFileForSoundBank; }
+        }
+        public ProgramMode Mode
+        {
+            get { return programMode; }
+        }
+        public string BallisticMapTextureImage
+        {
+            get { return ballisticMapTextureImage; }
+        }
+        public string BallisticMapMeshFile
+        {
+            get { return ballisticMapMeshFile; }
+        }
+        public float BallisticMapMeshScale
+        {
+            get { return ballisticMapMeshScale; }
         }
 
         bool ConvertToFloat(string str, out float val)
@@ -250,11 +276,42 @@ namespace PackterViewer
                         maxSENum = int.Parse(value);
                         i++; continue;
                     }
+
+                    if (key == "/ballisticmaptextureimage" && !string.IsNullOrEmpty(value) && System.IO.File.Exists(value))
+                    {
+                        ballisticMapTextureImage = value;
+                        i++; continue;
+                    }
+
+                    if (key == "/ballisticmapmeshfile" && !string.IsNullOrEmpty(value) && System.IO.File.Exists(value))
+                    {
+                        ballisticMapMeshFile = value;
+                        i++; continue;
+                    }
+
+                    if (key == "/ballisticmapmeshscale" && !string.IsNullOrEmpty(value) && ConvertToFloat(value, out tmpFloat))
+                    {
+                        ballisticMapMeshScale = tmpFloat;
+                        i++; continue;
+                    }
+                
                 }
 
                 if (key == "/enableskydome")
                 {
                     skydomeEnabled = true;
+                    continue;
+                }
+
+                if (key == "/ballisticmode")
+                {
+                    programMode = ProgramMode.Ballistic;
+                    continue;
+                }
+
+                if (key == "/senderreceivermode")
+                {
+                    programMode = ProgramMode.SenderReceiver;
                     continue;
                 }
 
@@ -453,6 +510,39 @@ namespace PackterViewer
                                 if (!string.IsNullOrEmpty(value) && System.IO.File.Exists(value))
                                 {
                                     xACTFileForSoundBank = value;
+                                }
+                                break;
+                            case "programmode":
+                                switch(value.ToLower()){
+                                    case "ballistic":
+                                        programMode = ProgramMode.Ballistic;
+                                        break;
+                                    case "senderreceiver":
+                                        programMode = ProgramMode.SenderReceiver;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                break;
+
+                            case "ballisticmaptextureimage":
+                                if (!string.IsNullOrEmpty(value) && System.IO.File.Exists(value))
+                                {
+                                    ballisticMapTextureImage = value;
+                                }
+                                break;
+
+                            case "ballisticmapmeshfile":
+                                if (!string.IsNullOrEmpty(value) && System.IO.File.Exists(value))
+                                {
+                                    ballisticMapMeshFile = value;
+                                }
+                                break;
+
+                            case "ballisticmapmeshscale":
+                                if (!string.IsNullOrEmpty(value) && ConvertToFloat(value, out tmpFloat))
+                                {
+                                    ballisticMapMeshScale = tmpFloat;
                                 }
                                 break;
 

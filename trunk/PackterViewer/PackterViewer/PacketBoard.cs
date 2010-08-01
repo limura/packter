@@ -66,6 +66,11 @@ namespace PackterViewer
             set;
         }
 
+        float PositionZ
+        {
+            get;
+        }
+
         //int CompareTo(PacketBoard x);
         //static int Compare(Object x, Object y);
     }

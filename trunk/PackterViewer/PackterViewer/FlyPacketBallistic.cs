@@ -98,7 +98,7 @@ namespace Packter_viewer
                 if (str == null || str.Length <= 0)
                     return -1;
                 float f = 0;
-                if (str.IndexOf('.') >= 0 && str.IndexOf('.') == str.LastIndexOf('.') && float.TryParse(str, out f) == true && f < 1 && f >= 0)
+                if (str.IndexOf('.') >= 0 && str.IndexOf('.') == str.LastIndexOf('.') && float.TryParse(str, out f) == true && f <= 1 && f >= 0)
                 {
                     return f;
                 }
@@ -157,6 +157,7 @@ namespace Packter_viewer
                 return false;
             if ((dstPort = String2float(words[3])) < 0)
                 return false;
+            System.Diagnostics.Debug.WriteLine(srcAddress.ToString() + ", " + srcPort.ToString() + " => " + dstAddress.ToString() + ", " + dstPort.ToString());
             packetImageString = words[4];
             if (byte.TryParse(words[4], out packetImageNumber) == false)
                 packetImageNumber = 0;
