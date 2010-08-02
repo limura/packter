@@ -221,7 +221,7 @@ namespace Packter_viewer
         {
             get { return originalString; }
         }
-        public PacketBoard CreatePacketBoard(Model model, Texture2D texture, float defaultScale, Vector3 senderPosition, Vector3 receiverPosition, float flyMillisecond)
+        public PacketBoard CreatePacketBoard(Model model, Texture2D texture, float defaultScale, Vector3 min, Vector3 max, float flyMillisecond)
         {
             float srcX = this.SrcAddress;
             float srcZ = this.SrcPort;
@@ -230,13 +230,10 @@ namespace Packter_viewer
             byte imageNumber = this.PacketImageNumber;
             string fileName = this.PacketImageString;
             GameTime nowGameTime = this.CreatedGameTime;
+            Vector3 diff = max - min;
 
-            Vector3 startPoint = new Vector3((srcX - 0.5f) * 100.0f * 2 - defaultScale / 4.0f
-                    , 200.0f
-                , ((srcZ - 0.5f) * 100.0f * 2) - defaultScale / 4.0f);
-            Vector3 endPoint = new Vector3((dstX - 0.5f) * 100.0f * 2 - defaultScale / 4.0f
-                    , 200.0f
-                , ((dstZ - 0.5f) * 100.0f * 2) - defaultScale / 4.0f);
+            Vector3 startPoint = new Vector3(srcX * diff.X + min.X, 200.0f, srcZ * diff.Z + min.Z);
+            Vector3 endPoint = new Vector3(dstX * diff.X + min.X, 200.0f, dstZ * diff.Z + min.Z);
 
             return new PacketBoardBallistic(model, texture, startPoint, endPoint, nowGameTime, flyMillisecond, this.OriginalString);
         }
