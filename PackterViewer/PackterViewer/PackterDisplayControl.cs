@@ -56,6 +56,7 @@ namespace Packter_viewer2
         Board senderBoard = null;
         Board receiverBoard = null;
         Board ballisticBoard = null;
+        BoundingBox ballisticBoardBoundingBox = new BoundingBox(new Vector3(-100, -200, -100), new Vector3(100, 200, 100));
         //ArrayList packetList = new ArrayList();
         //RingBuffer<PacketBoard> packetList = new RingBuffer<PacketBoard>(MaxPacketNum);
         // ArrayList drawPacketList = new ArrayList();
@@ -214,7 +215,8 @@ namespace Packter_viewer2
             PacketBoard pb = null;
             switch(configReader.Mode){
                 case ConfigReader.ProgramMode.Ballistic:
-                    pb = packet.CreatePacketBoard(targetModel, targetTexture, defaultScale, Vector3.Zero, Vector3.Zero, flyMillisecond);
+                    pb = packet.CreatePacketBoard(targetModel, targetTexture, defaultScale
+                            , ballisticBoardBoundingBox.Min, ballisticBoardBoundingBox.Max, flyMillisecond);
                     break;
                 case ConfigReader.ProgramMode.SenderReceiver:
                 default:
@@ -298,6 +300,52 @@ namespace Packter_viewer2
                     packetModelList.Add(defaultModel);
                 }
             }
+        }
+
+        BoundingBox CalculateBoundingBox(Model model)
+        {
+            Vector3[] tempVecs3 = new Vector3[512];
+            ushort[] tempUshorts = new ushort[512 * 3];
+            BoundingBox bb = new BoundingBox();
+            bool first = true;
+            Matrix x = Matrix.Identity;
+
+            foreach (ModelMesh mm in model.Meshes)
+            {
+                ModelBone mb = mm.ParentBone;
+                while (mb != null)
+                {
+                    x = x * mb.Transform;
+                    mb = mb.Parent;
+                }
+                foreach (ModelMeshPart mp in mm.MeshParts)
+                {
+                    int n = mp.NumVertices;
+                    if (n > tempVecs3.Length)
+                        tempVecs3 = new Vector3[n + 128];
+                    int l = mp.PrimitiveCount * 3;
+                    if (l > tempUshorts.Length)
+                        tempUshorts = new ushort[l + 128];
+                    if (n == 0 || l == 0)
+                        continue;
+                    mm.IndexBuffer.GetData<ushort>(tempUshorts, mp.StartIndex, l);
+                    mm.VertexBuffer.GetData<Vector3>(mp.StreamOffset, tempVecs3, mp.BaseVertex, n, mp.VertexStride);
+                    if (first)
+                    {
+                        bb.Min = Vector3.Transform(tempVecs3[tempUshorts[0]], x);
+                        bb.Max = bb.Min;
+                        first = false;
+                    }
+                    for (int i = 0; i != l; ++i)
+                    {
+                        ushort us = tempUshorts[i];
+                        Vector3 v = Vector3.Transform(tempVecs3[us], x);
+                        Vector3.Max(ref v, ref bb.Max, out bb.Max);
+                        Vector3.Min(ref v, ref bb.Min, out bb.Min);
+                    }
+                }
+            }
+            return bb;
         }
 
         /// <summary>
@@ -422,7 +470,7 @@ namespace Packter_viewer2
                 case ConfigReader.ProgramMode.Ballistic:
                     {
                         Model tmpModel = contentLoader.GetModel(configReader.BallisticMapMeshFile);
-                        if (tmpModel == null)
+                        if (tmpModel == contentLoader.GetModel("board") || tmpModel == null)
                         {
                             tmpModel = contentLoader.GetModel("board");
                             ballisticBoard = new Board(tmpModel);
@@ -444,6 +492,7 @@ namespace Packter_viewer2
                             ballisticBoard.Scale = configReader.BallisticMapMeshScale;
                             ballisticBoard.LightingEnabled = true;
                             ballisticBoard.Texture = contentLoader.GetTexture2D(configReader.BallisticMapTextureImage);
+                            ballisticBoardBoundingBox = CalculateBoundingBox(tmpModel);
                         }
                     }
                     break;
@@ -658,28 +707,39 @@ namespace Packter_viewer2
             }
             if (nowKeyState.IsKeyDown(Keys.O) == true)
             {
-#if false
-                FlyPacket packet = new FlyPacketLay(
-                    rnd.Next(65535) / 65535.0f, rnd.Next(65535) / 65535.0f
-                    , rnd.Next(65535) / 65535.0f, rnd.Next(65535) / 65535.0f
-                    , (byte)(rnd.Next(packetModelList.Count)), "Test Packet", gameTime);
-#else
                 FlyPacket packet = null;
-                if (nowKeyState.IsKeyDown(Keys.LeftShift) == true)
+                switch (configReader.Mode)
                 {
-                    packet = new FlyPacketBallistic(
-                        rnd.Next(65535) / 65535.0f, 0.0f
-                        , 0.5f, 0.5f
-                        , (byte)(rnd.Next(packetModelList.Count)), "Test Packet", gameTime);
+                    case ConfigReader.ProgramMode.SenderReceiver:
+                    default:
+                        {
+                            packet = new FlyPacketLay(
+                                rnd.Next(65535) / 65535.0f, rnd.Next(65535) / 65535.0f
+                                , rnd.Next(65535) / 65535.0f, rnd.Next(65535) / 65535.0f
+                                , (byte)(rnd.Next(packetModelList.Count)), "Test Packet", gameTime);
+                        }
+                        break;
+                    case ConfigReader.ProgramMode.Ballistic:
+                        {
+                            packet = null;
+                            if (nowKeyState.IsKeyDown(Keys.LeftShift) == true)
+                            {
+                                packet = new FlyPacketBallistic(
+                                    rnd.Next(65535) / 65535.0f, 0.0f
+                                    , 0.5f, 0.5f
+                                    , (byte)(rnd.Next(packetModelList.Count)), "Test Packet", gameTime);
+                            }
+                            else
+                            {
+                                packet = new FlyPacketBallistic(
+                                    rnd.Next(65535) / 65535.0f, rnd.Next(65535) / 65535.0f
+                                    , 0.5f, 0.5f
+                                    , (byte)(rnd.Next(packetModelList.Count)), "Test Packet", gameTime);
+                            }
+                        }
+                        break;
                 }
-                else
-                {
-                    packet = new FlyPacketBallistic(
-                        rnd.Next(65535) / 65535.0f, rnd.Next(65535) / 65535.0f
-                        , 0.5f, 0.5f
-                        , (byte)(rnd.Next(packetModelList.Count)), "Test Packet", gameTime);
-                }
-#endif
+
                 AddPacketBoard(packet);
             }
 
