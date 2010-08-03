@@ -125,4 +125,17 @@
 # 逆にいうと、メッシュの中でテクスチャを指定しているようなモデルの場合、BallisticMapTextureImage は指定しないでください。
 #BallisticMapMeshFile = 
 
+# GatewayBoardEnable
+# GatewayBoard を表示するかどうかを決定します。
+# default は false です。
+#GatewayBoardEnable = true
+
+# GatewayBoardFile: 中継地点に表示されるオブジェクトの .x ファイルを指定します。default では未設定です
+#GatewayBoardFile = 
+
+# GatewayBoardScale: 中継地点に表示されるオブジェクトの拡大率を指定します。default では 1.0 です
+#GatewayBoardScale = 1.0
+
+# GatewayBoardTextureFile: 中継地点に表示されるオブジェクトのテクスチャを指定します。default では未設定です
+#GatewayBoardTextureFile =
 

@@ -32,6 +32,7 @@ namespace Packter_viewer
         public const string SETriggerString = "PACKTERSE";
         public const string SKYDOMETextureTriggerString = "PACKTERSKYDOMETEXTURE";
         public const string BallisticTriggerString = "PACKTERBALLISTIC";
+        public const string GatewayBoardTriggerString = "PACKTERWITHGATEWAY";
 
         Dictionary<string, List<string> > packterStringQueue = new Dictionary<string, List<string> >();
 
@@ -134,6 +135,15 @@ namespace Packter_viewer
                     while (true)
                     {
                         FlyPacket packet = new FlyPacketBallistic();
+                        if (packet.SetFromData(reader) == false)
+                            break;
+                        packetQueue.Add(packet);
+                    }
+                    break;
+                case PacketReader.GatewayBoardTriggerString: // Gateway‚Â‚«
+                    while (true)
+                    {
+                        FlyPacket packet = new FlyPacketWithGateway();
                         if (packet.SetFromData(reader) == false)
                             break;
                         packetQueue.Add(packet);

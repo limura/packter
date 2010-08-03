@@ -56,6 +56,7 @@ namespace Packter_viewer2
         Board senderBoard = null;
         Board receiverBoard = null;
         Board ballisticBoard = null;
+        Board gatewayBoard = null;
         BoundingBox ballisticBoardBoundingBox = new BoundingBox(new Vector3(-100, -200, -100), new Vector3(100, 200, 100));
         //ArrayList packetList = new ArrayList();
         //RingBuffer<PacketBoard> packetList = new RingBuffer<PacketBoard>(MaxPacketNum);
@@ -464,6 +465,40 @@ namespace Packter_viewer2
                             receiverBoard.Scale = configReader.ReceiverBoardScale;
                             receiverBoard.LightingEnabled = true;
                             receiverBoard.Texture = contentLoader.GetTexture2D(configReader.ReceiverBoardTextureFile);
+                        }
+
+                        tmpModel = contentLoader.GetModel(configReader.GatewayBoardFile);
+                        if (tmpModel == null)
+                        {
+                            tmpModel = contentLoader.GetModel("board");
+                            gatewayBoard = new Board(tmpModel);
+                            gatewayBoard.Position = new Vector3(0, 0, 0);
+                            gatewayBoard.RotationMatrix = Matrix.CreateRotationY((float)Math.PI);
+                            gatewayBoard.Scale = 100;
+                            gatewayBoard.Alpha = 0.3f;
+
+                            Texture2D t = null;
+                            try
+                            {
+                                t = contentLoader.GetTexture2D("packter_gateway.png");
+                            }
+                            catch
+                            {
+                                t = null;
+                            }
+                            if (t == null)
+                            {
+                                t = contentLoader.GetTexture2D("packter_gateway");
+                            }
+                            gatewayBoard.Texture = t;
+                        }
+                        else
+                        {
+                            gatewayBoard = new Board(tmpModel);
+                            gatewayBoard.Position = new Vector3(0, 0, 0);
+                            gatewayBoard.Scale = configReader.GatewayBoardScale;
+                            gatewayBoard.LightingEnabled = true;
+                            gatewayBoard.Texture = contentLoader.GetTexture2D(configReader.GatewayBoardTextureFile);
                         }
                     }
                     break;
@@ -1177,6 +1212,8 @@ namespace Packter_viewer2
                     ballisticBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
                 if (senderBoard != null)
                     senderBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
+                if (gatewayBoard != null)
+                    gatewayBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
                 DrawPacketBoards(gameTime, view, GraphicsDevice.Viewport, projection);
                 if(receiverBoard != null)
                     receiverBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
@@ -1186,6 +1223,8 @@ namespace Packter_viewer2
                 if (receiverBoard != null)
                     receiverBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
                 DrawPacketBoards(gameTime, view, GraphicsDevice.Viewport, projection);
+                if (gatewayBoard != null)
+                    gatewayBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
                 if (senderBoard != null)
                     senderBoard.Draw(view, GraphicsDevice.Viewport, projection, 1.0f, this.cameraPosition, this.cameraTarget);
                 if (ballisticBoard != null)

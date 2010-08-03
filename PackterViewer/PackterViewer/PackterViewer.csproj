@@ -67,6 +67,7 @@
     <Compile Include="FlyPacket.cs" />
     <Compile Include="FlyPacketBallistic.cs" />
     <Compile Include="FlyPacketLay.cs" />
+    <Compile Include="FlyPacketWithGateway.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -82,6 +83,7 @@
     <Compile Include="PacketBoardBallistic.cs" />
     <Compile Include="PacketBoardLay.cs" />
     <Compile Include="PacketBoardBuffer.cs" />
+    <Compile Include="PacketBoardWithGateway.cs" />
     <Compile Include="PacketReader.cs" />
     <Compile Include="PackterDisplayControl.cs">
       <SubType>Component</SubType>
