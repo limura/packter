@@ -18,10 +18,13 @@ namespace PackterViewer
         string loadPacketTarget = "ball";
         string senderBoard = null;
         string receiverBoard = null;
+        string gatewayBoard = null;
         float senderBoardScale = 1.0f;
         float receiverBoardScale = 1.0f;
+        float gatewayBoardScale = 1.0f;
         string senderBoardTextureFile = null;
         string receiverBoardTextureFile = null;
+        string gatewayBoardTextureFile = null;
         Dictionary<string, string> htmlConvertList = new Dictionary<string, string>();
         string htmlConvertToCurrentDirTarget = null;
         bool skydomeEnabled = false;
@@ -36,6 +39,7 @@ namespace PackterViewer
         string ballisticMapTextureImage = null;
         string ballisticMapMeshFile = null;
         float ballisticMapMeshScale = 1.0f;
+        bool gatewayBoardEnabled = false;
 
         public enum ProgramMode
         {
@@ -82,6 +86,10 @@ namespace PackterViewer
         {
             get { return receiverBoard; }
         }
+        public string GatewayBoardFile
+        {
+            get { return gatewayBoard; }
+        }
         public float SenderBoardScale
         {
             get { return senderBoardScale; }
@@ -90,6 +98,10 @@ namespace PackterViewer
         {
             get { return receiverBoardScale; }
         }
+        public float GatewayBoardScale
+        {
+            get { return gatewayBoardScale; }
+        }
         public string SenderBoardTextureFile
         {
             get { return senderBoardTextureFile; }
@@ -97,6 +109,10 @@ namespace PackterViewer
         public string ReceiverBoardTextureFile
         {
             get { return receiverBoardTextureFile; }
+        }
+        public string GatewayBoardTextureFile
+        {
+            get { return gatewayBoardTextureFile; }
         }
         public Dictionary<string, string> HtmlConvertList
         {
@@ -162,6 +178,10 @@ namespace PackterViewer
         {
             get { return ballisticMapMeshScale; }
         }
+        public bool GatewayBoardEnabled
+        {
+            get { return gatewayBoardEnabled; }
+        }
 
         bool ConvertToFloat(string str, out float val)
         {
@@ -217,6 +237,12 @@ namespace PackterViewer
                         i++; continue;
                     }
 
+                    if (key == "/gatewayboardfile" && System.IO.File.Exists(value))
+                    {
+                        gatewayBoard = value;
+                        i++; continue;
+                    }
+
                     float tmpFloat = 0.0f;
                     if (key == "/senderboardscale" && ConvertToFloat(value, out tmpFloat))
                     {
@@ -226,6 +252,11 @@ namespace PackterViewer
                     if (key == "/receiverboardscale" && ConvertToFloat(value, out tmpFloat))
                     {
                         receiverBoardScale = tmpFloat;
+                        i++; continue;
+                    }
+                    if (key == "/gatewayboardscale" && ConvertToFloat(value, out tmpFloat))
+                    {
+                        gatewayBoardScale = tmpFloat;
                         i++; continue;
                     }
 
@@ -238,6 +269,12 @@ namespace PackterViewer
                     if (key == "/receiverboardtexturefile" && System.IO.File.Exists(value))
                     {
                         receiverBoardTextureFile = value;
+                        i++; continue;
+                    }
+
+                    if (key == "/gatewayboardtexturefile" && System.IO.File.Exists(value))
+                    {
+                        gatewayBoardTextureFile = value;
                         i++; continue;
                     }
 
@@ -312,6 +349,12 @@ namespace PackterViewer
                 if (key == "/senderreceivermode")
                 {
                     programMode = ProgramMode.SenderReceiver;
+                    continue;
+                }
+
+                if (key == "/gatewayboardenable")
+                {
+                    gatewayBoardEnabled = true;
                     continue;
                 }
 
@@ -402,6 +445,12 @@ namespace PackterViewer
                                     receiverBoard = value;
                                 }
                                 break;
+                            case "gatewayboardfile":
+                                if (System.IO.File.Exists(value))
+                                {
+                                    gatewayBoard = value;
+                                }
+                                break;
                             case "senderboardscale":
                                 if (ConvertToFloat(value, out tmpFloat))
                                 {
@@ -414,6 +463,12 @@ namespace PackterViewer
                                     receiverBoardScale = tmpFloat;
                                 }
                                 break;
+                            case "gatewayboardscale":
+                                if (ConvertToFloat(value, out tmpFloat))
+                                {
+                                    gatewayBoardScale = tmpFloat;
+                                }
+                                break;
                             case "senderboardtexturefile":
                                 if (System.IO.File.Exists(value))
                                 {
@@ -424,6 +479,12 @@ namespace PackterViewer
                                 if (System.IO.File.Exists(value))
                                 {
                                     receiverBoardTextureFile = value;
+                                }
+                                break;
+                            case "gatewayboardtexturefile":
+                                if (System.IO.File.Exists(value))
+                                {
+                                    gatewayBoardTextureFile = value;
                                 }
                                 break;
                             case "htmlconverttarget":
@@ -543,6 +604,20 @@ namespace PackterViewer
                                 if (!string.IsNullOrEmpty(value) && ConvertToFloat(value, out tmpFloat))
                                 {
                                     ballisticMapMeshScale = tmpFloat;
+                                }
+                                break;
+
+                            case "gatewayboardenable":
+                                if (!string.IsNullOrEmpty(value))
+                                {
+                                    if (value.ToLower() == "true")
+                                    {
+                                        gatewayBoardEnabled = true;
+                                    }
+                                    else
+                                    {
+                                        gatewayBoardEnabled = false;
+                                    }
                                 }
                                 break;
 
