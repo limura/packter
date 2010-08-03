@@ -33,7 +33,7 @@ namespace PackterViewer
         string xACTFileForAudioEngine = null;
         string xACTFileForWaveBank = null;
         string xACTFileForSoundBank = null;
-        string ballisticMapTextureImage = "world_ga_worldmap_5_2";
+        string ballisticMapTextureImage = null;
         string ballisticMapMeshFile = null;
         float ballisticMapMeshScale = 1.0f;
 
