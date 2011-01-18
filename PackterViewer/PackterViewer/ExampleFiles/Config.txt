@@ -139,3 +139,11 @@
 # GatewayBoardTextureFile: 中継地点に表示されるオブジェクトのテクスチャを指定します。default では未設定です
 #GatewayBoardTextureFile =
 
+# IPv4XAxisStart: X軸のIPv4アドレス表記での開始位置
+#IPv4XAxisStart = 0.0.0.0
+# IPv4XAxisEnd: X軸のIPv4アドレス表記での終了位置
+#IPv4XAxisEnd = 255.255.255.255
+# IPv4YAxisStart: Y軸(上下方向)のIPv4アドレス表記での開始位置
+#IPv4YAxisStart = 0.0.0.0
+# IPv4YAxisEnd: Y軸(上下方向)のIPv4アドレス表記での終了位置
+#IPv4YAxisEnd = 255.255.255.255

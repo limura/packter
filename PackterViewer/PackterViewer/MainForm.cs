@@ -228,7 +228,7 @@ namespace WinFormsGraphicsDevice
                                 {
                                     System.Diagnostics.Process.Start(startInfo);
                                 }
-                                catch (System.ComponentModel.Win32Exception w32error)
+                                catch (System.ComponentModel.Win32Exception)
                                 {
                                     //PutLog(e.Message);
                                 }
