@@ -9,6 +9,27 @@ namespace PackterViewer
 {
     class ConfigReader
     {
+        private static volatile ConfigReader instance;
+        private static object syncObject = new Object();
+
+        private ConfigReader() { }
+
+        public static ConfigReader Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    lock (syncObject)
+                    {
+                        if (instance == null)
+                            instance = new ConfigReader();
+                    }
+                }
+                return instance;
+            }
+        }
+        
         float defaultScale = 8.0f;
         string sofTalkPath = "softalk\\softalkw.exe";
         string packterMSGString1 = "<html lang=\"ja\"><body>";
@@ -40,10 +61,10 @@ namespace PackterViewer
         string ballisticMapMeshFile = null;
         float ballisticMapMeshScale = 1.0f;
         bool gatewayBoardEnabled = false;
-        float IPv4_XaxisStart = 0.0f;
-        float IPv4_XaxisEnd = 1.0f;
-        float IPv4_YaxisStart = 0.0f;
-        float IPv4_YaxisEnd = 1.0f;
+        float xAxisStart = 0.0f;
+        float xAxisEnd = 1.0f;
+        float yAxisStart = 0.0f;
+        float yAxisEnd = 1.0f;
 
         public enum ProgramMode
         {
@@ -186,21 +207,21 @@ namespace PackterViewer
         {
             get { return gatewayBoardEnabled; }
         }
-        public float IPv4XaxisStart
+        public float XAxisStart
         {
-            get { return IPv4_XaxisStart; }
+            get { return xAxisStart; }
         }
-        public float IPv4XaxisEnd
+        public float XAxisEnd
         {
-            get { return IPv4_XaxisEnd; }
+            get { return xAxisEnd; }
         }
-        public float IPv4YaxisStart
+        public float YAxisStart
         {
-            get { return IPv4_YaxisStart; }
+            get { return yAxisStart; }
         }
-        public float IPv4YaxisEnd
+        public float YAxisEnd
         {
-            get { return IPv4_YaxisEnd; }
+            get { return yAxisEnd; }
         }
 
         bool ConvertToFloat(string str, out float val)
@@ -362,24 +383,24 @@ namespace PackterViewer
                         i++; continue;
                     }
 
-                    if (key == "/ipv4xaxisstart" && !string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                    if (key == "/xaxisstart" && !string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
                     {
-                        IPv4_XaxisStart = tmpFloat;
+                        xAxisStart = tmpFloat;
                         continue;
                     }
-                    if (key == "/ipv4xaxisend" && !string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                    if (key == "/xaxisend" && !string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
                     {
-                        IPv4_XaxisEnd = tmpFloat;
+                        xAxisEnd = tmpFloat;
                         continue;
                     }
-                    if (key == "/ipv4yaxisstart" && !string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                    if (key == "/yaxisstart" && !string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
                     {
-                        IPv4_YaxisStart = tmpFloat;
+                        yAxisStart = tmpFloat;
                         continue;
                     }
-                    if (key == "/ipv4yaxisend" && !string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                    if (key == "/yaxisend" && !string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
                     {
-                        IPv4_YaxisEnd = tmpFloat;
+                        yAxisEnd = tmpFloat;
                         continue;
                     }
                 }
@@ -671,31 +692,31 @@ namespace PackterViewer
                                 }
                                 break;
 
-                            case "ipv4xaxisstart":
+                            case "xaxisstart":
                                 if (!string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
                                 {
-                                    IPv4_XaxisStart = tmpFloat;
+                                    xAxisStart = tmpFloat;
                                 }
                                 break;
 
-                            case "ipv4xaxisend":
+                            case "xaxisend":
                                 if (!string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
                                 {
-                                    IPv4_XaxisEnd = tmpFloat;
+                                    xAxisEnd = tmpFloat;
                                 }
                                 break;
 
-                            case "ipv4yaxisstart":
+                            case "yaxisstart":
                                 if (!string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
                                 {
-                                    IPv4_YaxisStart = tmpFloat;
+                                    yAxisStart = tmpFloat;
                                 }
                                 break;
 
-                            case "ipv4yaxisend":
+                            case "yaxisend":
                                 if (!string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
                                 {
-                                    IPv4_YaxisEnd = tmpFloat;
+                                    yAxisEnd = tmpFloat;
                                 }
                                 break;
 

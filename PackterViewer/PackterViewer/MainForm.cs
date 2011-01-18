@@ -30,7 +30,6 @@ namespace WinFormsGraphicsDevice
     /// </summary>
     public partial class MainForm : Form
     {
-        ConfigReader configReader = new ConfigReader();
         ContentBuilder contentBuilder;
         ContentManager contentManager;
         string caractorImageFile = null;
@@ -51,15 +50,15 @@ namespace WinFormsGraphicsDevice
         {
             InitializeComponent();
 
-            configReader.ParseArgs(args);
-            webBrowserVisibleChangeTimer.Interval = configReader.MsgBoxCloseTimeSec;
+            ConfigReader.Instance.ParseArgs(args);
+            webBrowserVisibleChangeTimer.Interval = ConfigReader.Instance.MsgBoxCloseTimeSec;
 
             contentBuilder = new ContentBuilder();
             contentManager = new ContentManager(packterDisplayControl.Services, contentBuilder.OutputDirectory);
-            packterDisplayControl.RegisterData(contentBuilder, contentManager, configReader.DefaultScale, configReader);
-            if (configReader.TickKeyInputAcceptMicrosecond != null)
+            packterDisplayControl.RegisterData(contentBuilder, contentManager, ConfigReader.Instance.DefaultScale);
+            if (ConfigReader.Instance.TickKeyInputAcceptMicrosecond != null)
             {
-                packterDisplayControl.OverrideKeyInputAcceptGapTimeMicrosecond(configReader.TickKeyInputAcceptMicrosecond.GetValueOrDefault());
+                packterDisplayControl.OverrideKeyInputAcceptGapTimeMicrosecond(ConfigReader.Instance.TickKeyInputAcceptMicrosecond.GetValueOrDefault());
             }
 
             intervalTimer.Tick += new System.EventHandler(intervalTimer_Tick);
@@ -75,11 +74,11 @@ namespace WinFormsGraphicsDevice
             seThread = new System.Threading.Thread(new System.Threading.ThreadStart(SeThreadMain));
             seThread.Start();
 
-            if (configReader.XACTEnabled)
+            if (ConfigReader.Instance.XACTEnabled)
             {
-                audioEngine = new Microsoft.Xna.Framework.Audio.AudioEngine(configReader.XACTFileForAudioEngine);
-                waveBank = new Microsoft.Xna.Framework.Audio.WaveBank(audioEngine, configReader.XACTFileForWaveBank);
-                soundBank = new Microsoft.Xna.Framework.Audio.SoundBank(audioEngine, configReader.XACTFileForSoundBank);
+                audioEngine = new Microsoft.Xna.Framework.Audio.AudioEngine(ConfigReader.Instance.XACTFileForAudioEngine);
+                waveBank = new Microsoft.Xna.Framework.Audio.WaveBank(audioEngine, ConfigReader.Instance.XACTFileForWaveBank);
+                soundBank = new Microsoft.Xna.Framework.Audio.SoundBank(audioEngine, ConfigReader.Instance.XACTFileForSoundBank);
             }
 
             System.Windows.Forms.Application.Idle += delegate
@@ -142,29 +141,29 @@ namespace WinFormsGraphicsDevice
                                 string numString = msgString.Substring(0, pos);
                                 imgFileName = numString;
                                 string htmlString = msgString.Substring(pos + 1);
-                                targetHtml = configReader.PackterMSGString1 + htmlString + configReader.PackterMSGString2;
+                                targetHtml = ConfigReader.Instance.PackterMSGString1 + htmlString + ConfigReader.Instance.PackterMSGString2;
                             }
                         }
                         if (!string.IsNullOrEmpty(targetHtml))
                         {
                             // ’†‚É“ü‚Á‚Ä‚¢‚é•¶Žš—ñ‚ð’u‚«Š·‚¦‚é
-                            Dictionary<string, string> convertList = configReader.HtmlConvertList;
+                            Dictionary<string, string> convertList = ConfigReader.Instance.HtmlConvertList;
                             foreach (string key in convertList.Keys)
                             {
                                 targetHtml = targetHtml.Replace(key, convertList[key]);
                             }
-                            string dirTarget = configReader.HtmlConvertToCurrentDirTarget;
+                            string dirTarget = ConfigReader.Instance.HtmlConvertToCurrentDirTarget;
                             if (!string.IsNullOrEmpty(dirTarget))
                             {
                                 System.Uri currentDirUri = new System.Uri(System.IO.Directory.GetCurrentDirectory());
                                 targetHtml = targetHtml.Replace(dirTarget, currentDirUri.AbsolutePath + "/");
                             }
-                            string widthTarget = configReader.HtmlConvertToCurrentWidthTarget;
+                            string widthTarget = ConfigReader.Instance.HtmlConvertToCurrentWidthTarget;
                             if (!string.IsNullOrEmpty(widthTarget))
                             {
                                 targetHtml = targetHtml.Replace(widthTarget, webBrowser.Width.ToString());
                             }
-                            string heightTarget = configReader.HtmlConvertToCurrentHeightTarget;
+                            string heightTarget = ConfigReader.Instance.HtmlConvertToCurrentHeightTarget;
                             if (!string.IsNullOrEmpty(heightTarget))
                             {
                                 targetHtml = targetHtml.Replace(heightTarget, webBrowser.Height.ToString());
@@ -220,7 +219,7 @@ namespace WinFormsGraphicsDevice
                             if (targetList.Count > 0 && !string.IsNullOrEmpty(targetList[targetList.Count - 1]))
                             {
                                 System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                                startInfo.FileName = configReader.SofTalkPath;
+                                startInfo.FileName = ConfigReader.Instance.SofTalkPath;
                                 startInfo.Arguments = targetList[targetList.Count - 1];
                                 startInfo.CreateNoWindow = true;
                                 startInfo.UseShellExecute = true;
@@ -294,7 +293,7 @@ namespace WinFormsGraphicsDevice
 
         void SeThreadMain()
         {
-            for (int i = 0; i < configReader.MaxSENum; i++)
+            for (int i = 0; i < ConfigReader.Instance.MaxSENum; i++)
             {
                 WMPLib.WindowsMediaPlayer player = new WMPLib.WindowsMediaPlayer();
                 if (player != null)
