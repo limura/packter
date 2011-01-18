@@ -40,6 +40,10 @@ namespace PackterViewer
         string ballisticMapMeshFile = null;
         float ballisticMapMeshScale = 1.0f;
         bool gatewayBoardEnabled = false;
+        float IPv4_XaxisStart = 0.0f;
+        float IPv4_XaxisEnd = 1.0f;
+        float IPv4_YaxisStart = 0.0f;
+        float IPv4_YaxisEnd = 1.0f;
 
         public enum ProgramMode
         {
@@ -182,6 +186,22 @@ namespace PackterViewer
         {
             get { return gatewayBoardEnabled; }
         }
+        public float IPv4XaxisStart
+        {
+            get { return IPv4_XaxisStart; }
+        }
+        public float IPv4XaxisEnd
+        {
+            get { return IPv4_XaxisEnd; }
+        }
+        public float IPv4YaxisStart
+        {
+            get { return IPv4_YaxisStart; }
+        }
+        public float IPv4YaxisEnd
+        {
+            get { return IPv4_YaxisEnd; }
+        }
 
         bool ConvertToFloat(string str, out float val)
         {
@@ -191,6 +211,16 @@ namespace PackterViewer
                 val = float.Parse(str);
             }
             catch
+            {
+                return false;
+            }
+            return true;
+        }
+
+        bool ConvertIPv4ToFloat(string str, out float val)
+        {
+            val = IPv4Tools.IPString2float(str);
+            if (val < 0.0f)
             {
                 return false;
             }
@@ -331,7 +361,27 @@ namespace PackterViewer
                         ballisticMapMeshScale = tmpFloat;
                         i++; continue;
                     }
-                
+
+                    if (key == "/ipv4xaxisstart" && !string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                    {
+                        IPv4_XaxisStart = tmpFloat;
+                        continue;
+                    }
+                    if (key == "/ipv4xaxisend" && !string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                    {
+                        IPv4_XaxisEnd = tmpFloat;
+                        continue;
+                    }
+                    if (key == "/ipv4yaxisstart" && !string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                    {
+                        IPv4_YaxisStart = tmpFloat;
+                        continue;
+                    }
+                    if (key == "/ipv4yaxisend" && !string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                    {
+                        IPv4_YaxisEnd = tmpFloat;
+                        continue;
+                    }
                 }
 
                 if (key == "/enableskydome")
@@ -618,6 +668,34 @@ namespace PackterViewer
                                     {
                                         gatewayBoardEnabled = false;
                                     }
+                                }
+                                break;
+
+                            case "ipv4xaxisstart":
+                                if (!string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                                {
+                                    IPv4_XaxisStart = tmpFloat;
+                                }
+                                break;
+
+                            case "ipv4xaxisend":
+                                if (!string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                                {
+                                    IPv4_XaxisEnd = tmpFloat;
+                                }
+                                break;
+
+                            case "ipv4yaxisstart":
+                                if (!string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                                {
+                                    IPv4_YaxisStart = tmpFloat;
+                                }
+                                break;
+
+                            case "ipv4yaxisend":
+                                if (!string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                                {
+                                    IPv4_YaxisEnd = tmpFloat;
                                 }
                                 break;
 

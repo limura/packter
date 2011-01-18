@@ -68,6 +68,7 @@
     <Compile Include="FlyPacketBallistic.cs" />
     <Compile Include="FlyPacketLay.cs" />
     <Compile Include="FlyPacketWithGateway.cs" />
+    <Compile Include="IPv4Tools.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
