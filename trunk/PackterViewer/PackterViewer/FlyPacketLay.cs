@@ -126,6 +126,22 @@ namespace Packter_viewer
                 return false;
             if ((dstPort = String2float(words[3])) < 0)
                 return false;
+            // srcAddress, dstAddres, srcPort, dstPort ‚ð ConfigReader.Instance.XAxsisStart “™‚Å•â³‚µ‚Ü‚·B
+            float xWidth = ConfigReader.Instance.XAxisEnd - ConfigReader.Instance.XAxisStart;
+            if (xWidth <= 0.001f)
+            {
+                xWidth = 1.0f;
+            }
+            float yWidth = ConfigReader.Instance.YAxisEnd - ConfigReader.Instance.YAxisStart;
+            if (yWidth <= 0.001f)
+            {
+                yWidth = 1.0f;
+            }
+            srcAddress = (srcAddress - ConfigReader.Instance.XAxisStart) / xWidth;
+            dstAddress = (dstAddress - ConfigReader.Instance.XAxisStart) / xWidth;
+            srcPort = (srcPort - ConfigReader.Instance.YAxisStart) / yWidth;
+            dstPort = (dstPort - ConfigReader.Instance.YAxisStart) / yWidth;
+
             packetImageString = words[4];
             if (byte.TryParse(words[4], out packetImageNumber) == false)
                 packetImageNumber = 0;
@@ -133,43 +149,6 @@ namespace Packter_viewer
             originalString = line;
             
             return true;
-#if false // good old bunary format reader.
-            int size = buffer.Length;
-            // srcAddress
-            if (size - start - 4 < 0)
-                return false;
-            srcAddress = (UInt32)((buffer[start] << 24) + (buffer[start + 1] << 16) + (buffer[start + 2] << 8) + buffer[start + 3]);
-            start += 4;
-
-            // dstAddress
-            if (size - start - 4 < 0)
-                return false;
-            dstAddress = (UInt32)((buffer[start] << 24) + (buffer[start + 1] << 16) + (buffer[start + 2] << 8) + buffer[start + 3]);
-            start += 4;
-
-            // srcPort
-            if (size - start - 2 < 0)
-                return false;
-            srcPort = (UInt16)((buffer[start] << 8) + buffer[start + 1]);
-            start += 2;
-
-            // dstPort
-            if (size - start - 2 < 0)
-                return false;
-            dstPort = (UInt16)((buffer[start] << 8) + buffer[start + 1]);
-            start += 2;
-
-            // packetImageNumber
-            if (size - start - 1 < 0)
-                return false;
-            packetImageNumber = buffer[start];
-            start += 1;
-
-            // dummy maybe '\n'
-            start += 1;
-            
-            return false;
-#endif
         }
 
         public bool setResult(StreamReader reader)

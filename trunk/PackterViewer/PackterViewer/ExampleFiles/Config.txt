@@ -139,11 +139,17 @@
 # GatewayBoardTextureFile: 中継地点に表示されるオブジェクトのテクスチャを指定します。default では未設定です
 #GatewayBoardTextureFile =
 
-# IPv4XAxisStart: X軸のIPv4アドレス表記での開始位置
-#IPv4XAxisStart = 0.0.0.0
-# IPv4XAxisEnd: X軸のIPv4アドレス表記での終了位置
-#IPv4XAxisEnd = 255.255.255.255
-# IPv4YAxisStart: Y軸(上下方向)のIPv4アドレス表記での開始位置
-#IPv4YAxisStart = 0.0.0.0
-# IPv4YAxisEnd: Y軸(上下方向)のIPv4アドレス表記での終了位置
-#IPv4YAxisEnd = 255.255.255.255
+# XAxisStart: 表示されるパケットのX軸の開始位置。
+#IPv4表記(0.0.0.0～255.255.255.255まで)か、0.1 等のfloat表記で 0.0～1.0 までかのどちらかで記述できます。
+#XAxisStart = 0.0.0.0
+XAxisStart = 0.5
+# XAxisEnd: 表示されるパケットのX軸の終了位置
+#IPv4表記(0.0.0.0～255.255.255.255まで)か、0.1 等のfloat表記で 0.0～1.0 までかのどちらかで記述できます。
+#XAxisEnd = 255.255.255.255
+XAxisEnd = 200.255.255.255
+# YAxisStart: 表示されるパケットのY軸(上下方向)の開始位置
+#IPv4表記(0.0.0.0～255.255.255.255まで)か、0.1 等のfloat表記で 0.0～1.0 までかのどちらかで記述できます。
+#YAxisStart = 0.0.0.0
+# YAxisEnd: 表示されるパケットのY軸(上下方向)の終了位置
+#IPv4表記(0.0.0.0～255.255.255.255まで)か、0.1 等のfloat表記で 0.0～1.0 までかのどちらかで記述できます。
+#YAxisEnd = 255.255.255.255

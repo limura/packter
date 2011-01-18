@@ -39,7 +39,6 @@ namespace Packter_viewer2
         Stopwatch timer;
         Dictionary<System.Windows.Forms.Keys, int> EnableKeyMap = new Dictionary<System.Windows.Forms.Keys,int>();
         Dictionary<System.Windows.Forms.Keys, DateTime> KeyHitMap = new Dictionary<System.Windows.Forms.Keys, DateTime>();
-        ConfigReader configReader = null;
         ContentLoader contentLoader = new ContentLoader();
 
         System.Threading.Mutex mutex = new System.Threading.Mutex();
@@ -214,7 +213,7 @@ namespace Packter_viewer2
                 , startPoint, endPoint, nowGameTime, flyMillisecond, packet.OriginalString);
 #else
             PacketBoard pb = null;
-            switch(configReader.Mode){
+            switch(ConfigReader.Instance.Mode){
                 case ConfigReader.ProgramMode.Ballistic:
                     pb = packet.CreatePacketBoard(targetModel, targetTexture, defaultScale
                             , ballisticBoardBoundingBox.Min, ballisticBoardBoundingBox.Max, flyMillisecond);
@@ -227,7 +226,7 @@ namespace Packter_viewer2
 #endif
             pb.Scale = defaultScale;
             // 標準が "board" でないか、標準の model でなければ lighting を true にする
-            if (targetModel != packetModel || configReader.LoadPacketTarget != "board")
+            if (targetModel != packetModel || ConfigReader.Instance.LoadPacketTarget != "board")
                 pb.LightingEnabled = true;
             packetList.Add(pb);
             if (keyboardState.IsKeyDown(Keys.P))
@@ -242,12 +241,11 @@ namespace Packter_viewer2
             base.OnCreateControl();
         }
 
-        public void RegisterData(ContentBuilder builder, ContentManager manager, float DefaultScale, ConfigReader reader)
+        public void RegisterData(ContentBuilder builder, ContentManager manager, float DefaultScale)
         {
             manager.RootDirectory = builder.OutputDirectory;
             contentLoader.Initialize(builder, manager, Services, GraphicsDevice);
             defaultScale = DefaultScale;
-            configReader = reader;
 
             LoadContent();
         }
@@ -366,7 +364,7 @@ namespace Packter_viewer2
             font = contentLoader.GetSpriteFont("font");
             v4Texture = contentLoader.GetTexture2D("v4");
 
-            if (configReader.SkydomeEnabled)
+            if (ConfigReader.Instance.SkydomeEnabled)
             {
                 Model tmpModel = contentLoader.GetModel("skydome");
                 if (tmpModel != null)
@@ -375,7 +373,7 @@ namespace Packter_viewer2
                     skyModel.Position = new Vector3(0, 0, 0);
                     skyModel.Scale = 2000.0f;
                     skyModel.SkyBoxEnabled = true;
-                    Texture2D tmpTexture = contentLoader.GetTexture2D(configReader.SkydomeTexture);
+                    Texture2D tmpTexture = contentLoader.GetTexture2D(ConfigReader.Instance.SkydomeTexture);
                     if (tmpTexture != null)
                     {
                         skyModel.Texture = tmpTexture;
@@ -383,7 +381,7 @@ namespace Packter_viewer2
                 }
             }
 
-            switch (configReader.LoadPacketTarget)
+            switch (ConfigReader.Instance.LoadPacketTarget)
             {
                 case "board":
                     packetModel = contentLoader.GetModel("board");
@@ -395,10 +393,11 @@ namespace Packter_viewer2
             LoadPacketModelList(packetModel);
 
             // sender と receiver の板を load する
-            switch(configReader.Mode){
+            switch (ConfigReader.Instance.Mode)
+            {
                 case ConfigReader.ProgramMode.SenderReceiver:
                     {
-                        Model tmpModel = contentLoader.GetModel(configReader.SenderBoardFile);
+                        Model tmpModel = contentLoader.GetModel(ConfigReader.Instance.SenderBoardFile);
                         if (tmpModel == null)
                         {
                             tmpModel = contentLoader.GetModel("board");
@@ -428,12 +427,12 @@ namespace Packter_viewer2
                         {
                             senderBoard = new Board(tmpModel);
                             senderBoard.Position = new Vector3(0, 0, -150);
-                            senderBoard.Scale = configReader.SenderBoardScale;
+                            senderBoard.Scale = ConfigReader.Instance.SenderBoardScale;
                             senderBoard.LightingEnabled = true;
-                            senderBoard.Texture = contentLoader.GetTexture2D(configReader.SenderBoardTextureFile);
+                            senderBoard.Texture = contentLoader.GetTexture2D(ConfigReader.Instance.SenderBoardTextureFile);
                         }
 
-                        tmpModel = contentLoader.GetModel(configReader.ReceiverBoardFile);
+                        tmpModel = contentLoader.GetModel(ConfigReader.Instance.ReceiverBoardFile);
                         if (tmpModel == null)
                         {
                             tmpModel = contentLoader.GetModel("board");
@@ -462,12 +461,12 @@ namespace Packter_viewer2
                         {
                             receiverBoard = new Board(tmpModel);
                             receiverBoard.Position = new Vector3(0, 0, 150);
-                            receiverBoard.Scale = configReader.ReceiverBoardScale;
+                            receiverBoard.Scale = ConfigReader.Instance.ReceiverBoardScale;
                             receiverBoard.LightingEnabled = true;
-                            receiverBoard.Texture = contentLoader.GetTexture2D(configReader.ReceiverBoardTextureFile);
+                            receiverBoard.Texture = contentLoader.GetTexture2D(ConfigReader.Instance.ReceiverBoardTextureFile);
                         }
 
-                        tmpModel = contentLoader.GetModel(configReader.GatewayBoardFile);
+                        tmpModel = contentLoader.GetModel(ConfigReader.Instance.GatewayBoardFile);
                         if (tmpModel == null)
                         {
                             tmpModel = contentLoader.GetModel("board");
@@ -496,15 +495,15 @@ namespace Packter_viewer2
                         {
                             gatewayBoard = new Board(tmpModel);
                             gatewayBoard.Position = new Vector3(0, 0, 0);
-                            gatewayBoard.Scale = configReader.GatewayBoardScale;
+                            gatewayBoard.Scale = ConfigReader.Instance.GatewayBoardScale;
                             gatewayBoard.LightingEnabled = true;
-                            gatewayBoard.Texture = contentLoader.GetTexture2D(configReader.GatewayBoardTextureFile);
+                            gatewayBoard.Texture = contentLoader.GetTexture2D(ConfigReader.Instance.GatewayBoardTextureFile);
                         }
                     }
                     break;
                 case ConfigReader.ProgramMode.Ballistic:
                     {
-                        Model tmpModel = contentLoader.GetModel(configReader.BallisticMapMeshFile);
+                        Model tmpModel = contentLoader.GetModel(ConfigReader.Instance.BallisticMapMeshFile);
                         if (tmpModel == contentLoader.GetModel("board") || tmpModel == null)
                         {
                             tmpModel = contentLoader.GetModel("board");
@@ -513,7 +512,7 @@ namespace Packter_viewer2
                             ballisticBoard.RotationMatrix = Matrix.CreateRotationX((float)Math.PI / 2);
                             ballisticBoard.Scale = 100;
 
-                            Texture2D t = contentLoader.GetTexture2D(configReader.BallisticMapTextureImage);
+                            Texture2D t = contentLoader.GetTexture2D(ConfigReader.Instance.BallisticMapTextureImage);
                             if (t == null)
                             {
                                 t = contentLoader.GetTexture2D("world_ga_worldmap_5_2");
@@ -524,9 +523,9 @@ namespace Packter_viewer2
                         {
                             ballisticBoard = new Board(tmpModel);
                             ballisticBoard.Position = new Vector3(0, -100, 0);
-                            ballisticBoard.Scale = configReader.BallisticMapMeshScale;
+                            ballisticBoard.Scale = ConfigReader.Instance.BallisticMapMeshScale;
                             ballisticBoard.LightingEnabled = true;
-                            ballisticBoard.Texture = contentLoader.GetTexture2D(configReader.BallisticMapTextureImage);
+                            ballisticBoard.Texture = contentLoader.GetTexture2D(ConfigReader.Instance.BallisticMapTextureImage);
                             ballisticBoardBoundingBox = CalculateBoundingBox(tmpModel);
                         }
                     }
@@ -571,7 +570,7 @@ namespace Packter_viewer2
             try
             {
                 packetReader_v6 = new Packter_viewer.PacketReader(new IPEndPoint(IPAddress.IPv6Any, 11300));
-                packetReader_v6.Mode = configReader.Mode;
+                packetReader_v6.Mode = ConfigReader.Instance.Mode;
             }
             catch
             {
@@ -580,7 +579,7 @@ namespace Packter_viewer2
             try
             {
                 packetReader_v4 = new Packter_viewer.PacketReader(new IPEndPoint(IPAddress.Any, 11300));
-                packetReader_v4.Mode = configReader.Mode;
+                packetReader_v4.Mode = ConfigReader.Instance.Mode;
             }
             catch
             {
@@ -743,7 +742,7 @@ namespace Packter_viewer2
             if (nowKeyState.IsKeyDown(Keys.O) == true)
             {
                 FlyPacket packet = null;
-                switch (configReader.Mode)
+                switch (ConfigReader.Instance.Mode)
                 {
                     case ConfigReader.ProgramMode.SenderReceiver:
                     default:
@@ -1171,7 +1170,7 @@ namespace Packter_viewer2
             {
                 return;
             }
-            GraphicsDevice.Clear(configReader.BGColor);
+            GraphicsDevice.Clear(ConfigReader.Instance.BGColor);
             //GraphicsDevice.Clear(Color.Bisque);
 
             // 深度バッファを有効にする
