@@ -128,12 +128,12 @@ namespace Packter_viewer
                 return false;
             // srcAddress, dstAddres, srcPort, dstPort ‚ğ ConfigReader.Instance.XAxsisStart “™‚Å•â³‚µ‚Ü‚·B
             float xWidth = ConfigReader.Instance.XAxisEnd - ConfigReader.Instance.XAxisStart;
-            if (xWidth <= 0.001f)
+            if (xWidth < 0.0f)
             {
                 xWidth = 1.0f;
             }
             float yWidth = ConfigReader.Instance.YAxisEnd - ConfigReader.Instance.YAxisStart;
-            if (yWidth <= 0.001f)
+            if (yWidth < 0.0f)
             {
                 yWidth = 1.0f;
             }
