@@ -466,38 +466,42 @@ namespace Packter_viewer2
                             receiverBoard.Texture = contentLoader.GetTexture2D(ConfigReader.Instance.ReceiverBoardTextureFile);
                         }
 
-                        tmpModel = contentLoader.GetModel(ConfigReader.Instance.GatewayBoardFile);
-                        if (tmpModel == null)
+                        if (ConfigReader.Instance.GatewayBoardEnabled == true)
                         {
-                            tmpModel = contentLoader.GetModel("board");
-                            gatewayBoard = new Board(tmpModel);
-                            gatewayBoard.Position = new Vector3(0, 0, 0);
-                            gatewayBoard.RotationMatrix = Matrix.CreateRotationY((float)Math.PI);
-                            gatewayBoard.Scale = 100;
-                            gatewayBoard.Alpha = 0.3f;
 
-                            Texture2D t = null;
-                            try
+                            tmpModel = contentLoader.GetModel(ConfigReader.Instance.GatewayBoardFile);
+                            if (tmpModel == null)
                             {
-                                t = contentLoader.GetTexture2D("packter_gateway.png");
+                                tmpModel = contentLoader.GetModel("board");
+                                gatewayBoard = new Board(tmpModel);
+                                gatewayBoard.Position = new Vector3(0, 0, 0);
+                                gatewayBoard.RotationMatrix = Matrix.CreateRotationY((float)Math.PI);
+                                gatewayBoard.Scale = 100;
+                                gatewayBoard.Alpha = 0.3f;
+
+                                Texture2D t = null;
+                                try
+                                {
+                                    t = contentLoader.GetTexture2D("packter_gateway.png");
+                                }
+                                catch
+                                {
+                                    t = null;
+                                }
+                                if (t == null)
+                                {
+                                    t = contentLoader.GetTexture2D("packter_gateway");
+                                }
+                                gatewayBoard.Texture = t;
                             }
-                            catch
+                            else
                             {
-                                t = null;
+                                gatewayBoard = new Board(tmpModel);
+                                gatewayBoard.Position = new Vector3(0, 0, 0);
+                                gatewayBoard.Scale = ConfigReader.Instance.GatewayBoardScale;
+                                gatewayBoard.LightingEnabled = true;
+                                gatewayBoard.Texture = contentLoader.GetTexture2D(ConfigReader.Instance.GatewayBoardTextureFile);
                             }
-                            if (t == null)
-                            {
-                                t = contentLoader.GetTexture2D("packter_gateway");
-                            }
-                            gatewayBoard.Texture = t;
-                        }
-                        else
-                        {
-                            gatewayBoard = new Board(tmpModel);
-                            gatewayBoard.Position = new Vector3(0, 0, 0);
-                            gatewayBoard.Scale = ConfigReader.Instance.GatewayBoardScale;
-                            gatewayBoard.LightingEnabled = true;
-                            gatewayBoard.Texture = contentLoader.GetTexture2D(ConfigReader.Instance.GatewayBoardTextureFile);
                         }
                     }
                     break;
