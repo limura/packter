@@ -761,5 +761,26 @@ namespace PackterViewer
                 return currentColor;
             }
         }
+
+        public float RevisionXAxis(float value)
+        {
+            // srcAddress, dstAddres, srcPort, dstPort を ConfigReader.Instance.XAxsisStart 等で補正します。
+            float xWidth = ConfigReader.Instance.XAxisEnd - ConfigReader.Instance.XAxisStart;
+            if (float.IsNaN(0.0f / xWidth))
+            {
+                xWidth = 1.0f;
+            }
+
+            return (value - ConfigReader.Instance.XAxisStart) / xWidth;
+        }
+        public float RevisionYAxis(float value)
+        {
+            float yWidth = ConfigReader.Instance.YAxisEnd - ConfigReader.Instance.YAxisStart;
+            if (float.IsNaN(0.0f / yWidth))
+            {
+                yWidth = 1.0f;
+            }
+            return (value - ConfigReader.Instance.XAxisStart) / yWidth;
+        }
     }
 }
