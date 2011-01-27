@@ -126,21 +126,11 @@ namespace Packter_viewer
                 return false;
             if ((dstPort = String2float(words[3])) < 0)
                 return false;
-            // srcAddress, dstAddres, srcPort, dstPort ‚ð ConfigReader.Instance.XAxsisStart “™‚Å•â³‚µ‚Ü‚·B
-            float xWidth = ConfigReader.Instance.XAxisEnd - ConfigReader.Instance.XAxisStart;
-            if (xWidth < 0.0f)
-            {
-                xWidth = 1.0f;
-            }
-            float yWidth = ConfigReader.Instance.YAxisEnd - ConfigReader.Instance.YAxisStart;
-            if (yWidth < 0.0f)
-            {
-                yWidth = 1.0f;
-            }
-            srcAddress = (srcAddress - ConfigReader.Instance.XAxisStart) / xWidth;
-            dstAddress = (dstAddress - ConfigReader.Instance.XAxisStart) / xWidth;
-            srcPort = (srcPort - ConfigReader.Instance.YAxisStart) / yWidth;
-            dstPort = (dstPort - ConfigReader.Instance.YAxisStart) / yWidth;
+
+            srcAddress = ConfigReader.Instance.RevisionXAxis(srcAddress);
+            dstAddress = ConfigReader.Instance.RevisionXAxis(dstAddress);
+            srcPort = ConfigReader.Instance.RevisionXAxis(srcPort);
+            dstPort = ConfigReader.Instance.RevisionXAxis(dstPort);
 
             packetImageString = words[4];
             if (byte.TryParse(words[4], out packetImageNumber) == false)

@@ -177,6 +177,11 @@ namespace Packter_viewer
                 return false;
             if ((gatewayPort = String2float(words[5])) < 0)
                 return false;
+
+            srcAddress = ConfigReader.Instance.RevisionXAxis(srcAddress);
+            dstAddress = ConfigReader.Instance.RevisionXAxis(dstAddress);
+            srcPort = ConfigReader.Instance.RevisionXAxis(srcPort);
+            dstPort = ConfigReader.Instance.RevisionXAxis(dstPort);
             
             packetImageString = words[6];
             if (byte.TryParse(words[7], out packetImageNumber) == false)
