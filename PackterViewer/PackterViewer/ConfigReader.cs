@@ -65,6 +65,7 @@ namespace PackterViewer
         float xAxisEnd = 1.0f;
         float yAxisStart = 0.0f;
         float yAxisEnd = 1.0f;
+        ushort bindPort = 11300;
 
         public enum ProgramMode
         {
@@ -222,6 +223,10 @@ namespace PackterViewer
         public float YAxisEnd
         {
             get { return yAxisEnd; }
+        }
+        public ushort BindPort
+        {
+            get { return bindPort; }
         }
 
         bool ConvertToFloat(string str, out float val)
@@ -403,6 +408,12 @@ namespace PackterViewer
                         yAxisEnd = tmpFloat;
                         continue;
                     }
+                    if (key == "/bindport" && !string.IsNullOrEmpty(value) && Convert.ToUInt16(value) > 0 && Convert.ToUInt16(value) <= 65535)
+                    {
+                        bindPort = Convert.ToUInt16(value);
+                        continue;
+                    }
+
                 }
 
                 if (key == "/enableskydome")
@@ -689,6 +700,13 @@ namespace PackterViewer
                                     {
                                         gatewayBoardEnabled = false;
                                     }
+                                }
+                                break;
+
+                            case "bindport":
+                                if (!string.IsNullOrEmpty(value) && Convert.ToUInt16(value) > 0 && Convert.ToUInt16(value) <= 65535)
+                                {
+                                    bindPort = Convert.ToUInt16(value);
                                 }
                                 break;
 

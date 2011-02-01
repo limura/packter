@@ -573,7 +573,7 @@ namespace Packter_viewer2
 
             try
             {
-                packetReader_v6 = new Packter_viewer.PacketReader(new IPEndPoint(IPAddress.IPv6Any, 11300));
+                packetReader_v6 = new Packter_viewer.PacketReader(new IPEndPoint(IPAddress.IPv6Any, ConfigReader.Instance.BindPort));
                 packetReader_v6.Mode = ConfigReader.Instance.Mode;
             }
             catch
@@ -582,7 +582,7 @@ namespace Packter_viewer2
             }
             try
             {
-                packetReader_v4 = new Packter_viewer.PacketReader(new IPEndPoint(IPAddress.Any, 11300));
+                packetReader_v4 = new Packter_viewer.PacketReader(new IPEndPoint(IPAddress.Any, ConfigReader.Instance.BindPort));
                 packetReader_v4.Mode = ConfigReader.Instance.Mode;
             }
             catch
