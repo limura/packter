@@ -37,6 +37,7 @@
 #include <arpa/inet.h>
 #include <sys/time.h>
 #include <netdb.h>
+#include <pwd.h>
 
 #include <pcap.h>
 
@@ -91,15 +92,18 @@ int main(int argc, char *argv[])
 	int viewer = PACKTER_FALSE;
 	int snort = PACKTER_FALSE;
 
+	/* setuid */
+	struct passwd *pw;
+
 	progname = argv[0];
 
 	packter_init();
 
 	/* getopt */
 #ifdef USE_INET6
-	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:us6dh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:u:g:Us6dh?")) != -1) 
 #else
-	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:usdh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:u:g:Usdh?")) != -1) 
 #endif
 	{
 		switch (op) {
@@ -138,7 +142,22 @@ int main(int argc, char *argv[])
 			enable_sound = PACKTER_TRUE;
 			break;
 
-		case 'u': /* read from snort */
+		case 'u': /* setuid */
+			if ((pw = getpwnam(optarg)) == NULL){
+				fprintf(stderr, "unknown username: %s\n", optarg);
+				exit(EXIT_FAILURE);
+			}
+			if (setgid(pw->pw_gid) < 0){
+				perror("setgid");
+				exit(EXIT_FAILURE);
+			}
+			if (setuid(pw->pw_uid) < 0){
+				perror("setuid");
+				exit(EXIT_FAILURE);
+			}
+			break;
+
+		case 'U': /* read from snort */
 			snort = PACKTER_TRUE;
 			break;
 
@@ -387,7 +406,8 @@ packter_usage(void)
 	printf("      -i [ Monitor device ] (optional)\n");
 	printf("      -r [ Pcap dump file ] (optional)\n");
 	printf("      -f [ Flab base ] (optional: default 0)\n");
-	printf("      -u ( Read from Snort's UNIX domain socket: optional)\n");
+	printf("      -u [ Run as another username ] (optional)\n");
+	printf("      -U ( Read from Snort's UNIX domain socket: optional)\n");
 	printf("      -d ( Show debug information: optional)\n");
 	printf("      -R [ Random droprate ] (optional)\n");
 	printf("      -T [ Traceback Client ] (optional)\n");
