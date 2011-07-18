@@ -87,4 +87,4 @@ IPTB_FAILED_VOICE=/T:1 /W:トレースバックに失敗しました
 IPTB_OPT_HASH=<font color=black face="メイリオ">ハッシュ値：</font>
 
 IPTB_SKYDOME_START=texture2.bmp
-IPTB_SKYDOME_DONE=skydometexture.bmp
+IPTB_SKYDOME_DONE=texture1.bmp
