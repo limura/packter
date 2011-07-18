@@ -14,17 +14,17 @@ namespace PackterViewer
         /// </summary>
         /// <param name="str">IPv4のアドレス表記(255.255.255.255のような奴)</param>
         /// <returns>IPv4アドレス表記を 0 から1.0fまでの float へと変換したもの</returns>
-        public static float IPString2float(string str)
+        public static double IPString2Double(string str)
         {
             try
             {
                 if (str == null || str.Length <= 0)
                     return -1;
-                float f = 0;
+                double d = 0;
                 // 0.1 のような表記の場合はそれを float だと思って変換する。
-                if (str.IndexOf('.') >= 0 && str.IndexOf('.') == str.LastIndexOf('.') && float.TryParse(str, out f) == true && f < 1 && f >= 0)
+                if (str.IndexOf('.') >= 0 && str.IndexOf('.') == str.LastIndexOf('.') && double.TryParse(str, out d) == true && d < 1 && d >= 0)
                 {
-                    return f;
+                    return d;
                 }
                 IPAddress addr = IPAddress.Parse(str);
                 if (addr == null)
@@ -35,16 +35,16 @@ namespace PackterViewer
                 if (ba.Length < 4)
                     return -1.0f;
 
-                f = 0;
-                float fmax = 0;
+                d = 0;
+                double dmax = 0;
                 foreach (byte b in ba)
                 {
-                    f = f * 256 + b;
-                    fmax = fmax * 256 + 255;
+                    d = d * 256 + b;
+                    dmax = dmax * 256 + 255;
                 }
-                return f / fmax;
+                return d / dmax;
             }
-            catch { return -1.0f; }
+            catch { return -1.0; }
         }
     }
 }

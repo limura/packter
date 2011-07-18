@@ -25,10 +25,10 @@ namespace Packter_viewer
 {
     class FlyPacketLay : FlyPacket
     {
-        float srcAddress = 0;
-        float dstAddress = 0;
-        float srcPort = 0;
-        float dstPort = 0;
+        double srcAddress = 0;
+        double dstAddress = 0;
+        double srcPort = 0;
+        double dstPort = 0;
         byte packetImageNumber = 0;
         string packetImageString = null;
         string packetDescription = null;
@@ -45,7 +45,7 @@ namespace Packter_viewer
             startGameTime = new GameTime();
         }
 
-        public FlyPacketLay(float sourceAddress, float sourcePort, float destinationAddress, float destinationPort
+        public FlyPacketLay(double sourceAddress, double sourcePort, double destinationAddress, double destinationPort
             , byte imageNumber, string description, GameTime createdGameTime)
         {
             srcAddress = sourceAddress;
@@ -59,23 +59,23 @@ namespace Packter_viewer
             originalString = String.Format("{0}, {1}, {2}, {3}, {4}, {5}"
                 , sourceAddress, sourcePort, destinationAddress, destinationPort, description, imageNumber);
         }
-        
-        public float SrcAddress
+
+        public double SrcAddress
         {
             get { return srcAddress; }
         }
-        
-        public float DstAddress
+
+        public double DstAddress
         {
             get { return dstAddress; }
         }
-        
-        public float SrcPort
+
+        public double SrcPort
         {
             get { return srcPort; }
         }
-        
-        public float DstPort
+
+        public double DstPort
         {
             get { return dstPort; }
         }
@@ -100,19 +100,19 @@ namespace Packter_viewer
             set { startGameTime = value; }
         }
 
-        float String2float(string str)
+        double String2Double(string str)
         {
             try
             {
                 if (str == null || str.Length <= 0)
                     return -1;
-                float f;
-                if (float.TryParse(str, out f) == false)
+                double d;
+                if (double.TryParse(str, out d) == false)
                     return -1;
-                if (f >= 1 && f <= 65536 && str.IndexOf('.') < 0)
-                    return f / 65536.0f;
-                if (f >= 0 && f <= 1)
-                    return f;
+                if (d >= 1 && d <= 65536 && str.IndexOf('.') < 0)
+                    return d / 65536.0;
+                if (d >= 0 && d <= 1)
+                    return d;
                 return -1;
             }
             catch { return -1; }
@@ -127,19 +127,19 @@ namespace Packter_viewer
             string[] words = line.Split(delimiters);
             if (words.Length < 6)
                 return false;
-            if ((srcAddress = IPv4Tools.IPString2float(words[0])) < 0)
+            if ((srcAddress = IPv4Tools.IPString2Double(words[0])) < 0)
                 return false;
-            if ((dstAddress = IPv4Tools.IPString2float(words[1])) < 0)
+            if ((dstAddress = IPv4Tools.IPString2Double(words[1])) < 0)
                 return false;
-            if ((srcPort = String2float(words[2])) < 0)
+            if ((srcPort = String2Double(words[2])) < 0)
                 return false;
-            if ((dstPort = String2float(words[3])) < 0)
+            if ((dstPort = String2Double(words[3])) < 0)
                 return false;
 
             srcAddress = ConfigReader.Instance.RevisionXAxis(srcAddress);
             dstAddress = ConfigReader.Instance.RevisionXAxis(dstAddress);
-            srcPort = ConfigReader.Instance.RevisionXAxis(srcPort);
-            dstPort = ConfigReader.Instance.RevisionXAxis(dstPort);
+            srcPort = ConfigReader.Instance.RevisionYAxis(srcPort);
+            dstPort = ConfigReader.Instance.RevisionYAxis(dstPort);
 
             packetImageString = words[4];
             if (byte.TryParse(words[4], out packetImageNumber) == false)
@@ -173,10 +173,10 @@ namespace Packter_viewer
 
         public PacketBoard CreatePacketBoard(Model model, Texture2D texture, float defaultScale, Vector3 senderPosition, Vector3 receiverPosition, float flyMillisecond)
         {
-            float srcX = this.SrcAddress;
-            float srcY = this.SrcPort;
-            float dstX = this.DstAddress;
-            float dstY = this.DstPort;
+            float srcX = (float)this.SrcAddress;
+            float srcY = (float)this.SrcPort;
+            float dstX = (float)this.DstAddress;
+            float dstY = (float)this.DstPort;
             byte imageNumber = this.PacketImageNumber;
             string fileName = this.PacketImageString;
             GameTime nowGameTime = new GameTime(this.startGameTime.TotalRealTime + diffTimeSpan
