@@ -133,8 +133,8 @@ namespace Packter_viewer
 
             srcAddress = ConfigReader.Instance.RevisionXAxis(srcAddress);
             dstAddress = ConfigReader.Instance.RevisionXAxis(dstAddress);
-            srcPort = ConfigReader.Instance.RevisionXAxis(srcPort);
-            dstPort = ConfigReader.Instance.RevisionXAxis(dstPort);
+            srcPort = ConfigReader.Instance.RevisionYAxis(srcPort);
+            dstPort = ConfigReader.Instance.RevisionYAxis(dstPort);
 
             System.Diagnostics.Debug.WriteLine(srcAddress.ToString() + ", " + srcPort.ToString() + " => " + dstAddress.ToString() + ", " + dstPort.ToString());
             packetImageString = words[4];
