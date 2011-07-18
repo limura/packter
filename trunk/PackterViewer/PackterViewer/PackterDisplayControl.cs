@@ -1023,7 +1023,8 @@ namespace Packter_viewer2
                     foreach (FlyPacket packet in newPackets)
                     {
                         //packet.CreatedGameTime = gameTime;
-                        packet.StartGameTime = startGameTime;
+                        //packet.StartGameTime = startGameTime;
+                        packet.StartGameTime = gameTime;
                         AddPacketBoard(packet);
                     }
                 }
