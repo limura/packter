@@ -13,22 +13,22 @@ namespace Packter_viewer
 {
     public interface FlyPacket
     {
-        float SrcAddress
+        double SrcAddress
         {
             get;
         }
 
-        float DstAddress
+        double DstAddress
         {
             get;
         }
 
-        float SrcPort
+        double SrcPort
         {
             get;
         }
 
-        float DstPort
+        double DstPort
         {
             get;
         }

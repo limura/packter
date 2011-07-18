@@ -61,10 +61,10 @@ namespace PackterViewer
         string ballisticMapMeshFile = null;
         float ballisticMapMeshScale = 1.0f;
         bool gatewayBoardEnabled = false;
-        float xAxisStart = 0.0f;
-        float xAxisEnd = 1.0f;
-        float yAxisStart = 0.0f;
-        float yAxisEnd = 1.0f;
+        double xAxisStart = 0.0;
+        double xAxisEnd = 1.0;
+        double yAxisStart = 0.0;
+        double yAxisEnd = 1.0;
         ushort bindPort = 11300;
 
         public enum ProgramMode
@@ -208,19 +208,19 @@ namespace PackterViewer
         {
             get { return gatewayBoardEnabled; }
         }
-        public float XAxisStart
+        public double XAxisStart
         {
             get { return xAxisStart; }
         }
-        public float XAxisEnd
+        public double XAxisEnd
         {
             get { return xAxisEnd; }
         }
-        public float YAxisStart
+        public double YAxisStart
         {
             get { return yAxisStart; }
         }
-        public float YAxisEnd
+        public double YAxisEnd
         {
             get { return yAxisEnd; }
         }
@@ -243,10 +243,10 @@ namespace PackterViewer
             return true;
         }
 
-        bool ConvertIPv4ToFloat(string str, out float val)
+        bool ConvertIPv4ToDouble(string str, out double val)
         {
-            val = IPv4Tools.IPString2float(str);
-            if (val < 0.0f)
+            val = IPv4Tools.IPString2Double(str);
+            if (val < 0.0)
             {
                 return false;
             }
@@ -300,6 +300,7 @@ namespace PackterViewer
                     }
 
                     float tmpFloat = 0.0f;
+                    double tmpDouble = 0.0;
                     if (key == "/senderboardscale" && ConvertToFloat(value, out tmpFloat))
                     {
                         senderBoardScale = tmpFloat;
@@ -388,24 +389,24 @@ namespace PackterViewer
                         i++; continue;
                     }
 
-                    if (key == "/xaxisstart" && !string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                    if (key == "/xaxisstart" && !string.IsNullOrEmpty(value) && ConvertIPv4ToDouble(value, out tmpDouble))
                     {
-                        xAxisStart = tmpFloat;
+                        xAxisStart = tmpDouble;
                         continue;
                     }
-                    if (key == "/xaxisend" && !string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                    if (key == "/xaxisend" && !string.IsNullOrEmpty(value) && ConvertIPv4ToDouble(value, out tmpDouble))
                     {
-                        xAxisEnd = tmpFloat;
+                        xAxisEnd = tmpDouble;
                         continue;
                     }
-                    if (key == "/yaxisstart" && !string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                    if (key == "/yaxisstart" && !string.IsNullOrEmpty(value) && ConvertIPv4ToDouble(value, out tmpDouble))
                     {
-                        yAxisStart = tmpFloat;
+                        yAxisStart = tmpDouble;
                         continue;
                     }
-                    if (key == "/yaxisend" && !string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                    if (key == "/yaxisend" && !string.IsNullOrEmpty(value) && ConvertIPv4ToDouble(value, out tmpDouble))
                     {
-                        yAxisEnd = tmpFloat;
+                        yAxisEnd = tmpDouble;
                         continue;
                     }
                     if (key == "/bindport" && !string.IsNullOrEmpty(value) && Convert.ToUInt16(value) > 0 && Convert.ToUInt16(value) <= 65535)
@@ -466,6 +467,7 @@ namespace PackterViewer
                         key = key.Trim();
                         key = key.ToLower();
                         float tmpFloat = 0.0f;
+                        double tmpDouble = 0.0;
                         value = value.Trim();
                         switch (key)
                         {
@@ -711,30 +713,30 @@ namespace PackterViewer
                                 break;
 
                             case "xaxisstart":
-                                if (!string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                                if (!string.IsNullOrEmpty(value) && ConvertIPv4ToDouble(value, out tmpDouble))
                                 {
-                                    xAxisStart = tmpFloat;
+                                    xAxisStart = tmpDouble;
                                 }
                                 break;
 
                             case "xaxisend":
-                                if (!string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                                if (!string.IsNullOrEmpty(value) && ConvertIPv4ToDouble(value, out tmpDouble))
                                 {
-                                    xAxisEnd = tmpFloat;
+                                    xAxisEnd = tmpDouble;
                                 }
                                 break;
 
                             case "yaxisstart":
-                                if (!string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                                if (!string.IsNullOrEmpty(value) && ConvertIPv4ToDouble(value, out tmpDouble))
                                 {
-                                    yAxisStart = tmpFloat;
+                                    yAxisStart = tmpDouble;
                                 }
                                 break;
 
                             case "yaxisend":
-                                if (!string.IsNullOrEmpty(value) && ConvertIPv4ToFloat(value, out tmpFloat))
+                                if (!string.IsNullOrEmpty(value) && ConvertIPv4ToDouble(value, out tmpDouble))
                                 {
-                                    yAxisEnd = tmpFloat;
+                                    yAxisEnd = tmpDouble;
                                 }
                                 break;
 
@@ -780,25 +782,25 @@ namespace PackterViewer
             }
         }
 
-        public float RevisionXAxis(float value)
+        public double RevisionXAxis(double value)
         {
             // srcAddress, dstAddres, srcPort, dstPort を ConfigReader.Instance.XAxsisStart 等で補正します。
-            float xWidth = ConfigReader.Instance.XAxisEnd - ConfigReader.Instance.XAxisStart;
-            if (float.IsNaN(0.0f / xWidth))
+            double xWidth = ConfigReader.Instance.XAxisEnd - ConfigReader.Instance.XAxisStart;
+            if (double.IsNaN(0.0 / xWidth))
             {
-                xWidth = 1.0f;
+                xWidth = 1.0;
             }
 
             return (value - ConfigReader.Instance.XAxisStart) / xWidth;
         }
-        public float RevisionYAxis(float value)
+        public double RevisionYAxis(double value)
         {
-            float yWidth = ConfigReader.Instance.YAxisEnd - ConfigReader.Instance.YAxisStart;
-            if (float.IsNaN(0.0f / yWidth))
+            double yWidth = ConfigReader.Instance.YAxisEnd - ConfigReader.Instance.YAxisStart;
+            if (double.IsNaN(0.0 / yWidth))
             {
-                yWidth = 1.0f;
+                yWidth = 1.0;
             }
-            return (value - ConfigReader.Instance.XAxisStart) / yWidth;
+            return (value - ConfigReader.Instance.YAxisStart) / yWidth;
         }
     }
 }
