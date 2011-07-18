@@ -104,6 +104,8 @@ namespace Packter_viewer2
 
         Random rnd = new Random();
 
+        GameTime startGameTime = null;
+
         bool demoMode = false;
 
         protected override void Initialize()
@@ -557,11 +559,23 @@ namespace Packter_viewer2
                 int i = 0;
                 while (true)
                 {
-                    Texture2D t = contentLoader.GetTexture2D("packter" + i + ".png");
+                    Texture2D t = null;
+                    if (i < 99)
+                    {
+                        // 10 から 99 までは 01, 02, 03, ... という感じ
+                        string name = string.Format("packter{0,0:D2}.png", i + 1);
+                        t = contentLoader.GetTexture2D(name);
+                    }
+                    if (t == null)
+                    {
+                        // 1～99 で失敗したら 1, 2, 3 ... とかでも試してみる
+                        t = contentLoader.GetTexture2D("packter" + i + ".png");
+                    }
                     if (t == null)
                     {
                         t = contentLoader.GetTexture2D("packter" + i);
                     }
+                    
                     if (t != null)
                         packetImages.Add(t);
                     else
@@ -996,6 +1010,10 @@ namespace Packter_viewer2
         private void ReadMessages(GameTime gameTime)
         {
             FlyPacket[] newPackets = null;
+            if (startGameTime == null)
+            {
+                startGameTime = gameTime;
+            }
 
             if(packetReader_v4 != null) 
             {
@@ -1004,7 +1022,8 @@ namespace Packter_viewer2
                 {
                     foreach (FlyPacket packet in newPackets)
                     {
-                        packet.CreatedGameTime = gameTime;
+                        //packet.CreatedGameTime = gameTime;
+                        packet.StartGameTime = startGameTime;
                         AddPacketBoard(packet);
                     }
                 }
@@ -1016,7 +1035,8 @@ namespace Packter_viewer2
                 {
                     foreach (FlyPacket packet in newPackets)
                     {
-                        packet.CreatedGameTime = gameTime;
+                        //packet.CreatedGameTime = gameTime;
+                        packet.StartGameTime = startGameTime;
                         AddPacketBoard(packet);
                     }
                 }

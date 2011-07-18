@@ -46,6 +46,10 @@ namespace Packter_viewer
         GameTime CreatedGameTime
         {
             get;
+            //set;
+        }
+        GameTime StartGameTime
+        {
             set;
         }
 

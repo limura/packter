@@ -88,40 +88,13 @@ namespace Packter_viewer
         public GameTime CreatedGameTime
         {
             get { return gameTime; }
-            set { gameTime = value; }
+            //set { gameTime = value; }
         }
-
-        float IPString2float(string str)
+        public GameTime StartGameTime
         {
-            try
-            {
-                if (str == null || str.Length <= 0)
-                    return -1;
-                float f = 0;
-                if (str.IndexOf('.') >= 0 && str.IndexOf('.') == str.LastIndexOf('.') && float.TryParse(str, out f) == true && f <= 1 && f >= 0)
-                {
-                    return f;
-                }
-                IPAddress addr = IPAddress.Parse(str);
-                if (addr == null)
-                {
-                    return -1;
-                }
-                byte[] ba = addr.GetAddressBytes();
-                if (ba.Length < 4)
-                    return -1;
-
-                f = 0;
-                float fmax = 0;
-                foreach (byte b in ba)
-                {
-                    f = f * 256 + b;
-                    fmax = fmax * 256 + 255;
-                }
-                return f / fmax;
-            }
-            catch { return -1; }
+            set { }
         }
+
         float String2float(string str)
         {
             try
@@ -149,9 +122,9 @@ namespace Packter_viewer
             string[] words = line.Split(delimiters);
             if (words.Length < 6)
                 return false;
-            if ((srcAddress = IPString2float(words[0])) < 0)
+            if ((srcAddress = IPv4Tools.IPString2float(words[0])) < 0)
                 return false;
-            if ((dstAddress = IPString2float(words[1])) < 0)
+            if ((dstAddress = IPv4Tools.IPString2float(words[1])) < 0)
                 return false;
             if ((srcPort = String2float(words[2])) < 0)
                 return false;

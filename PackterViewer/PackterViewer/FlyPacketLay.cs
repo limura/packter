@@ -32,13 +32,17 @@ namespace Packter_viewer
         byte packetImageNumber = 0;
         string packetImageString = null;
         string packetDescription = null;
-
+        
         GameTime gameTime = null;
+        GameTime startGameTime = null;
         string originalString = "undefined";
         string originalResult = "undefined";
 
+        TimeSpan diffTimeSpan = new TimeSpan();
+
         public FlyPacketLay() {
             gameTime = new GameTime();
+            startGameTime = new GameTime();
         }
 
         public FlyPacketLay(float sourceAddress, float sourcePort, float destinationAddress, float destinationPort
@@ -51,6 +55,7 @@ namespace Packter_viewer
             packetImageNumber = imageNumber;
             packetDescription = description;
             gameTime = createdGameTime;
+            startGameTime = createdGameTime;
             originalString = String.Format("{0}, {1}, {2}, {3}, {4}, {5}"
                 , sourceAddress, sourcePort, destinationAddress, destinationPort, description, imageNumber);
         }
@@ -88,7 +93,11 @@ namespace Packter_viewer
         public GameTime CreatedGameTime
         {
             get { return gameTime; }
-            set { gameTime = value; }
+            //set { gameTime = value; }
+        }
+        public GameTime StartGameTime
+        {
+            set { startGameTime = value; }
         }
 
         float String2float(string str)
@@ -137,7 +146,10 @@ namespace Packter_viewer
                 packetImageNumber = 0;
             packetDescription = words[5];
             originalString = line;
-            
+
+            GameTime nowGameTime = new GameTime();
+            diffTimeSpan = nowGameTime.TotalGameTime - startGameTime.TotalGameTime;
+
             return true;
         }
 
@@ -167,7 +179,10 @@ namespace Packter_viewer
             float dstY = this.DstPort;
             byte imageNumber = this.PacketImageNumber;
             string fileName = this.PacketImageString;
-            GameTime nowGameTime = this.CreatedGameTime;
+            GameTime nowGameTime = new GameTime(this.startGameTime.TotalRealTime + diffTimeSpan
+                , this.startGameTime.ElapsedRealTime + diffTimeSpan
+                , this.startGameTime.TotalGameTime + diffTimeSpan
+                , this.startGameTime.ElapsedGameTime + diffTimeSpan);
 
             Vector3 startPoint = new Vector3((srcX - 0.5f) * 100.0f * 2 - defaultScale / 4.0f,
                 ((srcY - 0.5f) * 100.0f * 2) - defaultScale / 4.0f, senderPosition.Z);
