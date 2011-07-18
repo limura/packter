@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010 Daisuke Miyamoto. All rights reserved.
+ * Copyright (c) 2011 Daisuke Miyamoto. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -70,6 +70,7 @@ int use6 = PACKTER_FALSE;
 /* for InterTrack */
 char trace_server[PACKTER_BUFSIZ];
 int trace = PACKTER_FALSE;
+int packter_flagbase = 0;
 
 /* for Sound */
 int enable_sound = PACKTER_FALSE;
@@ -96,12 +97,16 @@ int main(int argc, char *argv[])
 
 	/* getopt */
 #ifdef USE_INET6
-	while ((op = getopt(argc, argv, "v:i:r:p:R:T:us6dh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:us6dh?")) != -1) 
 #else
-	while ((op = getopt(argc, argv, "v:i:r:p:R:T:usdh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:usdh?")) != -1) 
 #endif
 	{
 		switch (op) {
+		case 'f': /* packter flag base */
+			packter_flagbase = atoi(optarg);
+			break;
+
 		case 'd': /* show debug */
 			debug = PACKTER_TRUE;
 			break;
@@ -164,9 +169,14 @@ int main(int argc, char *argv[])
 		packter_usage();
 	}
 
+	if (packter_flagbase < 0){
+		packter_flagbase = 0;
+	}
+
 	if (rate_limit < 1){
 		rate_limit = 1;
 	}
+
 	rate = packter_rate();
 
 
@@ -376,6 +386,7 @@ packter_usage(void)
 	printf("      -p [ Viewer Port number ] (optional: default %d)\n", PACKTER_VIEWER_PORT);
 	printf("      -i [ Monitor device ] (optional)\n");
 	printf("      -r [ Pcap dump file ] (optional)\n");
+	printf("      -f [ Flab base ] (optional: default 0)\n");
 	printf("      -u ( Read from Snort's UNIX domain socket: optional)\n");
 	printf("      -d ( Show debug information: optional)\n");
 	printf("      -R [ Random droprate ] (optional)\n");
@@ -593,7 +604,7 @@ packter_tcp(u_char *p, u_int len, char *srcip, char *dstip, int flag, char *mesg
 	if (enable_sound == PACKTER_TRUE){
 		char se[PACKTER_BUFSIZ];
 		memset((void *)&se, '\0', PACKTER_BUFSIZ);
-		snprintf(se, PACKTER_BUFSIZ, "%sse%02d", PACKTER_SE, flag + 1);
+		snprintf(se, PACKTER_BUFSIZ, "%sse%d.wav", PACKTER_SE, flag);
 		packter_send(se);
 	}
 
@@ -626,7 +637,7 @@ packter_udp(u_char *p, u_int len, char *srcip, char *dstip, int flag, char *mesg
 	if (enable_sound == PACKTER_TRUE){
 		char se[PACKTER_BUFSIZ];
 		memset((void *)&se, '\0', PACKTER_BUFSIZ);
-		snprintf(se, PACKTER_BUFSIZ, "%sse%02d", PACKTER_SE, flag + 1);
+		snprintf(se, PACKTER_BUFSIZ, "%sse%d.wav", PACKTER_SE, flag);
 		packter_send(se);
 	}
 
@@ -659,7 +670,7 @@ packter_icmp(u_char *p, u_int len, char *srcip, char *dstip, int flag, char *mes
 	if (enable_sound == PACKTER_TRUE){
 		char se[PACKTER_BUFSIZ];
 		memset((void *)&se, '\0', PACKTER_BUFSIZ);
-		snprintf(se, PACKTER_BUFSIZ, "%sse%02d", PACKTER_SE, flag + 1);
+		snprintf(se, PACKTER_BUFSIZ, "%sse%d.wav", PACKTER_SE, flag);
 		packter_send(se);
 	}
 
@@ -694,7 +705,7 @@ void packter_icmp6(u_char *p, u_int len, char *srcip, char *dstip, int flag, cha
 	if (enable_sound == PACKTER_TRUE){
 		char se[PACKTER_BUFSIZ];
 		memset((void *)&se, '\0', PACKTER_BUFSIZ);
-		snprintf(se, PACKTER_BUFSIZ, "%sse%02d", PACKTER_SE, flag + 1);
+		snprintf(se, PACKTER_BUFSIZ, "%sse%d.wav", PACKTER_SE, flag);
 		packter_send(se);
 	}
 
@@ -806,7 +817,7 @@ void packter_mesg(char *mesg, char *srcip, char *dstip, int data1, int data2, in
 						dstip,
 						data1,
 						data2,
-						flag,
+						(flag + packter_flagbase),
 						mesgbuf,
 						trace_server					
 		);
@@ -818,7 +829,7 @@ void packter_mesg(char *mesg, char *srcip, char *dstip, int data1, int data2, in
 						dstip,
 						data1,
 						data2,
-						flag,
+						(flag + packter_flagbase),
 						mesgbuf
 		);
 	}
