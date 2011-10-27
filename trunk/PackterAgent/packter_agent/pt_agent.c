@@ -43,16 +43,17 @@
 
 #include <openssl/md5.h>
 
-#include "pt_ether.h"
-#include "pt_ip.h"
-#include "pt_ip6.h"
-#include "pt_ipproto.h"
-#include "pt_icmp.h"
-#include "pt_icmp6.h"
-#include "pt_tcp.h"
-#include "pt_udp.h"
-#include "pt_snort.h"
-#include "pt.h"
+#include "../include/pt_std.h"
+#include "../include/pt_agent.h"
+#include "../include/pt_ether.h"
+#include "../include/pt_ip.h"
+#include "../include/pt_ip6.h"
+#include "../include/pt_ipproto.h"
+#include "../include/pt_icmp.h"
+#include "../include/pt_icmp6.h"
+#include "../include/pt_tcp.h"
+#include "../include/pt_udp.h"
+#include "../include/pt_snort.h"
 
 static char *progname;
 static int debug = PACKTER_FALSE;
@@ -445,11 +446,12 @@ packter_ether(u_char * userdata, const struct pcap_pkthdr *h, const u_char * p)
 	int skiplen = ETHER_HDRLEN;
 
 	/* if capture size is too short */
-	if (h->caplen < ETHER_HDRLEN)
+	if (h->caplen < ETHER_HDRLEN){
 		return;
-	else
+	}
+	else {
 		ep = (struct ether_header *)p;
-
+	}
 	ether_type = ntohs(ep->ether_type);
 
 	if (ether_type == ETHERTYPE_8021Q){
