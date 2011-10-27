@@ -67,5 +67,7 @@ void packter_addfloat(char *, float);
 void packter_addstring_hash(char *, char *);
 int packter_is_exist_key(char *);
 void packter_sig_handler(int);
+void packter_thmon_tcp(u_char *, u_int, char *, char *, int, char *);
+
 #endif
 
