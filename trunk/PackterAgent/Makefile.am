@@ -1,2 +1,2 @@
-SUBDIRS = packter_agent packter_thmon
+SUBDIRS = src
 sysconf_DATA = packter.conf.sample
