@@ -4,7 +4,7 @@
 AC_PREREQ(2.61)
 AC_INIT(pt-agent, 1.0.0, namaya2hashi@packter.net)
 AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION)
-AC_CONFIG_SRCDIR([packter_agent/pt_agent.c],[packter_thmon/pt_thmon.c])
+AC_CONFIG_SRCDIR([src/pt_agent.c])
 AC_CONFIG_HEADER([config.h])
 
 # Checks for programs.
@@ -45,6 +45,5 @@ if test "$enable_ipv6" = "yes"; then
 fi
 
 AC_CONFIG_FILES([Makefile
-                 packter_agent/Makefile
-                 packter_thmon/Makefile])
+                 src/Makefile])
 AC_OUTPUT
