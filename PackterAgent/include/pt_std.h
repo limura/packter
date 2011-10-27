@@ -30,9 +30,11 @@
 #define PACKTER_SNAPLEN	128
 #define PACKTER_BUFSIZ	1024
 #define PACKTER_VIEWER_PORT 11300
+#define PACKTER_TC_PORT 11301
 #define PACKTER_HEADER	"PACKTER\n"
 #define PACKTER_MSG	"PACKTERMSG\n"
 #define PACKTER_SOUND	"PACKTERSOUND\n"
+#define PACKTER_SE	"PACKTERSE\n"
 #define PACKTER_VOICE	"PACKTERVOICE\n"
 #define PACKTER_SKYDOME	"PACKTERSKYDOMETEXTURE\n"
 #define PACKTER_TCP_ACK	0
@@ -77,24 +79,4 @@
 #define ICMP_MIN_HDRLEN	2
 #endif
 
-void packter_init();
-void packter_pcap(char *, char *, char *);
-void packter_snort(char *, char *, char *);
-void packter_usage(void);
-void packter_lback(u_char *, const struct pcap_pkthdr *, const u_char *);
-void packter_ether(u_char *, const struct pcap_pkthdr *, const u_char *);
-void packter_ip(u_char *, u_int);
-void packter_ip6(u_char *, u_int);
-void packter_tcp(u_char *, u_int, char *, char *, int, char *);
-void packter_udp(u_char *, u_int, char *, char *, int, char *);
-void packter_icmp(u_char *, u_int, char *, char *, int, char *);
-void packter_icmp6(u_char *, u_int, char *, char *, int, char *);
-void packter_mesg(char *, char *, char *, int, int, int, char *);
-int packter_rate();
-void packter_send(char *);
-
-void generate_hash(u_char *, int, char *);
-void generate_hash6(u_char *, int, char *);
-
 #endif
-
