@@ -24,10 +24,10 @@
  *
  */
 
-#ifndef __PACKTER_AGENT_H__
-#define __PACKTER_AGENT_H__
+#ifndef __PACKTER_SEND_H__
+#define __PACKTER_SEND_H__
 
-void packter_usage(void);
+void packter_send(char *);
 
 #endif
 

@@ -24,10 +24,10 @@
  *
  */
 
-#ifndef __PACKTER_AGENT_H__
-#define __PACKTER_AGENT_H__
+#ifndef __PACKTER_IPV6_H__
+#define __PACKTER_IPV6_H__
 
-void packter_usage(void);
+void packter_ip6(u_char *, u_int);
 
 #endif
 

@@ -41,7 +41,8 @@
 #include <pcap.h>
 
 #include "pt_std.h"
-#include "pt_agent.h"
+#include "pt_pcap.h"
+#include "pt_datalink.h"
 
 extern int debug;
 

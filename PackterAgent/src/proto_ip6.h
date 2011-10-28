@@ -1,5 +1,5 @@
-#ifndef __PACKTER_IP6_H__
-#define __PACKTER_IP6_H__
+#ifndef __PROTOCOL_IP6_H__
+#define __PROTOCOL_IP6_H__
 
 struct ip6_hdr {
     union {

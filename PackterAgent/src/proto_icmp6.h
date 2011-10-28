@@ -1,5 +1,5 @@
-#ifndef __PACKTER_ICMP6_H__
-#define __PACKTER_ICMP6_H__
+#ifndef __PROTOCOL_ICMP6_H__
+#define __PROTOCOL_ICMP6_H__
 
 struct icmp6hdr {
     u_int8_t    icmp6_type; /* type field */

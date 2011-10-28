@@ -1,5 +1,7 @@
-#ifndef __PACKTER_ICMP_H__
-#define __PACKTER_ICMP_H__
+#ifndef __PROTOCOL_ICMP_H__
+#define __PROTOCOL_ICMP_H__
+
+#include "proto_ip.h"
 
 struct icmphdr {
 	u_int8_t  icmp_type;		/* type of message, see below */

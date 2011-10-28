@@ -37,38 +37,17 @@
 #include <arpa/inet.h>
 #include <sys/time.h>
 #include <netdb.h>
-#include <pwd.h>
-
-#include <pcap.h>
-
-#include <openssl/md5.h>
 
 #include "pt_std.h"
 #include "pt_agent.h"
-#include "pt_ether.h"
-#include "pt_ip.h"
-#include "pt_ip6.h"
-#include "pt_ipproto.h"
-#include "pt_icmp.h"
-#include "pt_icmp6.h"
-#include "pt_tcp.h"
-#include "pt_udp.h"
-#include "pt_snort.h"
+#include "pt_init.h"
 
-extern int sock;
 extern struct sockaddr_in addr;
-extern int rate_limit;
-extern int rate;
-
 #ifdef USE_INET6
 extern struct sockaddr_in6 addr6;
 #endif
-extern int use6;
-
-extern int debug;
-extern int rate_limit;
-extern int rate;
 extern char *trace_server;
+extern int rate_limit;
 
 void packter_init()
 {
@@ -82,6 +61,7 @@ void packter_init()
 
 	srand((unsigned)time(NULL));
 	rate_limit = 1;
+
 	memset((void *)&trace_server, '\0', sizeof(trace_server)); 
 	return;
 }

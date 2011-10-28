@@ -86,7 +86,5 @@ struct sflow_ex_gateway {
 	u_int32_t local_pref;
 };
 
-void packter_sflow_usage();
-int packter_sflow_read(char *, int);
-void packter_sflow_server(char *, int, int);
+int packter_sflow(char *, int);
 #endif

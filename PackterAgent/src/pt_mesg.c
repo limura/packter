@@ -34,7 +34,7 @@
 #include <sys/socket.h>
 
 #include "pt_std.h"
-#include "pt_agent.h"
+#include "pt_mesg.h"
 
 extern int trace;
 extern char *trace_server;

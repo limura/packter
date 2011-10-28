@@ -38,44 +38,58 @@
 #include <sys/time.h>
 #include <netdb.h>
 
-#include <pcap.h>
+#include <openssl/md5.h>
 
 #include "pt_std.h"
-#include "pt_udp.h"
+#include "pt_netflow.h"
+#include "pt_netflowd.h"
 
-#include "proto_udp.h"
+extern int debug;
 
-extern int enable_sound;
-extern int trace;
-
-/* process udp header */
-void
-packter_udp(u_char *p, u_int len, char *srcip, char *dstip, int flag, char *mesgbuf)
+void pt_netflowd(char *netflow_bind_addr, int netflow_bind_port, int bind_set)
 {
-	struct udphdr *uh;
-	char mesg[PACKTER_BUFSIZ];
+	int bind_sock;
+	int recvlen;
+	struct sockaddr_in netflow_server;
+	struct sockaddr_in netflow_client;
+	int len;
+	char buf[PACKTER_BUFSIZ_LONG];
 
-	if (len < UDP_HDRLEN){
-		return;
+	if ((bind_sock = socket(PF_INET, SOCK_DGRAM, 0)) < 0){
+		perror("socket");
+		exit(EXIT_FAILURE);
+	}
+
+	memset((void *)&netflow_server, 0, sizeof(struct sockaddr_in));
+  netflow_server.sin_family = AF_INET;
+  netflow_server.sin_port = htons(netflow_bind_port);
+
+	if (bind_set == PACKTER_TRUE){
+		if (inet_pton(AF_INET, netflow_bind_addr, (void *)&(netflow_server.sin_addr.s_addr)) < 0){
+      perror("inet_pton(4)");
+    }
 	}
 	else {
-		uh = (struct udphdr *)p;
-	}
-	memset((void *)&mesg, '\0', PACKTER_BUFSIZ);
+    netflow_server.sin_addr.s_addr = htonl(INADDR_ANY);
+  }
 
-	if (trace == PACKTER_FALSE){
-		sprintf(mesgbuf, "UDP src:%s(%d) dst:%s(%d)",
-						srcip, ntohs(uh->uh_sport), dstip, ntohs(uh->uh_dport));
-	}
+  if (bind(bind_sock, (struct sockaddr *)&netflow_server, sizeof(netflow_server)) < 0){
+ 		perror("bind");
+		exit(EXIT_FAILURE);
+  }
 
-	packter_mesg(mesg, srcip, dstip, ntohs(uh->uh_sport), ntohs(uh->uh_dport), flag, mesgbuf);
-	packter_send(mesg);
+  for (;;) {
+    memset((void *)&netflow_client, 0, sizeof(struct sockaddr_in));
+    memset((void *)&buf, 0, sizeof(buf));
+    recvlen = sizeof(struct sockaddr_in);
 
-	if (enable_sound == PACKTER_TRUE){
-		char se[PACKTER_BUFSIZ];
-		memset((void *)&se, '\0', PACKTER_BUFSIZ);
-		snprintf(se, PACKTER_BUFSIZ, "%sse%d.wav", PACKTER_SE, flag);
-		packter_send(se);
+		if ((len = (int)recvfrom(bind_sock, (void *)buf, PACKTER_BUFSIZ_LONG, 0,
+          (struct sockaddr *)&netflow_client, (socklen_t *)&recvlen)) < 1)
+    {
+      perror("recvfrom");
+    }
+		else {
+			packter_netflow_read(buf, len);
+		}
 	}
-	return;
 }

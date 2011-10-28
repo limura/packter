@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <time.h>
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -38,44 +39,79 @@
 #include <sys/time.h>
 #include <netdb.h>
 
-#include <pcap.h>
+#include <glib.h>
 
 #include "pt_std.h"
-#include "pt_udp.h"
+#include "pt_hash.h"
 
-#include "proto_udp.h"
+extern GHashTable *config; 
 
-extern int enable_sound;
-extern int trace;
-
-/* process udp header */
-void
-packter_udp(u_char *p, u_int len, char *srcip, char *dstip, int flag, char *mesgbuf)
+void packter_hash_new()
 {
-	struct udphdr *uh;
-	char mesg[PACKTER_BUFSIZ];
-
-	if (len < UDP_HDRLEN){
-		return;
-	}
-	else {
-		uh = (struct udphdr *)p;
-	}
-	memset((void *)&mesg, '\0', PACKTER_BUFSIZ);
-
-	if (trace == PACKTER_FALSE){
-		sprintf(mesgbuf, "UDP src:%s(%d) dst:%s(%d)",
-						srcip, ntohs(uh->uh_sport), dstip, ntohs(uh->uh_dport));
-	}
-
-	packter_mesg(mesg, srcip, dstip, ntohs(uh->uh_sport), ntohs(uh->uh_dport), flag, mesgbuf);
-	packter_send(mesg);
-
-	if (enable_sound == PACKTER_TRUE){
-		char se[PACKTER_BUFSIZ];
-		memset((void *)&se, '\0', PACKTER_BUFSIZ);
-		snprintf(se, PACKTER_BUFSIZ, "%sse%d.wav", PACKTER_SE, flag);
-		packter_send(se);
-	}
+	config = g_hash_table_new((GHashFunc)g_str_hash, (GCompareFunc)g_str_equal);
 	return;
+}
+
+void *packter_destroy_func(void *data) {
+  GHashTable *cf_hash;
+  if (data == NULL){
+    return;
+  }
+  else {
+    cf_hash = (GHashTable *)data;
+    g_hash_table_foreach(cf_hash, packter_free_hash, NULL);
+    g_hash_table_destroy(cf_hash);
+  }
+  return;
+}
+
+void packter_free_hash(gpointer key, gpointer value, gpointer user_data)
+{
+  if (value != NULL){
+    g_free(value);
+  }
+  g_free(key);
+  return;
+}
+
+void packter_addstring_hash(char *buf, char *key)
+{
+	char *val;
+	char tmp[PACKTER_BUFSIZ];
+	memset((void *)tmp, '\0', PACKTER_BUFSIZ);
+
+	if (key != NULL){
+		val = (char *)g_hash_table_lookup(config, key);
+		if (val != NULL && strlen(val) > 0){
+				snprintf(tmp, PACKTER_BUFSIZ, "%s%s",
+										buf, val);
+				strncpy(buf, tmp, PACKTER_BUFSIZ);
+		}
+	}
+}
+
+int packter_is_exist_key(char *key)
+{
+	int ret = PACKTER_FALSE;
+	char *val;
+
+	do {
+		if (key == NULL){
+			break;
+		}
+
+		val = (char *)g_hash_table_lookup(config, key);
+		if (val == NULL){
+			break;
+		}
+
+		if (strlen(val) < 1){
+			break;
+		}
+
+		ret = PACKTER_TRUE;
+
+	} while(0);
+
+	return ret;
 }

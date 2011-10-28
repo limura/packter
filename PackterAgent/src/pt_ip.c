@@ -41,12 +41,10 @@
 #include <pcap.h>
 
 #include "pt_std.h"
-#include "pt_agent.h"
-#include "pt_ether.h"
 #include "pt_ip.h"
-#include "pt_ip6.h"
-#include "pt_ipproto.h"
-#include "pt_tcp.h"
+
+#include "proto_ip.h"
+#include "proto_ipproto.h"
 
 extern int trace;
 

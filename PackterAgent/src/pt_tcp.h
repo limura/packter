@@ -24,10 +24,10 @@
  *
  */
 
-#ifndef __PACKTER_AGENT_H__
-#define __PACKTER_AGENT_H__
+#ifndef __PACKTER_TCP_H__
+#define __PACKTER_TCP_H__
 
-void packter_usage(void);
+void packter_tcp(u_char *, u_int, char *, char *, int, char *);
 
 #endif
 

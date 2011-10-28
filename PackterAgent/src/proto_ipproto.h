@@ -1,5 +1,5 @@
-#ifndef __PACKTER_IPPROTO_H__
-#define __PACKTER_IPPROTO_H__
+#ifndef __PROTOCOL_IPPROTO_H__
+#define __PROTOCOL_IPPROTO_H__
 
 #ifndef IPPROTO_IP
 #define IPPROTO_IP			0				/* dummy for IP */

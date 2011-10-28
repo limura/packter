@@ -24,10 +24,11 @@
  *
  */
 
-#ifndef __PACKTER_AGENT_H__
-#define __PACKTER_AGENT_H__
+#ifndef __PACKTER_DATALINK_H__
+#define __PACKTER_DATALINK_H__
 
-void packter_usage(void);
+void packter_lback(u_char *, const struct pcap_pkthdr *, const u_char *);
+void packter_ether(u_char *, const struct pcap_pkthdr *, const u_char *);
 
 #endif
 

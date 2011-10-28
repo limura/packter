@@ -35,8 +35,10 @@
 #include <arpa/inet.h>
 
 #include "pt_std.h"
-#include "pt_ip.h"
-#include "pt_ip6.h"
+#include "pt_iptbhash.h"
+
+#include "proto_ip.h"
+#include "proto_ip6.h"
 
 #include <openssl/md5.h>
 
