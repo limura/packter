@@ -561,26 +561,26 @@ packter_analy()
 	}
 
 	if (alert == PACKTER_TRUE){
-		if (packter_is_exist_key("MON_OPT_MSG_FOOT") == PACKTER_TRUE){
+		if (packter_is_exist_key_str("MON_OPT_MSG_FOOT") == PACKTER_TRUE){
     	packter_addstring_hash(mesg, "MON_OPT_MSG_FOOT");
 		}
 		packter_send(mesg);
 
 		if (enable_sound == PACKTER_TRUE){
 			/* PACKTERSOUND uses no footer, but codes are prepared */
-			if (packter_is_exist_key("MON_OPT_SOUND_FOOT") == PACKTER_TRUE){
+			if (packter_is_exist_key_str("MON_OPT_SOUND_FOOT") == PACKTER_TRUE){
 				packter_addstring_hash(voice, "MON_OPT_SOUND");
 			}
 			packter_send(sound);
 
 			/* PACKTERVOICE sometimes needs footer */
-			if (packter_is_exist_key("MON_OPT_VOICE_FOOT") == PACKTER_TRUE){
+			if (packter_is_exist_key_str("MON_OPT_VOICE_FOOT") == PACKTER_TRUE){
 				packter_addstring_hash(voice, "MON_OPT_VOICE_FOOT");
 			}
 			packter_send(voice);
 
 			/* PACKTER_SKYDOME sends only skydome texture is specified */	
-			if (packter_is_exist_key("MON_SKYDOME_START") == PACKTER_TRUE){
+			if (packter_is_exist_key_str("MON_SKYDOME_START") == PACKTER_TRUE){
 				packter_addstring_hash(skydome, "MON_SKYDOME_START");
 				packter_send(skydome);
 			}
@@ -838,12 +838,12 @@ int packter_generate_alert(int alert, char *mesg, char *sound, char *voice, char
 		 */
 
 		/* PIC for PACKTERMESG called at once */
-		if (packter_is_exist_key(mon_pic) == PACKTER_TRUE){
+		if (packter_is_exist_key_str(mon_pic) == PACKTER_TRUE){
 			packter_addstring_hash(mesg, mon_pic);
 		}
 		packter_addstring(mesg, ",");
 		/* Header for PACKTERMESG called at once */
-		if (packter_is_exist_key("MON_OPT_MSG_HEAD") == PACKTER_TRUE){
+		if (packter_is_exist_key_str("MON_OPT_MSG_HEAD") == PACKTER_TRUE){
     	packter_addstring_hash(mesg, "MON_OPT_MSG_HEAD");
 		}
 
@@ -853,11 +853,11 @@ int packter_generate_alert(int alert, char *mesg, char *sound, char *voice, char
 		 */
 
 		/* Header for PACKTERSOUND called at once */
-		if (packter_is_exist_key("MON_OPT_SOUND_HEAD") == PACKTER_TRUE){
+		if (packter_is_exist_key_str("MON_OPT_SOUND_HEAD") == PACKTER_TRUE){
 			packter_addstring_hash(voice, "MON_OPT_SOUND_HEAD");
 		}
 		/* PACKTERSOUND called at once */
-		if (packter_is_exist_key(mon_sound) == PACKTER_TRUE){
+		if (packter_is_exist_key_str(mon_sound) == PACKTER_TRUE){
 			packter_addstring_hash(sound, mon_sound);
 		}
 
@@ -866,7 +866,7 @@ int packter_generate_alert(int alert, char *mesg, char *sound, char *voice, char
 		 * CONTENT(HEAD+BODY+FOOT)
 		 */		
 		/* Header for PACKTERVOICE called at once */
-		if (packter_is_exist_key("MON_OPT_VOICE_HEAD") == PACKTER_TRUE){
+		if (packter_is_exist_key_str("MON_OPT_VOICE_HEAD") == PACKTER_TRUE){
 			packter_addstring_hash(voice, "MON_OPT_VOICE_HEAD");
 		}
 
@@ -874,12 +874,12 @@ int packter_generate_alert(int alert, char *mesg, char *sound, char *voice, char
 	}
 
 	/* PACKTERMESG main content */
-	if (packter_is_exist_key(mon_mesg) == PACKTER_TRUE){
+	if (packter_is_exist_key_str(mon_mesg) == PACKTER_TRUE){
 		packter_addstring_hash(mesg, mon_mesg);
 	}
 
 	/* PACKTERMESG for Observed Variable */
-	if (packter_is_exist_key("MONITOR") == PACKTER_TRUE){
+	if (packter_is_exist_key_str("MONITOR") == PACKTER_TRUE){
 		packter_addstring_hash(mesg, "MONITOR");
 	}
 	else {
@@ -888,7 +888,7 @@ int packter_generate_alert(int alert, char *mesg, char *sound, char *voice, char
 	packter_addfloat(mesg, mon_th);
 
 	/* PACKTERMESG for Thershold Variable */
-	if (packter_is_exist_key("THRESHOLD") == PACKTER_TRUE){
+	if (packter_is_exist_key_str("THRESHOLD") == PACKTER_TRUE){
 		packter_addstring_hash(mesg, "THRESHOLD");
 	}
 	else {
@@ -897,7 +897,7 @@ int packter_generate_alert(int alert, char *mesg, char *sound, char *voice, char
 	packter_addfloat(mesg, given_th);
 
 	/* PACKTERVOICE */
-	if (packter_is_exist_key(mon_voice) == PACKTER_TRUE){
+	if (packter_is_exist_key_str(mon_voice) == PACKTER_TRUE){
 		packter_addstring_hash(voice, mon_voice);
 	}
 	return alert;
