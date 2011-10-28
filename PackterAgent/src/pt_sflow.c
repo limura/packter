@@ -78,8 +78,6 @@ int packter_flagbase = 0;
 
 int enable_sound = PACKTER_FALSE;
 
-struct pcap_pkthdr *pt;
-
 int main(int argc, char *argv[])
 {
 	/* sflow server */
@@ -195,15 +193,6 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	pt = (struct pcap_pkthdr *)malloc(sizeof(struct pcap_pkthdr));
-	if (pt == NULL){
-		perror("malloc");
-		exit(EXIT_FAILURE);
-	}
-	else {
-		memset((void *)pt, '\0', sizeof(struct pcap_pkthdr));
-	}
-
   if (viewer != PACKTER_TRUE){
     packter_sflow_usage();
   }
@@ -216,50 +205,17 @@ int main(int argc, char *argv[])
     rate_limit = 1;
   }
 
-  rate = packter_rate();
+  rate = packter_rate(rate_limit);
 
 	if ((sock = pt_sock(ip, port, use6)) < 0){
 		perror("socket");
 		exit(EXIT_FAILURE);
 	}
 
-	if ((bind_sock = socket(PF_INET, SOCK_DGRAM, 0)) < 0){
-		perror("socket");
-		exit(EXIT_FAILURE);
-	}
+	/* slow daemon start : loop */
+	pt_sflow_server(sflow_bind_addr, sflow_bind_port, bind_set);
 
-	memset((void *)&sflow_server, 0, sizeof(struct sockaddr_in));
-  sflow_server.sin_family = AF_INET;
-  sflow_server.sin_port = htons(sflow_bind_port);
-
-	if (bind_set == PACKTER_TRUE){
-		if (inet_pton(AF_INET, sflow_bind_addr, (void *)&(sflow_server.sin_addr.s_addr)) < 0){
-      perror("inet_pton(4)");
-    }
-	}
-	else {
-    sflow_server.sin_addr.s_addr = htonl(INADDR_ANY);
-  }
-
-  if (bind(bind_sock, (struct sockaddr *)&sflow_server, sizeof(sflow_server)) < 0){
-    perror("bind");
-    return(PACKTER_TRUE);
-  }
-
-  for (;;) {
-    memset((void *)&sflow_client, 0, sizeof(struct sockaddr_in));
-    memset((void *)&buf, 0, sizeof(buf));
-    recvlen = sizeof(struct sockaddr_in);
-
-		if ((len = (int)recvfrom(bind_sock, (void *)buf, PACKTER_BUFSIZ, 0,
-          (struct sockaddr *)&sflow_client, (socklen_t *)&recvlen)) < 1)
-    {
-      perror("recvfrom");
-    }
-		else {
-			packter_sflow(buf, len);
-		}
-	}
+	exit(EXIT_FAILURE);
 }
 
 void packter_sflow_usage()
@@ -280,95 +236,4 @@ void packter_sflow_usage()
   printf("\n");
 
 	exit(EXIT_SUCCESS);
-}
-
-int packter_sflow(char *buf, int len)
-{
-	int num;
-	int exnum;
-	int mesglen = 0;
-	int samplelen = 0;
-	int padding = 0;
-	int i,j ;
-	struct sflow_v4_header *header;
-	struct sflow_sample *sample;
-	struct sflow_ex_num *ex_num;
-	struct sflow_ex_type *ex_type;
-	struct sflow_ex_gateway *ex_gateway;
-
-	header = (struct sflow_v4_header *)buf;
-
-	if (debug == PACKTER_TRUE){
-		printf("version:%d:%d, seq:%d, uptime:%d, sample:%d\n",
-						ntohl(header->version), ntohl(header->counter_version),
-						ntohl(header->seq), ntohl(header->sysuptime),
-						ntohl(header->numsamples));
-	}
-	num = ntohl(header->numsamples);
-	mesglen += sizeof(struct sflow_v4_header);
-
-	for (i = 0; i < num; i++){
-		if (mesglen > len) break;
-
-		sample = (struct sflow_sample *)(buf + mesglen);
-
-		if (debug == PACKTER_TRUE){
-			printf("sample:%d\n", (i + 1));
-			printf("type:%d, seq:%d, id:%d, rate:%d, len:%d\n",
-							ntohl(sample->type), ntohl(sample->seq), ntohl(sample->id_type),
-							ntohl(sample->rate), ntohl(sample->len));
-		}
-		samplelen = ntohl(sample->len);	
-		padding = 0;
-		if (samplelen % 4 > 0){
-			padding = 4 - (samplelen % 4); 
-		}
-
-		mesglen += sizeof(struct sflow_sample);
-
-		gettimeofday(&(pt->ts), NULL); 
-		pt->caplen = samplelen;
-		pt->len = samplelen;
-
-		packter_ether(NULL, pt, (buf + mesglen));
-
-		mesglen += (samplelen + padding);
-		
-		if (mesglen > len) break;
-		ex_num = (struct sflow_ex_num *)(buf + mesglen);
-		if (debug == PACKTER_TRUE){
-			printf("ex_num:%d\n", ntohl(ex_num->num));
-		}
-
-		exnum = ntohl(ex_num->num);
-		mesglen += sizeof(struct sflow_ex_num);
-
-		for (j = 0; j < exnum; j++){
-			if (mesglen > len) break;
-			ex_type = (struct sflow_ex_type *)(buf + mesglen);
-
-			switch(ntohl(ex_type->type)){
-				case PACKTER_SFLOW_SWITCH:
-					mesglen += sizeof(struct sflow_ex_switch);
-					break;
-
-				case PACKTER_SFLOW_ROUTER:
-					mesglen += sizeof(struct sflow_ex_router);
-					break;
-
-				case PACKTER_SFLOW_GATEWAY:
-					ex_gateway = (struct sflow_ex_gateway *)(buf + mesglen);
-					if (debug == PACKTER_TRUE){
-						printf("Gateway\n");
-						printf("Router:%d\n", ntohl(ex_gateway->as_router));	
-						printf("Src:%d\n", ntohl(ex_gateway->as_src));	
-						printf("Peer:%d\n", ntohl(ex_gateway->as_peer));	
-						printf("Dst1:%d\n", ntohl(ex_gateway->as_dst1));	
-					}
-					mesglen += sizeof(struct sflow_ex_router);
-					break;
-			}	
-		}
-	}
-	return;
 }

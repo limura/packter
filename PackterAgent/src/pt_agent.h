@@ -40,7 +40,7 @@ void packter_udp(u_char *, u_int, char *, char *, int, char *);
 void packter_icmp(u_char *, u_int, char *, char *, int, char *);
 void packter_icmp6(u_char *, u_int, char *, char *, int, char *);
 void packter_mesg(char *, char *, char *, int, int, int, char *);
-int packter_rate();
+int packter_rate(int);
 void packter_send(char *);
 
 void generate_hash(u_char *, int, char *);

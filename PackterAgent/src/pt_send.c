@@ -74,7 +74,7 @@ void packter_send(char *mesg)
 		return;
 	}
 
-	rate = packter_rate();
+	rate = packter_rate(rate_limit);
 
 	if (debug == PACKTER_TRUE){
 		printf("%s", mesg);

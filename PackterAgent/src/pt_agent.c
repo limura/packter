@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
 		rate_limit = 1;
 	}
 
-	rate = packter_rate();
+	rate = packter_rate(rate_limit);
 
 	if ((sock = pt_sock(ip, port, use6)) < 0){
 		perror("socket");
