@@ -43,11 +43,12 @@
 #include <openssl/md5.h>
 
 #include "pt_std.h"
-#include "pt_agent.h"
-#include "pt_ether.h"
-#include "pt_ip.h"
-#include "pt_ip6.h"
-#include "pt_ipproto.h"
+#include "pt_datalink.h"
+
+#include "proto_ether.h"
+#include "proto_ip.h"
+#include "proto_ip6.h"
+#include "proto_ipproto.h"
 
 /* process Loop Back */
 void

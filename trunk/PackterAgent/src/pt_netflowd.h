@@ -24,10 +24,10 @@
  *
  */
 
-#ifndef __PACKTER_AGENT_H__
-#define __PACKTER_AGENT_H__
+#ifndef __PACKTER_NETFLOWD_H__
+#define __PACKTER_NETFLOWD_H__
 
-void packter_usage(void);
+void pt_netflowd(char *, int, int);
 
 #endif
 

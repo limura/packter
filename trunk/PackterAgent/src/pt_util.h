@@ -24,10 +24,12 @@
  *
  */
 
-#ifndef __PACKTER_AGENT_H__
-#define __PACKTER_AGENT_H__
+#ifndef __PACKTER_UTIL_H__
+#define __PACKTER_UTIL_H__
 
-void packter_usage(void);
+int packter_rate(int);
+int packter_addstring(char *, char *);
+int packter_addfloat(char *, float);
 
 #endif
 

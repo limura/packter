@@ -70,5 +70,4 @@ typedef struct _Alertpkt
     Event event;
 } Alertpkt;
 
-void packter_snort(char *, char *, char *);
 #endif

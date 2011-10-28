@@ -24,10 +24,12 @@
  *
  */
 
-#ifndef __PACKTER_AGENT_H__
-#define __PACKTER_AGENT_H__
+#ifndef __PACKTER_PCAP_H__
+#define __PACKTER_PCAP_H__
 
-void packter_usage(void);
+#include <pcap.h>
+
+void packter_pcap(char *, char *, char *);
 
 #endif
 

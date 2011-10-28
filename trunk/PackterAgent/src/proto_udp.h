@@ -1,5 +1,5 @@
-#ifndef __PACKTER_UDP_H__
-#define __PACKTER_UDP_H__
+#ifndef __PROTOCOL_UDP_H__
+#define __PROTOCOL_UDP_H__
 
 struct udphdr {
     u_int16_t   uh_sport;       /* source port */

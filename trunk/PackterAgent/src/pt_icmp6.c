@@ -41,12 +41,9 @@
 #include <pcap.h>
 
 #include "pt_std.h"
-#include "pt_agent.h"
-#include "pt_ether.h"
-#include "pt_ip.h"
-#include "pt_ip6.h"
-#include "pt_ipproto.h"
 #include "pt_icmp6.h"
+
+#include "proto_icmp6.h"
 
 extern int enable_sound;
 extern int trace;

@@ -42,8 +42,9 @@
 
 #include "pt_std.h"
 #include "pt_agent.h"
-#include "pt_ether.h"
-#include "pt_snort.h"
+
+#include "proto_ether.h"
+#include "proto_snort.h"
 
 extern int debug;
 

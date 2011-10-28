@@ -1,5 +1,5 @@
-#ifndef __PACKTER_TCP_H__
-#define __PACKTER_TCP_H__
+#ifndef __PROTOCOL_TCP_H__
+#define __PROTOCOL_TCP_H__
 
 typedef u_int32_t   tcp_seq;
 /*

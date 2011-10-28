@@ -1,5 +1,5 @@
-#ifndef __PACKTER_IP4_H__
-#define __PACKTER_IP4_H__
+#ifndef __PROTOCOL_IP4_H__
+#define __PROTOCOL_IP4_H__
 
 #ifndef IPVERSION	
 #define IPVERSION	 4

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Daisuke Miyamoto. All rights reserved.
+ * Copyright (c) 2008 Daisuke Miyamoto. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -24,10 +24,10 @@
  *
  */
 
-#ifndef __PACKTER_AGENT_H__
-#define __PACKTER_AGENT_H__
+#ifndef __PACKTER_IPTBHASH_H__
+#define __PACKTER_IPTBHASH_H__
 
-void packter_usage(void);
+void generate_hash(u_char *, int, char *);
+void generate_hash6(u_char *, int, char *);
 
 #endif
-

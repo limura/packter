@@ -44,17 +44,28 @@
 #include <openssl/md5.h>
 
 #include "pt_std.h"
-#include "pt_agent.h"
-#include "pt_ether.h"
+#include "pt_thmon.h"
+#include "pt_pcap.h"
+#include "pt_datalink.h"
 #include "pt_ip.h"
 #include "pt_ip6.h"
-#include "pt_ipproto.h"
-#include "pt_icmp.h"
-#include "pt_icmp6.h"
 #include "pt_tcp.h"
 #include "pt_udp.h"
-#include "pt_thmon.h"
-#include "pt_hash.h"
+#include "pt_icmp.h"
+#include "pt_icmp6.h"
+#include "pt_iptbhash.h"
+#include "pt_send.h"
+#include "pt_mesg.h"
+#include "pt_util.h"
+
+#include "proto_ether.h"
+#include "proto_ip.h"
+#include "proto_ip6.h"
+#include "proto_ipproto.h"
+#include "proto_icmp.h"
+#include "proto_icmp6.h"
+#include "proto_tcp.h"
+#include "proto_udp.h"
 
 char *progname;
 int debug = PACKTER_FALSE;
@@ -98,7 +109,7 @@ int main(int argc, char *argv[])
 
 	progname = argv[0];
 
-	packter_init();
+	packter_thmon_init();
 
 	/* getopt */
 #ifdef USE_INET6
@@ -178,7 +189,7 @@ int main(int argc, char *argv[])
 
 		case 'h':
 		case '?':	/* usage */
-			packter_usage();
+			packter_thmon_usage();
 			break;
 		}
 	}
@@ -188,11 +199,11 @@ int main(int argc, char *argv[])
 	}
 
 	if (viewer != PACKTER_TRUE){
-		packter_usage();
+		packter_thmon_usage();
 	}
 
 	if (packter_config_parse(configfile) < 0){
-		packter_usage();
+		packter_thmon_usage();
 	}
 
 	/* If no threshold specified */
@@ -243,7 +254,7 @@ int main(int argc, char *argv[])
 	exit(EXIT_SUCCESS);
 }
 
-void packter_init()
+void packter_thmon_init()
 {
 	memset((void *)&addr, 0, sizeof(struct sockaddr_in));
 	addr.sin_family = AF_INET;
@@ -375,7 +386,7 @@ void packter_pcap(char *dumpfile, char *device, char *filter)
 }
 
 void
-packter_usage(void)
+packter_thmon_usage(void)
 {
 	printf("usage: %s \n", progname);
 	printf("      -v [ Viewer IP address ]\n");

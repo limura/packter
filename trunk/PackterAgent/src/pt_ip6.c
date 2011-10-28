@@ -41,14 +41,11 @@
 #include <pcap.h>
 
 #include "pt_std.h"
-#include "pt_agent.h"
-#include "pt_ether.h"
-#include "pt_ip.h"
 #include "pt_ip6.h"
-#include "pt_ipproto.h"
-#include "pt_tcp.h"
 
-extern int enable_sound;
+#include "proto_ip6.h"
+#include "proto_ipproto.h"
+
 extern int trace;
 
 /* process ipv6 header */
@@ -68,14 +65,16 @@ packter_ip6(u_char * p, u_int len)
 		ip6 = (struct ip6_hdr *)p;
 	}
 
-	/* calculate other hash */
-	if ((packet = (u_char *)malloc(len)) == NULL){
-		fprintf(stderr, "malloc failed\n");
-		return;
+ if (trace == PACKTER_TRUE){
+		/* calculate other hash */
+		if ((packet = (u_char *)malloc(len)) == NULL){
+			fprintf(stderr, "malloc failed\n");
+			return;
+		}
+		memcpy((void *)packet, (void *)p, len);
+		generate_hash6(packet, len, mesgbuf);
+		free(packet);
 	}
-	memcpy((void *)packet, (void *)p, len);
-	generate_hash6(packet, len, mesgbuf);
-	free(packet);
 
 	memset((void *)&srcip, '\0', PACKTER_BUFSIZ);
 	memset((void *)&dstip, '\0', PACKTER_BUFSIZ);

@@ -29,31 +29,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <time.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <sys/un.h>
-#include <arpa/inet.h>
-#include <sys/time.h>
-#include <netdb.h>
-#include <pwd.h>
-
-#include <pcap.h>
-
-#include <openssl/md5.h>
 
 #include "pt_std.h"
-#include "pt_agent.h"
-#include "pt_ether.h"
-#include "pt_ip.h"
-#include "pt_ip6.h"
-#include "pt_ipproto.h"
-#include "pt_icmp.h"
-#include "pt_icmp6.h"
-#include "pt_tcp.h"
-#include "pt_udp.h"
-#include "pt_snort.h"
 
 extern int debug;
 
