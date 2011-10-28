@@ -55,21 +55,9 @@
 #include "pt_udp.h"
 #include "pt_snort.h"
 
-extern int sock;
-extern struct sockaddr_in addr;
-extern int rate_limit;
-extern int rate;
-
-#ifdef USE_INET6
-extern struct sockaddr_in6 addr6;
-#endif
-extern int use6;
-
 extern int debug;
-extern int rate_limit;
-extern int rate;
 
-int packter_rate()
+int packter_rate(int rate_limit)
 {
 	if (rate_limit < 1){
 		return 1;
@@ -78,3 +66,24 @@ int packter_rate()
 		return( rand() % rate_limit + 1 );
 	}
 }
+
+void packter_addstring(char *buf, char *val)
+{
+	char tmp[PACKTER_BUFSIZ];
+	memset((void *)tmp, '\0', PACKTER_BUFSIZ);
+	if (val != NULL){
+		snprintf(tmp, PACKTER_BUFSIZ, "%s%s", buf, val);
+	 	strncpy(buf, tmp, PACKTER_BUFSIZ);
+	}
+  return;
+}
+
+void packter_addfloat(char *buf, float val)
+{
+	char tmp[PACKTER_BUFSIZ];
+	memset((void *)tmp, '\0', PACKTER_BUFSIZ);
+	snprintf(tmp, PACKTER_BUFSIZ, "%s %.f", buf, val);
+  strncpy(buf, tmp, PACKTER_BUFSIZ);
+  return;
+}
+

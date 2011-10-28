@@ -53,18 +53,18 @@
 #include "pt_icmp6.h"
 #include "pt_tcp.h"
 #include "pt_udp.h"
-#include "pt_snort.h"
 #include "pt_thmon.h"
+#include "pt_hash.h"
 
-static char *progname;
-static int debug = PACKTER_FALSE;
+char *progname;
+int debug = PACKTER_FALSE;
 
-static int sock;
-static struct sockaddr_in addr;
+int sock;
+struct sockaddr_in addr;
 
 /* for IPv6 */
 #ifdef USE_INET6
-static struct sockaddr_in6 addr6;
+struct sockaddr_in6 addr6;
 #endif
 int use6 = PACKTER_FALSE;
 
@@ -95,7 +95,6 @@ int main(int argc, char *argv[])
 	/* misc */
 	int op;
 	int viewer = PACKTER_FALSE;
-	int snort = PACKTER_FALSE;
 
 	progname = argv[0];
 
@@ -239,12 +238,7 @@ int main(int argc, char *argv[])
 	}
 #endif
 
-	if (snort == PACKTER_TRUE){
-		packter_snort(dumpfile, device, filter);
-	}
-	else {
-		packter_pcap(dumpfile, device, filter);
-	}
+	packter_pcap(dumpfile, device, filter);
 
 	exit(EXIT_SUCCESS);
 }
@@ -288,50 +282,6 @@ void packter_count_init()
 	th.count_rst = 0;
 	th.count_icmp = 0;
 	th.count_udp = 0;
-}
-
-void packter_snort(char *dumpfile, char *device, char *filter)
-{
-	int	snort_sock;
-	struct sockaddr_un un;
-	Alertpkt alert;
-	char sockname[SUN_BUFSIZ];
-
-	/* if filter was set */
-	if (filter != NULL){
-		strncpy(sockname, filter, SUN_BUFSIZ);
-	}
-	else {
-		strncpy(sockname, SOCK_NAME, SUN_BUFSIZ);
-	}
-
-	if ((snort_sock = socket(PF_UNIX, SOCK_DGRAM, 0)) < 0){
-		perror("socket");
-		exit(EXIT_FAILURE);
-	}
-
-	memset((void *)&un, 0, sizeof(struct sockaddr_un));
-	un.sun_family = AF_UNIX;
-	strncpy(un.sun_path , sockname, strlen(sockname));
-	unlink(sockname);
-	if (bind(snort_sock, (struct sockaddr *)&un, sizeof(un)) < 0){
-		perror("bind");
-		exit(EXIT_FAILURE);
-	}
-
-	/* Loop -> pcap read packets and excute packter_ether funcation */
-	while ( 1 ) {
-		if (recv(snort_sock, (void *)&alert, sizeof(alert), 0) < 0){
-			perror("recv");
-			continue;
-		}
-		else {
-			if (debug == PACKTER_TRUE){
-				printf("incident: %s\n", alert.alertmsg);
-			}
-			packter_ether(NULL, &(alert.pkth), (u_char *)alert.pkt);
-		}
-	}
 }
 
 void packter_pcap(char *dumpfile, char *device, char *filter)
@@ -865,28 +815,6 @@ int packter_config_parse(char *configfile)
 	return PACKTER_TRUE;
 }
 
-void *packter_destroy_func(void *data) {
-  GHashTable *cf_hash;
-  if (data == NULL){
-    return;
-  }
-  else {
-    cf_hash = (GHashTable *)data;
-    g_hash_table_foreach(cf_hash, packter_free_hash, NULL);
-    g_hash_table_destroy(cf_hash);
-  }
-  return;
-}
-
-void packter_free_hash(gpointer key, gpointer value, gpointer user_data)
-{
-  if (value != NULL){
-    g_free(value);
-  }
-  g_free(key);
-  return;
-}
-
 int packter_generate_alert(int alert, char *mesg, char *sound, char *voice, char *mon_pic, char *mon_mesg, char *mon_sound, char *mon_voice, float mon_th, float given_th)
 {
 	char tmp[PACKTER_BUFSIZ];
@@ -962,130 +890,6 @@ int packter_generate_alert(int alert, char *mesg, char *sound, char *voice, char
 		packter_addstring_hash(voice, mon_voice);
 	}
 	return alert;
-}
-
-void
-packter_addstring_hash(char *buf, char *key)
-{
-	char *val;
-	char tmp[PACKTER_BUFSIZ];
-	memset((void *)tmp, '\0', PACKTER_BUFSIZ);
-
-	if (key != NULL){
-		val = (char *)g_hash_table_lookup(config, key);
-		if (val != NULL && strlen(val) > 0){
-				snprintf(tmp, PACKTER_BUFSIZ, "%s%s",
-										buf, val);
-				strncpy(buf, tmp, PACKTER_BUFSIZ);
-		}
-	}
-}
-
-int
-packter_is_exist_key(char *key)
-{
-	int ret = PACKTER_FALSE;
-	char *val;
-
-	do {
-		if (key == NULL){
-			break;
-		}
-
-		val = (char *)g_hash_table_lookup(config, key);
-		if (val == NULL){
-			break;
-		}
-
-		if (strlen(val) < 1){
-			break;
-		}
-
-		ret = PACKTER_TRUE;
-
-	} while(0);
-
-	return ret;
-
-}
-
-void
-packter_addstring(char *buf, char *val)
-{
-	char tmp[PACKTER_BUFSIZ];
-	memset((void *)tmp, '\0', PACKTER_BUFSIZ);
-
-	if (val != NULL){
-			snprintf(tmp, PACKTER_BUFSIZ, "%s%s",
-										buf, val);
-			strncpy(buf, tmp, PACKTER_BUFSIZ);
-	}
-	return;
-}
-
-void
-packter_addfloat(char *buf, float val)
-{
-	char tmp[PACKTER_BUFSIZ];
-	memset((void *)tmp, '\0', PACKTER_BUFSIZ);
-
-	snprintf(tmp, PACKTER_BUFSIZ, "%s %.f",
-								buf,
-								val);
-	strncpy(buf, tmp, PACKTER_BUFSIZ);
-
-	return;
-}
-
-void
-generate_hash(unsigned char *packet, int caplen, char *mesgbuf)
-{
-  struct ip *ip;
-  int hdrlen;
-  ip = (struct ip *)packet;
-  MD5_CTX context;
-  unsigned char digest[16];
-
-  hdrlen = ip->ip_hl * 4;
-  if (hdrlen > IP_HDRLEN){
-    memset((void *)(packet + IP_HDRLEN), 0, (hdrlen - IP_HDRLEN));
-  }
-  ip->ip_tos = 0x0;
-  ip->ip_len = 0x0;
-  ip->ip_off = 0x0;
-  ip->ip_ttl = 0x0;
-  ip->ip_sum = 0x0;
-
-  MD5_Init(&context);
-  MD5_Update(&context, (unsigned char *)packet, (unsigned long)(hdrlen + 8));
-  MD5_Final(digest, &context);
-  sprintf(mesgbuf, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-    digest[0], digest[1], digest[2], digest[3],
-    digest[4], digest[5], digest[6], digest[7],
-    digest[8], digest[9], digest[10], digest[11],
-    digest[12], digest[13], digest[14], digest[15]);
-
-}
-
-void generate_hash6(unsigned char *packet, int caplen, char *mesgbuf)
-{
-  struct ip6_hdr *ip6;
-  ip6 = (struct ip6_hdr *)packet;
-  ip6->ip6_vfc = ip6->ip6_vfc & 0xf0;
-  ip6->ip6_hlim = 0x0;
-  MD5_CTX context;
-  unsigned char digest[16];
-
-  MD5_Init(&context);
-  MD5_Update(&context, (unsigned char *)ip6, (unsigned int)(IP6_HDRLEN + 8));
-  MD5_Final(digest, &context);
-
-  sprintf(mesgbuf, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-    digest[0], digest[1], digest[2], digest[3],
-    digest[4], digest[5], digest[6], digest[7],
-    digest[8], digest[9], digest[10], digest[11],
-    digest[12], digest[13], digest[14], digest[15]);
-
 }
 
 void packter_sig_handler(int sig){

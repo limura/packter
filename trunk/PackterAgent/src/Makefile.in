@@ -30,7 +30,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = pt_agent$(EXEEXT) pt_sflow$(EXEEXT) pt_thmon$(EXEEXT)
+bin_PROGRAMS = pt_agent$(EXEEXT) pt_sflow$(EXEEXT) pt_netflow$(EXEEXT) \
+	pt_thmon$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -56,20 +57,38 @@ pt_agent_OBJECTS = $(am_pt_agent_OBJECTS)
 pt_agent_DEPENDENCIES =
 pt_agent_LINK = $(CCLD) $(pt_agent_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am_pt_netflow_OBJECTS = pt_netflow-pt_netflow.$(OBJEXT) \
+	pt_netflow-pt_netflow_server.$(OBJEXT) \
+	pt_netflow-pt_netflow_read.$(OBJEXT) \
+	pt_netflow-pt_sock.$(OBJEXT) pt_netflow-pt_pcap.$(OBJEXT) \
+	pt_netflow-pt_snort.$(OBJEXT) pt_netflow-pt_datalink.$(OBJEXT) \
+	pt_netflow-pt_ip.$(OBJEXT) pt_netflow-pt_ip6.$(OBJEXT) \
+	pt_netflow-pt_tcp.$(OBJEXT) pt_netflow-pt_udp.$(OBJEXT) \
+	pt_netflow-pt_icmp.$(OBJEXT) pt_netflow-pt_icmp6.$(OBJEXT) \
+	pt_netflow-pt_iptbhash.$(OBJEXT) pt_netflow-pt_mesg.$(OBJEXT) \
+	pt_netflow-pt_send.$(OBJEXT) pt_netflow-pt_util.$(OBJEXT) \
+	pt_netflow-pt_init.$(OBJEXT)
+pt_netflow_OBJECTS = $(am_pt_netflow_OBJECTS)
+pt_netflow_DEPENDENCIES =
+pt_netflow_LINK = $(CCLD) $(pt_netflow_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 am_pt_sflow_OBJECTS = pt_sflow-pt_sflow.$(OBJEXT) \
-	pt_sflow-pt_sock.$(OBJEXT) pt_sflow-pt_pcap.$(OBJEXT) \
-	pt_sflow-pt_snort.$(OBJEXT) pt_sflow-pt_datalink.$(OBJEXT) \
-	pt_sflow-pt_ip.$(OBJEXT) pt_sflow-pt_ip6.$(OBJEXT) \
-	pt_sflow-pt_tcp.$(OBJEXT) pt_sflow-pt_udp.$(OBJEXT) \
-	pt_sflow-pt_icmp.$(OBJEXT) pt_sflow-pt_icmp6.$(OBJEXT) \
-	pt_sflow-pt_iptbhash.$(OBJEXT) pt_sflow-pt_mesg.$(OBJEXT) \
-	pt_sflow-pt_send.$(OBJEXT) pt_sflow-pt_util.$(OBJEXT) \
-	pt_sflow-pt_init.$(OBJEXT)
+	pt_sflow-pt_sflow_server.$(OBJEXT) \
+	pt_sflow-pt_sflow_read.$(OBJEXT) pt_sflow-pt_sock.$(OBJEXT) \
+	pt_sflow-pt_pcap.$(OBJEXT) pt_sflow-pt_snort.$(OBJEXT) \
+	pt_sflow-pt_datalink.$(OBJEXT) pt_sflow-pt_ip.$(OBJEXT) \
+	pt_sflow-pt_ip6.$(OBJEXT) pt_sflow-pt_tcp.$(OBJEXT) \
+	pt_sflow-pt_udp.$(OBJEXT) pt_sflow-pt_icmp.$(OBJEXT) \
+	pt_sflow-pt_icmp6.$(OBJEXT) pt_sflow-pt_iptbhash.$(OBJEXT) \
+	pt_sflow-pt_mesg.$(OBJEXT) pt_sflow-pt_send.$(OBJEXT) \
+	pt_sflow-pt_util.$(OBJEXT) pt_sflow-pt_init.$(OBJEXT)
 pt_sflow_OBJECTS = $(am_pt_sflow_OBJECTS)
 pt_sflow_DEPENDENCIES =
 pt_sflow_LINK = $(CCLD) $(pt_sflow_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-am_pt_thmon_OBJECTS = pt_thmon-pt_thmon.$(OBJEXT)
+am_pt_thmon_OBJECTS = pt_thmon-pt_thmon.$(OBJEXT) \
+	pt_thmon-pt_iptbhash.$(OBJEXT) pt_thmon-pt_hash.$(OBJEXT) \
+	pt_thmon-pt_util.$(OBJEXT)
 pt_thmon_OBJECTS = $(am_pt_thmon_OBJECTS)
 pt_thmon_DEPENDENCIES =
 pt_thmon_LINK = $(CCLD) $(pt_thmon_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
@@ -81,9 +100,10 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(pt_agent_SOURCES) $(pt_sflow_SOURCES) $(pt_thmon_SOURCES)
-DIST_SOURCES = $(pt_agent_SOURCES) $(pt_sflow_SOURCES) \
-	$(pt_thmon_SOURCES)
+SOURCES = $(pt_agent_SOURCES) $(pt_netflow_SOURCES) \
+	$(pt_sflow_SOURCES) $(pt_thmon_SOURCES)
+DIST_SOURCES = $(pt_agent_SOURCES) $(pt_netflow_SOURCES) \
+	$(pt_sflow_SOURCES) $(pt_thmon_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -177,10 +197,13 @@ top_srcdir = @top_srcdir@
 pt_agent_SOURCES = pt_agent.c pt_sock.c pt_pcap.c pt_snort.c pt_datalink.c pt_ip.c pt_ip6.c pt_tcp.c pt_udp.c pt_icmp.c pt_icmp6.c pt_iptbhash.c pt_mesg.c pt_send.c pt_util.c pt_init.c
 pt_agent_LDADD = 
 pt_agent_CFLAGS = 
-pt_sflow_SOURCES = pt_sflow.c pt_sock.c pt_pcap.c pt_snort.c pt_datalink.c pt_ip.c pt_ip6.c pt_tcp.c pt_udp.c pt_icmp.c pt_icmp6.c pt_iptbhash.c pt_mesg.c pt_send.c pt_util.c pt_init.c
+pt_sflow_SOURCES = pt_sflow.c pt_sflow_server.c pt_sflow_read.c pt_sock.c pt_pcap.c pt_snort.c pt_datalink.c pt_ip.c pt_ip6.c pt_tcp.c pt_udp.c pt_icmp.c pt_icmp6.c pt_iptbhash.c pt_mesg.c pt_send.c pt_util.c pt_init.c
 pt_sflow_LDADD = 
 pt_sflow_CFLAGS = 
-pt_thmon_SOURCES = pt_thmon.c 
+pt_netflow_SOURCES = pt_netflow.c pt_netflow_server.c pt_netflow_read.c pt_sock.c pt_pcap.c pt_snort.c pt_datalink.c pt_ip.c pt_ip6.c pt_tcp.c pt_udp.c pt_icmp.c pt_icmp6.c pt_iptbhash.c pt_mesg.c pt_send.c pt_util.c pt_init.c
+pt_netflow_LDADD = 
+pt_netflow_CFLAGS = 
+pt_thmon_SOURCES = pt_thmon.c pt_iptbhash.c pt_hash.c pt_util.c
 pt_thmon_LDADD = 
 pt_thmon_CFLAGS = 
 all: all-am
@@ -242,6 +265,9 @@ clean-binPROGRAMS:
 pt_agent$(EXEEXT): $(pt_agent_OBJECTS) $(pt_agent_DEPENDENCIES) 
 	@rm -f pt_agent$(EXEEXT)
 	$(pt_agent_LINK) $(pt_agent_OBJECTS) $(pt_agent_LDADD) $(LIBS)
+pt_netflow$(EXEEXT): $(pt_netflow_OBJECTS) $(pt_netflow_DEPENDENCIES) 
+	@rm -f pt_netflow$(EXEEXT)
+	$(pt_netflow_LINK) $(pt_netflow_OBJECTS) $(pt_netflow_LDADD) $(LIBS)
 pt_sflow$(EXEEXT): $(pt_sflow_OBJECTS) $(pt_sflow_DEPENDENCIES) 
 	@rm -f pt_sflow$(EXEEXT)
 	$(pt_sflow_LINK) $(pt_sflow_OBJECTS) $(pt_sflow_LDADD) $(LIBS)
@@ -271,6 +297,24 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_agent-pt_tcp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_agent-pt_udp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_agent-pt_util.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_datalink.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_icmp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_icmp6.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_init.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_ip.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_ip6.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_iptbhash.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_mesg.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_netflow.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_netflow_read.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_netflow_server.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_pcap.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_send.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_snort.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_sock.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_tcp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_udp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_netflow-pt_util.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_sflow-pt_datalink.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_sflow-pt_icmp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_sflow-pt_icmp6.Po@am__quote@
@@ -282,12 +326,17 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_sflow-pt_pcap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_sflow-pt_send.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_sflow-pt_sflow.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_sflow-pt_sflow_read.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_sflow-pt_sflow_server.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_sflow-pt_snort.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_sflow-pt_sock.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_sflow-pt_tcp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_sflow-pt_udp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_sflow-pt_util.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_thmon-pt_hash.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_thmon-pt_iptbhash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_thmon-pt_thmon.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt_thmon-pt_util.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -527,6 +576,258 @@ pt_agent-pt_init.obj: pt_init.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_agent_CFLAGS) $(CFLAGS) -c -o pt_agent-pt_init.obj `if test -f 'pt_init.c'; then $(CYGPATH_W) 'pt_init.c'; else $(CYGPATH_W) '$(srcdir)/pt_init.c'; fi`
 
+pt_netflow-pt_netflow.o: pt_netflow.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_netflow.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_netflow.Tpo -c -o pt_netflow-pt_netflow.o `test -f 'pt_netflow.c' || echo '$(srcdir)/'`pt_netflow.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_netflow.Tpo $(DEPDIR)/pt_netflow-pt_netflow.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_netflow.c' object='pt_netflow-pt_netflow.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_netflow.o `test -f 'pt_netflow.c' || echo '$(srcdir)/'`pt_netflow.c
+
+pt_netflow-pt_netflow.obj: pt_netflow.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_netflow.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_netflow.Tpo -c -o pt_netflow-pt_netflow.obj `if test -f 'pt_netflow.c'; then $(CYGPATH_W) 'pt_netflow.c'; else $(CYGPATH_W) '$(srcdir)/pt_netflow.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_netflow.Tpo $(DEPDIR)/pt_netflow-pt_netflow.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_netflow.c' object='pt_netflow-pt_netflow.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_netflow.obj `if test -f 'pt_netflow.c'; then $(CYGPATH_W) 'pt_netflow.c'; else $(CYGPATH_W) '$(srcdir)/pt_netflow.c'; fi`
+
+pt_netflow-pt_netflow_server.o: pt_netflow_server.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_netflow_server.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_netflow_server.Tpo -c -o pt_netflow-pt_netflow_server.o `test -f 'pt_netflow_server.c' || echo '$(srcdir)/'`pt_netflow_server.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_netflow_server.Tpo $(DEPDIR)/pt_netflow-pt_netflow_server.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_netflow_server.c' object='pt_netflow-pt_netflow_server.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_netflow_server.o `test -f 'pt_netflow_server.c' || echo '$(srcdir)/'`pt_netflow_server.c
+
+pt_netflow-pt_netflow_server.obj: pt_netflow_server.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_netflow_server.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_netflow_server.Tpo -c -o pt_netflow-pt_netflow_server.obj `if test -f 'pt_netflow_server.c'; then $(CYGPATH_W) 'pt_netflow_server.c'; else $(CYGPATH_W) '$(srcdir)/pt_netflow_server.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_netflow_server.Tpo $(DEPDIR)/pt_netflow-pt_netflow_server.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_netflow_server.c' object='pt_netflow-pt_netflow_server.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_netflow_server.obj `if test -f 'pt_netflow_server.c'; then $(CYGPATH_W) 'pt_netflow_server.c'; else $(CYGPATH_W) '$(srcdir)/pt_netflow_server.c'; fi`
+
+pt_netflow-pt_netflow_read.o: pt_netflow_read.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_netflow_read.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_netflow_read.Tpo -c -o pt_netflow-pt_netflow_read.o `test -f 'pt_netflow_read.c' || echo '$(srcdir)/'`pt_netflow_read.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_netflow_read.Tpo $(DEPDIR)/pt_netflow-pt_netflow_read.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_netflow_read.c' object='pt_netflow-pt_netflow_read.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_netflow_read.o `test -f 'pt_netflow_read.c' || echo '$(srcdir)/'`pt_netflow_read.c
+
+pt_netflow-pt_netflow_read.obj: pt_netflow_read.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_netflow_read.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_netflow_read.Tpo -c -o pt_netflow-pt_netflow_read.obj `if test -f 'pt_netflow_read.c'; then $(CYGPATH_W) 'pt_netflow_read.c'; else $(CYGPATH_W) '$(srcdir)/pt_netflow_read.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_netflow_read.Tpo $(DEPDIR)/pt_netflow-pt_netflow_read.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_netflow_read.c' object='pt_netflow-pt_netflow_read.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_netflow_read.obj `if test -f 'pt_netflow_read.c'; then $(CYGPATH_W) 'pt_netflow_read.c'; else $(CYGPATH_W) '$(srcdir)/pt_netflow_read.c'; fi`
+
+pt_netflow-pt_sock.o: pt_sock.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_sock.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_sock.Tpo -c -o pt_netflow-pt_sock.o `test -f 'pt_sock.c' || echo '$(srcdir)/'`pt_sock.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_sock.Tpo $(DEPDIR)/pt_netflow-pt_sock.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_sock.c' object='pt_netflow-pt_sock.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_sock.o `test -f 'pt_sock.c' || echo '$(srcdir)/'`pt_sock.c
+
+pt_netflow-pt_sock.obj: pt_sock.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_sock.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_sock.Tpo -c -o pt_netflow-pt_sock.obj `if test -f 'pt_sock.c'; then $(CYGPATH_W) 'pt_sock.c'; else $(CYGPATH_W) '$(srcdir)/pt_sock.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_sock.Tpo $(DEPDIR)/pt_netflow-pt_sock.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_sock.c' object='pt_netflow-pt_sock.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_sock.obj `if test -f 'pt_sock.c'; then $(CYGPATH_W) 'pt_sock.c'; else $(CYGPATH_W) '$(srcdir)/pt_sock.c'; fi`
+
+pt_netflow-pt_pcap.o: pt_pcap.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_pcap.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_pcap.Tpo -c -o pt_netflow-pt_pcap.o `test -f 'pt_pcap.c' || echo '$(srcdir)/'`pt_pcap.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_pcap.Tpo $(DEPDIR)/pt_netflow-pt_pcap.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_pcap.c' object='pt_netflow-pt_pcap.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_pcap.o `test -f 'pt_pcap.c' || echo '$(srcdir)/'`pt_pcap.c
+
+pt_netflow-pt_pcap.obj: pt_pcap.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_pcap.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_pcap.Tpo -c -o pt_netflow-pt_pcap.obj `if test -f 'pt_pcap.c'; then $(CYGPATH_W) 'pt_pcap.c'; else $(CYGPATH_W) '$(srcdir)/pt_pcap.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_pcap.Tpo $(DEPDIR)/pt_netflow-pt_pcap.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_pcap.c' object='pt_netflow-pt_pcap.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_pcap.obj `if test -f 'pt_pcap.c'; then $(CYGPATH_W) 'pt_pcap.c'; else $(CYGPATH_W) '$(srcdir)/pt_pcap.c'; fi`
+
+pt_netflow-pt_snort.o: pt_snort.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_snort.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_snort.Tpo -c -o pt_netflow-pt_snort.o `test -f 'pt_snort.c' || echo '$(srcdir)/'`pt_snort.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_snort.Tpo $(DEPDIR)/pt_netflow-pt_snort.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_snort.c' object='pt_netflow-pt_snort.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_snort.o `test -f 'pt_snort.c' || echo '$(srcdir)/'`pt_snort.c
+
+pt_netflow-pt_snort.obj: pt_snort.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_snort.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_snort.Tpo -c -o pt_netflow-pt_snort.obj `if test -f 'pt_snort.c'; then $(CYGPATH_W) 'pt_snort.c'; else $(CYGPATH_W) '$(srcdir)/pt_snort.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_snort.Tpo $(DEPDIR)/pt_netflow-pt_snort.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_snort.c' object='pt_netflow-pt_snort.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_snort.obj `if test -f 'pt_snort.c'; then $(CYGPATH_W) 'pt_snort.c'; else $(CYGPATH_W) '$(srcdir)/pt_snort.c'; fi`
+
+pt_netflow-pt_datalink.o: pt_datalink.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_datalink.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_datalink.Tpo -c -o pt_netflow-pt_datalink.o `test -f 'pt_datalink.c' || echo '$(srcdir)/'`pt_datalink.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_datalink.Tpo $(DEPDIR)/pt_netflow-pt_datalink.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_datalink.c' object='pt_netflow-pt_datalink.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_datalink.o `test -f 'pt_datalink.c' || echo '$(srcdir)/'`pt_datalink.c
+
+pt_netflow-pt_datalink.obj: pt_datalink.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_datalink.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_datalink.Tpo -c -o pt_netflow-pt_datalink.obj `if test -f 'pt_datalink.c'; then $(CYGPATH_W) 'pt_datalink.c'; else $(CYGPATH_W) '$(srcdir)/pt_datalink.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_datalink.Tpo $(DEPDIR)/pt_netflow-pt_datalink.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_datalink.c' object='pt_netflow-pt_datalink.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_datalink.obj `if test -f 'pt_datalink.c'; then $(CYGPATH_W) 'pt_datalink.c'; else $(CYGPATH_W) '$(srcdir)/pt_datalink.c'; fi`
+
+pt_netflow-pt_ip.o: pt_ip.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_ip.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_ip.Tpo -c -o pt_netflow-pt_ip.o `test -f 'pt_ip.c' || echo '$(srcdir)/'`pt_ip.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_ip.Tpo $(DEPDIR)/pt_netflow-pt_ip.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_ip.c' object='pt_netflow-pt_ip.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_ip.o `test -f 'pt_ip.c' || echo '$(srcdir)/'`pt_ip.c
+
+pt_netflow-pt_ip.obj: pt_ip.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_ip.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_ip.Tpo -c -o pt_netflow-pt_ip.obj `if test -f 'pt_ip.c'; then $(CYGPATH_W) 'pt_ip.c'; else $(CYGPATH_W) '$(srcdir)/pt_ip.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_ip.Tpo $(DEPDIR)/pt_netflow-pt_ip.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_ip.c' object='pt_netflow-pt_ip.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_ip.obj `if test -f 'pt_ip.c'; then $(CYGPATH_W) 'pt_ip.c'; else $(CYGPATH_W) '$(srcdir)/pt_ip.c'; fi`
+
+pt_netflow-pt_ip6.o: pt_ip6.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_ip6.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_ip6.Tpo -c -o pt_netflow-pt_ip6.o `test -f 'pt_ip6.c' || echo '$(srcdir)/'`pt_ip6.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_ip6.Tpo $(DEPDIR)/pt_netflow-pt_ip6.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_ip6.c' object='pt_netflow-pt_ip6.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_ip6.o `test -f 'pt_ip6.c' || echo '$(srcdir)/'`pt_ip6.c
+
+pt_netflow-pt_ip6.obj: pt_ip6.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_ip6.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_ip6.Tpo -c -o pt_netflow-pt_ip6.obj `if test -f 'pt_ip6.c'; then $(CYGPATH_W) 'pt_ip6.c'; else $(CYGPATH_W) '$(srcdir)/pt_ip6.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_ip6.Tpo $(DEPDIR)/pt_netflow-pt_ip6.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_ip6.c' object='pt_netflow-pt_ip6.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_ip6.obj `if test -f 'pt_ip6.c'; then $(CYGPATH_W) 'pt_ip6.c'; else $(CYGPATH_W) '$(srcdir)/pt_ip6.c'; fi`
+
+pt_netflow-pt_tcp.o: pt_tcp.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_tcp.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_tcp.Tpo -c -o pt_netflow-pt_tcp.o `test -f 'pt_tcp.c' || echo '$(srcdir)/'`pt_tcp.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_tcp.Tpo $(DEPDIR)/pt_netflow-pt_tcp.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_tcp.c' object='pt_netflow-pt_tcp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_tcp.o `test -f 'pt_tcp.c' || echo '$(srcdir)/'`pt_tcp.c
+
+pt_netflow-pt_tcp.obj: pt_tcp.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_tcp.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_tcp.Tpo -c -o pt_netflow-pt_tcp.obj `if test -f 'pt_tcp.c'; then $(CYGPATH_W) 'pt_tcp.c'; else $(CYGPATH_W) '$(srcdir)/pt_tcp.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_tcp.Tpo $(DEPDIR)/pt_netflow-pt_tcp.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_tcp.c' object='pt_netflow-pt_tcp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_tcp.obj `if test -f 'pt_tcp.c'; then $(CYGPATH_W) 'pt_tcp.c'; else $(CYGPATH_W) '$(srcdir)/pt_tcp.c'; fi`
+
+pt_netflow-pt_udp.o: pt_udp.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_udp.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_udp.Tpo -c -o pt_netflow-pt_udp.o `test -f 'pt_udp.c' || echo '$(srcdir)/'`pt_udp.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_udp.Tpo $(DEPDIR)/pt_netflow-pt_udp.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_udp.c' object='pt_netflow-pt_udp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_udp.o `test -f 'pt_udp.c' || echo '$(srcdir)/'`pt_udp.c
+
+pt_netflow-pt_udp.obj: pt_udp.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_udp.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_udp.Tpo -c -o pt_netflow-pt_udp.obj `if test -f 'pt_udp.c'; then $(CYGPATH_W) 'pt_udp.c'; else $(CYGPATH_W) '$(srcdir)/pt_udp.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_udp.Tpo $(DEPDIR)/pt_netflow-pt_udp.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_udp.c' object='pt_netflow-pt_udp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_udp.obj `if test -f 'pt_udp.c'; then $(CYGPATH_W) 'pt_udp.c'; else $(CYGPATH_W) '$(srcdir)/pt_udp.c'; fi`
+
+pt_netflow-pt_icmp.o: pt_icmp.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_icmp.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_icmp.Tpo -c -o pt_netflow-pt_icmp.o `test -f 'pt_icmp.c' || echo '$(srcdir)/'`pt_icmp.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_icmp.Tpo $(DEPDIR)/pt_netflow-pt_icmp.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_icmp.c' object='pt_netflow-pt_icmp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_icmp.o `test -f 'pt_icmp.c' || echo '$(srcdir)/'`pt_icmp.c
+
+pt_netflow-pt_icmp.obj: pt_icmp.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_icmp.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_icmp.Tpo -c -o pt_netflow-pt_icmp.obj `if test -f 'pt_icmp.c'; then $(CYGPATH_W) 'pt_icmp.c'; else $(CYGPATH_W) '$(srcdir)/pt_icmp.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_icmp.Tpo $(DEPDIR)/pt_netflow-pt_icmp.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_icmp.c' object='pt_netflow-pt_icmp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_icmp.obj `if test -f 'pt_icmp.c'; then $(CYGPATH_W) 'pt_icmp.c'; else $(CYGPATH_W) '$(srcdir)/pt_icmp.c'; fi`
+
+pt_netflow-pt_icmp6.o: pt_icmp6.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_icmp6.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_icmp6.Tpo -c -o pt_netflow-pt_icmp6.o `test -f 'pt_icmp6.c' || echo '$(srcdir)/'`pt_icmp6.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_icmp6.Tpo $(DEPDIR)/pt_netflow-pt_icmp6.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_icmp6.c' object='pt_netflow-pt_icmp6.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_icmp6.o `test -f 'pt_icmp6.c' || echo '$(srcdir)/'`pt_icmp6.c
+
+pt_netflow-pt_icmp6.obj: pt_icmp6.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_icmp6.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_icmp6.Tpo -c -o pt_netflow-pt_icmp6.obj `if test -f 'pt_icmp6.c'; then $(CYGPATH_W) 'pt_icmp6.c'; else $(CYGPATH_W) '$(srcdir)/pt_icmp6.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_icmp6.Tpo $(DEPDIR)/pt_netflow-pt_icmp6.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_icmp6.c' object='pt_netflow-pt_icmp6.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_icmp6.obj `if test -f 'pt_icmp6.c'; then $(CYGPATH_W) 'pt_icmp6.c'; else $(CYGPATH_W) '$(srcdir)/pt_icmp6.c'; fi`
+
+pt_netflow-pt_iptbhash.o: pt_iptbhash.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_iptbhash.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_iptbhash.Tpo -c -o pt_netflow-pt_iptbhash.o `test -f 'pt_iptbhash.c' || echo '$(srcdir)/'`pt_iptbhash.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_iptbhash.Tpo $(DEPDIR)/pt_netflow-pt_iptbhash.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_iptbhash.c' object='pt_netflow-pt_iptbhash.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_iptbhash.o `test -f 'pt_iptbhash.c' || echo '$(srcdir)/'`pt_iptbhash.c
+
+pt_netflow-pt_iptbhash.obj: pt_iptbhash.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_iptbhash.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_iptbhash.Tpo -c -o pt_netflow-pt_iptbhash.obj `if test -f 'pt_iptbhash.c'; then $(CYGPATH_W) 'pt_iptbhash.c'; else $(CYGPATH_W) '$(srcdir)/pt_iptbhash.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_iptbhash.Tpo $(DEPDIR)/pt_netflow-pt_iptbhash.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_iptbhash.c' object='pt_netflow-pt_iptbhash.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_iptbhash.obj `if test -f 'pt_iptbhash.c'; then $(CYGPATH_W) 'pt_iptbhash.c'; else $(CYGPATH_W) '$(srcdir)/pt_iptbhash.c'; fi`
+
+pt_netflow-pt_mesg.o: pt_mesg.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_mesg.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_mesg.Tpo -c -o pt_netflow-pt_mesg.o `test -f 'pt_mesg.c' || echo '$(srcdir)/'`pt_mesg.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_mesg.Tpo $(DEPDIR)/pt_netflow-pt_mesg.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_mesg.c' object='pt_netflow-pt_mesg.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_mesg.o `test -f 'pt_mesg.c' || echo '$(srcdir)/'`pt_mesg.c
+
+pt_netflow-pt_mesg.obj: pt_mesg.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_mesg.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_mesg.Tpo -c -o pt_netflow-pt_mesg.obj `if test -f 'pt_mesg.c'; then $(CYGPATH_W) 'pt_mesg.c'; else $(CYGPATH_W) '$(srcdir)/pt_mesg.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_mesg.Tpo $(DEPDIR)/pt_netflow-pt_mesg.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_mesg.c' object='pt_netflow-pt_mesg.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_mesg.obj `if test -f 'pt_mesg.c'; then $(CYGPATH_W) 'pt_mesg.c'; else $(CYGPATH_W) '$(srcdir)/pt_mesg.c'; fi`
+
+pt_netflow-pt_send.o: pt_send.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_send.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_send.Tpo -c -o pt_netflow-pt_send.o `test -f 'pt_send.c' || echo '$(srcdir)/'`pt_send.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_send.Tpo $(DEPDIR)/pt_netflow-pt_send.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_send.c' object='pt_netflow-pt_send.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_send.o `test -f 'pt_send.c' || echo '$(srcdir)/'`pt_send.c
+
+pt_netflow-pt_send.obj: pt_send.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_send.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_send.Tpo -c -o pt_netflow-pt_send.obj `if test -f 'pt_send.c'; then $(CYGPATH_W) 'pt_send.c'; else $(CYGPATH_W) '$(srcdir)/pt_send.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_send.Tpo $(DEPDIR)/pt_netflow-pt_send.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_send.c' object='pt_netflow-pt_send.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_send.obj `if test -f 'pt_send.c'; then $(CYGPATH_W) 'pt_send.c'; else $(CYGPATH_W) '$(srcdir)/pt_send.c'; fi`
+
+pt_netflow-pt_util.o: pt_util.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_util.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_util.Tpo -c -o pt_netflow-pt_util.o `test -f 'pt_util.c' || echo '$(srcdir)/'`pt_util.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_util.Tpo $(DEPDIR)/pt_netflow-pt_util.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_util.c' object='pt_netflow-pt_util.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_util.o `test -f 'pt_util.c' || echo '$(srcdir)/'`pt_util.c
+
+pt_netflow-pt_util.obj: pt_util.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_util.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_util.Tpo -c -o pt_netflow-pt_util.obj `if test -f 'pt_util.c'; then $(CYGPATH_W) 'pt_util.c'; else $(CYGPATH_W) '$(srcdir)/pt_util.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_util.Tpo $(DEPDIR)/pt_netflow-pt_util.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_util.c' object='pt_netflow-pt_util.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_util.obj `if test -f 'pt_util.c'; then $(CYGPATH_W) 'pt_util.c'; else $(CYGPATH_W) '$(srcdir)/pt_util.c'; fi`
+
+pt_netflow-pt_init.o: pt_init.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_init.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_init.Tpo -c -o pt_netflow-pt_init.o `test -f 'pt_init.c' || echo '$(srcdir)/'`pt_init.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_init.Tpo $(DEPDIR)/pt_netflow-pt_init.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_init.c' object='pt_netflow-pt_init.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_init.o `test -f 'pt_init.c' || echo '$(srcdir)/'`pt_init.c
+
+pt_netflow-pt_init.obj: pt_init.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_init.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_init.Tpo -c -o pt_netflow-pt_init.obj `if test -f 'pt_init.c'; then $(CYGPATH_W) 'pt_init.c'; else $(CYGPATH_W) '$(srcdir)/pt_init.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_netflow-pt_init.Tpo $(DEPDIR)/pt_netflow-pt_init.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_init.c' object='pt_netflow-pt_init.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_init.obj `if test -f 'pt_init.c'; then $(CYGPATH_W) 'pt_init.c'; else $(CYGPATH_W) '$(srcdir)/pt_init.c'; fi`
+
 pt_sflow-pt_sflow.o: pt_sflow.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_sflow_CFLAGS) $(CFLAGS) -MT pt_sflow-pt_sflow.o -MD -MP -MF $(DEPDIR)/pt_sflow-pt_sflow.Tpo -c -o pt_sflow-pt_sflow.o `test -f 'pt_sflow.c' || echo '$(srcdir)/'`pt_sflow.c
 @am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_sflow-pt_sflow.Tpo $(DEPDIR)/pt_sflow-pt_sflow.Po
@@ -540,6 +841,34 @@ pt_sflow-pt_sflow.obj: pt_sflow.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_sflow.c' object='pt_sflow-pt_sflow.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_sflow_CFLAGS) $(CFLAGS) -c -o pt_sflow-pt_sflow.obj `if test -f 'pt_sflow.c'; then $(CYGPATH_W) 'pt_sflow.c'; else $(CYGPATH_W) '$(srcdir)/pt_sflow.c'; fi`
+
+pt_sflow-pt_sflow_server.o: pt_sflow_server.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_sflow_CFLAGS) $(CFLAGS) -MT pt_sflow-pt_sflow_server.o -MD -MP -MF $(DEPDIR)/pt_sflow-pt_sflow_server.Tpo -c -o pt_sflow-pt_sflow_server.o `test -f 'pt_sflow_server.c' || echo '$(srcdir)/'`pt_sflow_server.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_sflow-pt_sflow_server.Tpo $(DEPDIR)/pt_sflow-pt_sflow_server.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_sflow_server.c' object='pt_sflow-pt_sflow_server.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_sflow_CFLAGS) $(CFLAGS) -c -o pt_sflow-pt_sflow_server.o `test -f 'pt_sflow_server.c' || echo '$(srcdir)/'`pt_sflow_server.c
+
+pt_sflow-pt_sflow_server.obj: pt_sflow_server.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_sflow_CFLAGS) $(CFLAGS) -MT pt_sflow-pt_sflow_server.obj -MD -MP -MF $(DEPDIR)/pt_sflow-pt_sflow_server.Tpo -c -o pt_sflow-pt_sflow_server.obj `if test -f 'pt_sflow_server.c'; then $(CYGPATH_W) 'pt_sflow_server.c'; else $(CYGPATH_W) '$(srcdir)/pt_sflow_server.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_sflow-pt_sflow_server.Tpo $(DEPDIR)/pt_sflow-pt_sflow_server.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_sflow_server.c' object='pt_sflow-pt_sflow_server.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_sflow_CFLAGS) $(CFLAGS) -c -o pt_sflow-pt_sflow_server.obj `if test -f 'pt_sflow_server.c'; then $(CYGPATH_W) 'pt_sflow_server.c'; else $(CYGPATH_W) '$(srcdir)/pt_sflow_server.c'; fi`
+
+pt_sflow-pt_sflow_read.o: pt_sflow_read.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_sflow_CFLAGS) $(CFLAGS) -MT pt_sflow-pt_sflow_read.o -MD -MP -MF $(DEPDIR)/pt_sflow-pt_sflow_read.Tpo -c -o pt_sflow-pt_sflow_read.o `test -f 'pt_sflow_read.c' || echo '$(srcdir)/'`pt_sflow_read.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_sflow-pt_sflow_read.Tpo $(DEPDIR)/pt_sflow-pt_sflow_read.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_sflow_read.c' object='pt_sflow-pt_sflow_read.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_sflow_CFLAGS) $(CFLAGS) -c -o pt_sflow-pt_sflow_read.o `test -f 'pt_sflow_read.c' || echo '$(srcdir)/'`pt_sflow_read.c
+
+pt_sflow-pt_sflow_read.obj: pt_sflow_read.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_sflow_CFLAGS) $(CFLAGS) -MT pt_sflow-pt_sflow_read.obj -MD -MP -MF $(DEPDIR)/pt_sflow-pt_sflow_read.Tpo -c -o pt_sflow-pt_sflow_read.obj `if test -f 'pt_sflow_read.c'; then $(CYGPATH_W) 'pt_sflow_read.c'; else $(CYGPATH_W) '$(srcdir)/pt_sflow_read.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_sflow-pt_sflow_read.Tpo $(DEPDIR)/pt_sflow-pt_sflow_read.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_sflow_read.c' object='pt_sflow-pt_sflow_read.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_sflow_CFLAGS) $(CFLAGS) -c -o pt_sflow-pt_sflow_read.obj `if test -f 'pt_sflow_read.c'; then $(CYGPATH_W) 'pt_sflow_read.c'; else $(CYGPATH_W) '$(srcdir)/pt_sflow_read.c'; fi`
 
 pt_sflow-pt_sock.o: pt_sock.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_sflow_CFLAGS) $(CFLAGS) -MT pt_sflow-pt_sock.o -MD -MP -MF $(DEPDIR)/pt_sflow-pt_sock.Tpo -c -o pt_sflow-pt_sock.o `test -f 'pt_sock.c' || echo '$(srcdir)/'`pt_sock.c
@@ -764,6 +1093,48 @@ pt_thmon-pt_thmon.obj: pt_thmon.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_thmon.c' object='pt_thmon-pt_thmon.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_thmon_CFLAGS) $(CFLAGS) -c -o pt_thmon-pt_thmon.obj `if test -f 'pt_thmon.c'; then $(CYGPATH_W) 'pt_thmon.c'; else $(CYGPATH_W) '$(srcdir)/pt_thmon.c'; fi`
+
+pt_thmon-pt_iptbhash.o: pt_iptbhash.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_thmon_CFLAGS) $(CFLAGS) -MT pt_thmon-pt_iptbhash.o -MD -MP -MF $(DEPDIR)/pt_thmon-pt_iptbhash.Tpo -c -o pt_thmon-pt_iptbhash.o `test -f 'pt_iptbhash.c' || echo '$(srcdir)/'`pt_iptbhash.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_thmon-pt_iptbhash.Tpo $(DEPDIR)/pt_thmon-pt_iptbhash.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_iptbhash.c' object='pt_thmon-pt_iptbhash.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_thmon_CFLAGS) $(CFLAGS) -c -o pt_thmon-pt_iptbhash.o `test -f 'pt_iptbhash.c' || echo '$(srcdir)/'`pt_iptbhash.c
+
+pt_thmon-pt_iptbhash.obj: pt_iptbhash.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_thmon_CFLAGS) $(CFLAGS) -MT pt_thmon-pt_iptbhash.obj -MD -MP -MF $(DEPDIR)/pt_thmon-pt_iptbhash.Tpo -c -o pt_thmon-pt_iptbhash.obj `if test -f 'pt_iptbhash.c'; then $(CYGPATH_W) 'pt_iptbhash.c'; else $(CYGPATH_W) '$(srcdir)/pt_iptbhash.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_thmon-pt_iptbhash.Tpo $(DEPDIR)/pt_thmon-pt_iptbhash.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_iptbhash.c' object='pt_thmon-pt_iptbhash.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_thmon_CFLAGS) $(CFLAGS) -c -o pt_thmon-pt_iptbhash.obj `if test -f 'pt_iptbhash.c'; then $(CYGPATH_W) 'pt_iptbhash.c'; else $(CYGPATH_W) '$(srcdir)/pt_iptbhash.c'; fi`
+
+pt_thmon-pt_hash.o: pt_hash.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_thmon_CFLAGS) $(CFLAGS) -MT pt_thmon-pt_hash.o -MD -MP -MF $(DEPDIR)/pt_thmon-pt_hash.Tpo -c -o pt_thmon-pt_hash.o `test -f 'pt_hash.c' || echo '$(srcdir)/'`pt_hash.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_thmon-pt_hash.Tpo $(DEPDIR)/pt_thmon-pt_hash.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_hash.c' object='pt_thmon-pt_hash.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_thmon_CFLAGS) $(CFLAGS) -c -o pt_thmon-pt_hash.o `test -f 'pt_hash.c' || echo '$(srcdir)/'`pt_hash.c
+
+pt_thmon-pt_hash.obj: pt_hash.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_thmon_CFLAGS) $(CFLAGS) -MT pt_thmon-pt_hash.obj -MD -MP -MF $(DEPDIR)/pt_thmon-pt_hash.Tpo -c -o pt_thmon-pt_hash.obj `if test -f 'pt_hash.c'; then $(CYGPATH_W) 'pt_hash.c'; else $(CYGPATH_W) '$(srcdir)/pt_hash.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_thmon-pt_hash.Tpo $(DEPDIR)/pt_thmon-pt_hash.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_hash.c' object='pt_thmon-pt_hash.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_thmon_CFLAGS) $(CFLAGS) -c -o pt_thmon-pt_hash.obj `if test -f 'pt_hash.c'; then $(CYGPATH_W) 'pt_hash.c'; else $(CYGPATH_W) '$(srcdir)/pt_hash.c'; fi`
+
+pt_thmon-pt_util.o: pt_util.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_thmon_CFLAGS) $(CFLAGS) -MT pt_thmon-pt_util.o -MD -MP -MF $(DEPDIR)/pt_thmon-pt_util.Tpo -c -o pt_thmon-pt_util.o `test -f 'pt_util.c' || echo '$(srcdir)/'`pt_util.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_thmon-pt_util.Tpo $(DEPDIR)/pt_thmon-pt_util.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_util.c' object='pt_thmon-pt_util.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_thmon_CFLAGS) $(CFLAGS) -c -o pt_thmon-pt_util.o `test -f 'pt_util.c' || echo '$(srcdir)/'`pt_util.c
+
+pt_thmon-pt_util.obj: pt_util.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_thmon_CFLAGS) $(CFLAGS) -MT pt_thmon-pt_util.obj -MD -MP -MF $(DEPDIR)/pt_thmon-pt_util.Tpo -c -o pt_thmon-pt_util.obj `if test -f 'pt_util.c'; then $(CYGPATH_W) 'pt_util.c'; else $(CYGPATH_W) '$(srcdir)/pt_util.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pt_thmon-pt_util.Tpo $(DEPDIR)/pt_thmon-pt_util.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt_util.c' object='pt_thmon-pt_util.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_thmon_CFLAGS) $(CFLAGS) -c -o pt_thmon-pt_util.obj `if test -f 'pt_util.c'; then $(CYGPATH_W) 'pt_util.c'; else $(CYGPATH_W) '$(srcdir)/pt_util.c'; fi`
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \

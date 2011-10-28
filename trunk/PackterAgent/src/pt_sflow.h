@@ -12,14 +12,6 @@
 #define PACKTER_SFLOW_ROUTER 2
 #define PACKTER_SFLOW_GATEWAY 3
 
-struct sflow_bts {
-	char src_mac[PACKTER_BUFSIZ];
-	char dst_mac[PACKTER_BUFSIZ];
-	int	in_as;
-	int out_as;
-	int peer_as;
-};
-
 struct sflow_v4_header {
 	u_int32_t	version;
 	u_int32_t counter_version;
@@ -95,6 +87,6 @@ struct sflow_ex_gateway {
 };
 
 void packter_sflow_usage();
-int packter_sflow(char *, int);
-
+int packter_sflow_read(char *, int);
+void packter_sflow_server(char *, int, int);
 #endif
