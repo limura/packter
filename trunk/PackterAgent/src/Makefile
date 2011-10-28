@@ -66,7 +66,8 @@ am_pt_netflow_OBJECTS = pt_netflow-pt_netflow_agent.$(OBJEXT) \
 	pt_netflow-pt_udp.$(OBJEXT) pt_netflow-pt_icmp.$(OBJEXT) \
 	pt_netflow-pt_icmp6.$(OBJEXT) pt_netflow-pt_iptbhash.$(OBJEXT) \
 	pt_netflow-pt_mesg.$(OBJEXT) pt_netflow-pt_send.$(OBJEXT) \
-	pt_netflow-pt_util.$(OBJEXT) pt_netflow-pt_init.$(OBJEXT)
+	pt_netflow-pt_util.$(OBJEXT) pt_netflow-pt_init.$(OBJEXT) \
+	pt_netflow-pt_hash.$(OBJEXT)
 pt_netflow_OBJECTS = $(am_pt_netflow_OBJECTS)
 pt_netflow_DEPENDENCIES =
 pt_netflow_LINK = $(CCLD) $(pt_netflow_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
@@ -199,7 +200,7 @@ pt_agent_CFLAGS =
 pt_sflow_SOURCES = pt_sflow_agent.c pt_sflow.c pt_sflowd.c pt_sock.c pt_pcap.c pt_snort.c pt_datalink.c pt_ip.c pt_ip6.c pt_tcp.c pt_udp.c pt_icmp.c pt_icmp6.c pt_iptbhash.c pt_mesg.c pt_send.c pt_util.c pt_init.c
 pt_sflow_LDADD = 
 pt_sflow_CFLAGS = 
-pt_netflow_SOURCES = pt_netflow_agent.c pt_netflow.c pt_netflowd.c pt_sock.c pt_pcap.c pt_snort.c pt_datalink.c pt_ip.c pt_ip6.c pt_tcp.c pt_udp.c pt_icmp.c pt_icmp6.c pt_iptbhash.c pt_mesg.c pt_send.c pt_util.c pt_init.c
+pt_netflow_SOURCES = pt_netflow_agent.c pt_netflow.c pt_netflowd.c pt_sock.c pt_pcap.c pt_snort.c pt_datalink.c pt_ip.c pt_ip6.c pt_tcp.c pt_udp.c pt_icmp.c pt_icmp6.c pt_iptbhash.c pt_mesg.c pt_send.c pt_util.c pt_init.c pt_hash.c
 pt_netflow_LDADD = 
 pt_netflow_CFLAGS = 
 pt_thmon_SOURCES = pt_thmon.c pt_iptbhash.c pt_hash.c pt_util.c
@@ -297,6 +298,7 @@ include ./$(DEPDIR)/pt_agent-pt_tcp.Po
 include ./$(DEPDIR)/pt_agent-pt_udp.Po
 include ./$(DEPDIR)/pt_agent-pt_util.Po
 include ./$(DEPDIR)/pt_netflow-pt_datalink.Po
+include ./$(DEPDIR)/pt_netflow-pt_hash.Po
 include ./$(DEPDIR)/pt_netflow-pt_icmp.Po
 include ./$(DEPDIR)/pt_netflow-pt_icmp6.Po
 include ./$(DEPDIR)/pt_netflow-pt_init.Po
@@ -826,6 +828,20 @@ pt_netflow-pt_init.obj: pt_init.c
 #	source='pt_init.c' object='pt_netflow-pt_init.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_init.obj `if test -f 'pt_init.c'; then $(CYGPATH_W) 'pt_init.c'; else $(CYGPATH_W) '$(srcdir)/pt_init.c'; fi`
+
+pt_netflow-pt_hash.o: pt_hash.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_hash.o -MD -MP -MF $(DEPDIR)/pt_netflow-pt_hash.Tpo -c -o pt_netflow-pt_hash.o `test -f 'pt_hash.c' || echo '$(srcdir)/'`pt_hash.c
+	mv -f $(DEPDIR)/pt_netflow-pt_hash.Tpo $(DEPDIR)/pt_netflow-pt_hash.Po
+#	source='pt_hash.c' object='pt_netflow-pt_hash.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_hash.o `test -f 'pt_hash.c' || echo '$(srcdir)/'`pt_hash.c
+
+pt_netflow-pt_hash.obj: pt_hash.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -MT pt_netflow-pt_hash.obj -MD -MP -MF $(DEPDIR)/pt_netflow-pt_hash.Tpo -c -o pt_netflow-pt_hash.obj `if test -f 'pt_hash.c'; then $(CYGPATH_W) 'pt_hash.c'; else $(CYGPATH_W) '$(srcdir)/pt_hash.c'; fi`
+	mv -f $(DEPDIR)/pt_netflow-pt_hash.Tpo $(DEPDIR)/pt_netflow-pt_hash.Po
+#	source='pt_hash.c' object='pt_netflow-pt_hash.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_netflow_CFLAGS) $(CFLAGS) -c -o pt_netflow-pt_hash.obj `if test -f 'pt_hash.c'; then $(CYGPATH_W) 'pt_hash.c'; else $(CYGPATH_W) '$(srcdir)/pt_hash.c'; fi`
 
 pt_sflow-pt_sflow_agent.o: pt_sflow_agent.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pt_sflow_CFLAGS) $(CFLAGS) -MT pt_sflow-pt_sflow_agent.o -MD -MP -MF $(DEPDIR)/pt_sflow-pt_sflow_agent.Tpo -c -o pt_sflow-pt_sflow_agent.o `test -f 'pt_sflow_agent.c' || echo '$(srcdir)/'`pt_sflow_agent.c

@@ -90,6 +90,27 @@ void packter_addstring_hash(char *buf, char *key)
 	}
 }
 
+int packter_is_exist_key_str(char *key)
+{
+	int ret = PACKTER_FALSE;
+	char *val;
+
+	do {
+		if (key == NULL){
+			break;
+		}
+		val = (char *)g_hash_table_lookup(config, key);
+		if (val == NULL){
+			break;
+		}
+		if (strlen(val) < 1){
+			break;
+		}
+		ret = PACKTER_TRUE;
+	} while(0);
+	return ret;
+}
+
 int packter_is_exist_key(char *key)
 {
 	int ret = PACKTER_FALSE;
@@ -99,19 +120,11 @@ int packter_is_exist_key(char *key)
 		if (key == NULL){
 			break;
 		}
-
 		val = (char *)g_hash_table_lookup(config, key);
 		if (val == NULL){
 			break;
 		}
-
-		if (strlen(val) < 1){
-			break;
-		}
-
 		ret = PACKTER_TRUE;
-
 	} while(0);
-
 	return ret;
 }

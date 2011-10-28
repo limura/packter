@@ -43,10 +43,16 @@
 
 #include <openssl/md5.h>
 
+#include <glib.h>
+
 #include "pt_std.h"
 #include "pt_netflow.h"
 
+#include "proto_tcp.h"
+#include "proto_ipproto.h"
+
 extern int debug;
+extern GHashTable *config;
 
 int packter_netflow_read(char *buf, int len)
 {
@@ -73,8 +79,11 @@ int packter_netflow_read(char *buf, int len)
 		}
 		nt = (struct netflow_v9_template *)buf;
 
-		if (nt->id == PACKTER_NETFLOW_TEMPLATE_SET){
+		if (ntohs(nt->id) == PACKTER_NETFLOW_TEMPLATE_SET){
 			packter_netflow_template_set(buf, len, srcid);		
+		}
+		else if (ntohs(nt->id) >= 256){
+			packter_netflow_template(buf, len, srcid);
 		}
 
 		buf += ntohs(nt->len);
@@ -83,17 +92,21 @@ int packter_netflow_read(char *buf, int len)
 	return;
 }
 
-int packter_netflow_template_set(const char *buf, const int len, int srcid) 
+int packter_netflow_template_set(const char *buf, const int len, int srcid)
 {
 	struct netflow_v9_template *nt;
 	struct netflow_v9_field *nf;
+	struct netflow_v9_pointer *np;
+	char key[PACKTER_BUFSIZ];
 
-	int templateid;
+	u_short templateid;
 	int fieldcount;
 	int fieldlen;
 	int i;
 
 	int bufp = 0;
+
+	/* SET : (template id) (length) (template id) (length) ... */
 
 	bufp += sizeof(struct netflow_v9_template);
 
@@ -107,8 +120,22 @@ int packter_netflow_template_set(const char *buf, const int len, int srcid)
 	templateid = ntohs(nt->id);
 	fieldcount = ntohs(nt->len);
 
+	snprintf(key, PACKTER_BUFSIZ, "%d-%d", srcid, templateid);
 	if (debug == PACKTER_TRUE){
-		printf("templadid: %d, fieldcount: %d\n", templateid, fieldcount);
+		printf("SET templateid:%d, srcid:%d\n", templateid, srcid);
+	}
+
+	if (packter_is_exist_key(key) == PACKTER_TRUE){
+		np = (struct netflow_v9_pointer *)g_hash_table_lookup(config, key);
+	}
+	else {
+		np = (struct netflow_v9_pointer *)malloc(sizeof(struct netflow_v9_pointer));
+		if (np == NULL){
+			perror("malloc");
+			exit(EXIT_FAILURE);
+		}
+		/* memset((void *)np, '\0', sizeof(struct netflow_v9_pointer)); */
+		packter_netflow_pointer_init(np);
 	}
 
 	fieldlen = 0;
@@ -121,46 +148,256 @@ int packter_netflow_template_set(const char *buf, const int len, int srcid)
 
 		switch(ntohs(nf->type)){
 			case PACKTER_NETFLOW_IPV4_SRC_ADDR:
-				printf("src ip4: %d\n", fieldlen);
+				np->l3_src = fieldlen;
 				break;
 
 			case PACKTER_NETFLOW_IPV4_DST_ADDR:
-				printf("dst ip4: %d\n", fieldlen);
+				np->l3_dst = fieldlen;
 				break;
 
 			case PACKTER_NETFLOW_IPV6_SRC_ADDR:
-				printf("dst ip6: %d\n", fieldlen);
+				np->l3_src = fieldlen;
+				np->isv6 = PACKTER_TRUE;
 				break;
 
 			case PACKTER_NETFLOW_IPV6_DST_ADDR:
-				printf("dst ip6: %d\n", fieldlen);
+				np->l3_dst = fieldlen;
+				np->isv6 = PACKTER_TRUE;
 				break;
 
 			case PACKTER_NETFLOW_L4_SRC_PORT:
-				printf("src port: %d\n", fieldlen);
+				np->l4_src = fieldlen;
 				break;
 	
 			case PACKTER_NETFLOW_L4_DST_PORT:
-				printf("dst port: %d\n", fieldlen);
+				np->l4_dst = fieldlen;
 				break;
 
 			case PACKTER_NETFLOW_ICMP_TYPE:
-				printf("icmp: %d\n", fieldlen);
+				np->icmp = fieldlen;
 				break;
 
 			case PACKTER_NETFLOW_IN_PROTOCOL:
-				printf("proto: %d\n", fieldlen);
+				np->proto = fieldlen;
 				break;
 
-			case PACKTER_NETFLOW_IP_PROTOCOL_VERSION:
-				printf("ver:%d\n", fieldlen);
+			case PACKTER_NETFLOW_TCP_FLAGS:
+				np->tcp_flags = fieldlen;
 				break;
 
+			default:
+				break;
 		}
 		fieldlen += ntohs(nf->len);
-		if (debug == PACKTER_TRUE){
-			printf("%d:%d,%d,%d\n", i, templateid, ntohs(nf->type), ntohs(nf->len));
+	
+		if (g_hash_table_lookup(config, (gconstpointer)key) == NULL){
+			g_hash_table_insert(config, g_strdup(key), (gpointer)np);
 		}
-		
+	
 	}
+}
+
+int packter_netflow_pointer_init(struct netflow_v9_pointer *np)
+{
+	np->l3_src = PACKTER_FALSE;
+  np->l3_dst = PACKTER_FALSE;
+  np->l4_src = PACKTER_FALSE;
+  np->l4_dst = PACKTER_FALSE;
+  np->isv6 = PACKTER_FALSE;
+  np->proto = PACKTER_FALSE;
+  np->icmp = PACKTER_FALSE;
+  np->tcp_flags = PACKTER_FALSE;
+}
+			
+int packter_netflow_template(const char *buf, const int len, int srcid)
+{
+	struct netflow_v9_template *nt;
+	struct netflow_v9_pointer *np;
+	char key[PACKTER_BUFSIZ];
+
+	char srcip[PACKTER_BUFSIZ];
+	char dstip[PACKTER_BUFSIZ];
+	int srcport;
+	int dstport;
+	int flag;
+	short proto;
+	short tcp_flags;
+	int isv6;
+	u_short templateid;
+
+	char mesg[PACKTER_BUFSIZ];
+	char mesgbuf[PACKTER_BUFSIZ];
+	int bufp = 0;
+
+	/* GET : (template id) (length)  ... */
+
+	if (len < sizeof(struct netflow_v9_template)){
+		return PACKTER_FALSE;
+	}
+
+	nt = (struct netflow_v9_template *)buf;
+	bufp += sizeof(struct netflow_v9_template);
+
+	templateid = ntohs(nt->id);
+
+	snprintf(key, PACKTER_BUFSIZ, "%d-%d", srcid, templateid);
+	if (debug == PACKTER_TRUE){
+		printf("GET templateid:%d, srcid:%d\n", templateid, srcid);
+	}
+
+	if (packter_is_exist_key(key) == PACKTER_FALSE){
+		/* this is uknown till format received */
+		return PACKTER_FALSE;
+	}
+
+	np = (struct netflow_v9_pointer *)g_hash_table_lookup(config, key);
+
+	if (np->l3_src == PACKTER_FALSE || np->l3_dst == PACKTER_FALSE 
+			|| np->proto == PACKTER_FALSE){
+		printf("unknown netflow\n");
+		return;
+	}
+
+	/* get ipaddrss */
+	isv6 = np->isv6;
+	if (isv6 == PACKTER_TRUE){
+		if (inet_ntop(AF_INET6,
+									(void *)(buf + bufp + np->l3_src),
+									srcip, PACKTER_BUFSIZ) == NULL)
+		{
+			perror("inet_ntop");
+			return;
+		}
+
+		if (inet_ntop(AF_INET6,
+									(void *)(buf + bufp + np->l3_dst),
+									dstip, PACKTER_BUFSIZ) == NULL)
+		{
+			perror("inet_ntop");
+			return;
+		}
+	}
+	else {
+		if (inet_ntop(AF_INET,
+									(void *)(buf + bufp + np->l3_src),
+									srcip, PACKTER_BUFSIZ) == NULL)
+		{
+			perror("inet_ntop");
+			return;
+		}
+		if (inet_ntop(AF_INET,
+									(void *)(buf + bufp + np->l3_dst),
+									dstip, PACKTER_BUFSIZ) == NULL)
+		{
+			perror("inet_ntop");
+			return;
+		}
+	}
+
+	srcport = 0; dstport = 0; flag = 0;
+	tcp_flags = 0; proto = 0;
+
+	/* get protocol type */
+	memcpy((void *)&proto,
+				(void *)(buf + bufp + np->proto),
+				PACKTER_NETFLOW_IN_PROTOCOL_LEN);
+
+	switch(proto){
+			case IPPROTO_TCP:
+				/* tcp port */
+				if (np->l4_src == PACKTER_FALSE || np->l4_dst == PACKTER_FALSE){
+					return;
+				}
+				memcpy((void *)&srcport,
+							(void *)(buf + bufp + np->l4_src),
+							PACKTER_NETFLOW_L4_SRC_PORT_LEN);
+
+				memcpy((void *)&dstport,
+							(void *)(buf + bufp + np->l4_dst),
+							PACKTER_NETFLOW_L4_SRC_PORT_LEN);
+
+				/* tcp flags */
+				if (isv6 == PACKTER_TRUE){
+					flag = PACKTER_TCP_ACK6;
+				}
+				else {
+					flag = PACKTER_TCP_ACK;
+				}
+
+				if (np->tcp_flags == PACKTER_TRUE){
+					memcpy((void *)&tcp_flags,
+							(void *)(buf + bufp + np->tcp_flags),
+							PACKTER_NETFLOW_TCP_FLAGS_LEN); 
+
+					if (tcp_flags != 0){
+						if (tcp_flags & TH_SYN){
+							flag += (PACKTER_TCP_SYN - PACKTER_TCP_ACK);
+						}
+						else if (tcp_flags & (TH_FIN|TH_RST)){
+    					flag += (PACKTER_TCP_FIN - PACKTER_TCP_ACK);
+						}
+					}
+				}
+				sprintf(mesgbuf, "TCP src:%s(%d) dst:%s(%d)",
+								srcip, ntohs(srcport), dstip, ntohs(dstport));
+				break;
+
+			/* UDP */
+			case IPPROTO_UDP:
+				if (np->l4_src == PACKTER_FALSE || np->l4_dst == PACKTER_FALSE){
+					return;
+				}
+				memcpy((void *)&srcport,
+							(void *)(buf + bufp + np->l4_src),
+							PACKTER_NETFLOW_L4_SRC_PORT_LEN);
+
+				memcpy((void *)&dstport,
+							(void *)(buf + bufp + np->l4_dst),
+							PACKTER_NETFLOW_L4_SRC_PORT_LEN);
+
+				if (isv6 == PACKTER_TRUE){
+					flag = PACKTER_UDP6;
+				}
+				else {
+					flag = PACKTER_UDP;
+				}
+				sprintf(mesgbuf, "UDP src:%s(%d) dst:%s(%d)",
+								srcip, ntohs(srcport), dstip, ntohs(dstport));
+				break;
+
+			case IPPROTO_ICMP:	
+				if (np->icmp == PACKTER_FALSE){
+					return;
+				}
+				memcpy((void *)&srcport,
+							(void *)(buf + bufp + np->icmp),
+							PACKTER_NETFLOW_ICMP_TYPE_LEN);
+				dstport = srcport;
+				flag = PACKTER_ICMP;
+				sprintf(mesgbuf, "ICMPv4 src:%s dst:%s (type:%d code:%d)",
+								srcip, dstip, (ntohs(srcport) / 256), (ntohs(srcport) % 256));
+				break;
+
+			case IPPROTO_ICMPV6:	
+				if (np->icmp == PACKTER_FALSE){
+					return;
+				}
+				memcpy((void *)&srcport,
+							(void *)(buf + bufp + np->icmp),
+							PACKTER_NETFLOW_ICMP_TYPE_LEN);
+				dstport = srcport;
+				flag = PACKTER_ICMP6;
+				sprintf(mesgbuf, "ICMPv6 src:%s dst:%s (type:%d code:%d)",
+								srcip, dstip, (ntohs(srcport) / 256), (ntohs(srcport) % 256));
+				break;
+
+			default:
+				if (debug == PACKTER_TRUE){
+					printf("unknown protocol: %d\n", proto);
+				}
+				return;
+	}
+
+	packter_mesg(mesg, srcip, dstip, ntohs(srcport),ntohs(dstport), flag, mesgbuf);
+	packter_send(mesg);
 }

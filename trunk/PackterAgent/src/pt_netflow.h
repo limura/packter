@@ -58,8 +58,10 @@ struct netflow_v9_pointer {
 	int l3_dst;
 	int l4_src;
 	int l4_dst;
+	int isv6;
 	int proto;
-	int flag;
+	int icmp;
+	int tcp_flags;
 };
 
 int packter_netflow(char *, int);

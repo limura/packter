@@ -43,6 +43,8 @@
 
 #include <openssl/md5.h>
 
+#include <glib.h>
+
 #include "pt_std.h"
 #include "pt_netflow.h"
 #include "pt_netflowd.h"
@@ -71,6 +73,9 @@ int trace = PACKTER_FALSE;
 int packter_flagbase = 0;
 
 int enable_sound = PACKTER_FALSE;
+
+/* hash */
+GHashTable *config = NULL;
 
 int main(int argc, char *argv[])
 {
@@ -107,6 +112,8 @@ int main(int argc, char *argv[])
 	progname = argv[0];
 
 	packter_init();
+
+	packter_hash_new();
 
 	/* getopt */
 #ifdef USE_INET6
