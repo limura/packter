@@ -1,0 +1,155 @@
+﻿# Size: 流れるパケットの大きさを指定します。default: 8
+#Size = 8
+
+# Softalk: PACKTERVOICE で指定された文字列を渡されるコマンド。default: softalk\\softalkw.exe
+#Softalk = softalk\\softalkw.exe
+
+# PackterMsgFormat1: PACKTERMSG で渡された文字列部分の前に挿入されるもの。
+# default: <html lang="ja"><body>
+#PackterMsgFormat1 = <html lang="ja"><body>
+
+# PackterMsgFormat2: PACKTERMSG で渡された文字列部分の後に挿入されるもの
+# default: </body></html>
+#PackterMsgFormat2 = </body></html>
+
+# MsgBoxCloseTimeSec: PACKTERMSG で表示されたメッセージが閉じるまでの時間(秒)。default: 10(秒)
+#MsgBoxCloseTimeSec = 10
+
+# LoadPacketTarget: 流れるパケットの形状を指定します。ball と board のみが使用できます。
+# 理解できないものは ball として判定されます。default: ball
+#LoadPacketTarget = ball
+
+# SenderBoardFile: 送信側に表示されるオブジェクトの .x ファイルを指定します。default では未設定です
+#SenderBoardFile = 
+
+# ReceiverBoardFile: 受信側に表示されるオブジェクトの .x ファイルを指定します。default では未設定です
+#ReceiverBoardFile = 
+
+# SenderBoardScale: 送信側に表示されるオブジェクトの拡大率を指定します。default では 1.0 です
+#SenderBoardScale = 1.0
+
+# ReceiverBoardScale: 受信側に表示されるオブジェクトの拡大率を指定します。default では 1.0 です
+#ReceiverBoardScale = 1.0
+
+# SenderBoardTextureFile: 送信側に表示されるオブジェクトのテクスチャを指定します。default では未設定です
+#SenderBoardTextureFile =
+
+# ReceiverBoardTextureFile: 受信側に表示されるオブジェクトのテクスチャを指定します。default では未設定です
+#ReceiverBoardTextureFile =
+
+# TickKeyInputAcceptMicrosecond: とても短いキー入力(KeyDown -> KeyUp までの時間)が短い場合、
+# Bキー と Fキー の効果を強化する機能の「短い」と判断するための時間(マイクロ秒)。default: 50000(マイクロ秒)
+#TickKeyInputAcceptMicrosecond = 50000
+
+# HtmlConvertTarget
+# PACKTERHTML や PACKTERMSG で入力された IEコンポーネント に渡される文字列を、
+# 文字列１ 文字列２ とあったら、文字列１ のものを 文字列２ に置き換えます。
+# ここの例に示されているものだった場合、
+# <img src="<HOGE>">
+# は、
+# <img src="file:///c:/tmp/img.png">
+# と書き換えられます。
+# また、HtmlConvertTarget は複数指定できます。
+# default は無指定です。
+#HtmlConvertTarget = <HOGE> file:///c:/tmp/img.png
+#HtmlConvertTarget = <HAGE> file:///c:/tmp/img2.png
+
+# HtmlConvertToCurrentDirTarget
+# PACKTERHTML や PACKTERMSG で入力された IEコンポーネント に渡される文字列のうち、
+# ここで指定された文字列を current directory を示すURI に変換します。
+# たとえば、current directory が c:/tmp であれば、
+# file:///c:/tmp/ に変換されます。(最後に / が入ります)
+# default は null です。
+#HtmlConvertToCurrentDirTarget = <CURRENTDIR>
+
+# BgColor
+# 背景色を設定します。RRGGBB の16進数で指定してください。
+# 後述する EnableSkyDome か SkyDomeTexture の指定がされると無視されます
+#BgColor = 002266
+
+# EnableSkyDome
+# "true" が指定された場合、標準で用意されているテクスチャを用いて背景を描きます。
+#EnableSkyDome = true
+
+# SkyDomeTexture
+# skydome に用いるテクスチャを指定します。
+# テクスチャの load に成功した場合、BgColor の指定は無視され、
+# 背景として load されたテクスチャが利用されます
+#SkyDomeTexture = texture.png
+
+# HtmlConvertToCurrentWidthTarget
+# PACKTERHTML や PACKTERMSG で入力された IEコンポーネント に渡される文字列のうち、
+# ここで指定された文字列を IEコンポーネントの width に変換します。
+# たとえば、現在のWindow幅が 100 であれば、100 に変換されます。
+# default は null です。
+#HtmlConvertToCurrentWidthTarget = <HTMLWIDTH>
+
+# HtmlConvertToCurrentHeightTarget
+# PACKTERHTML や PACKTERMSG で入力された IEコンポーネント に渡される文字列のうち、
+# ここで指定された文字列を IEコンポーネントの height に変換します。
+# たとえば、現在のWindow高さが 100 であれば、100 に変換されます。
+# default は null です。
+#HtmlConvertToCurrentHeightTarget = <HTMLHEIGHT>
+
+# MaxSENum
+# PACKTERSE で再生するSEで同時に再生出来る数を指定します。
+# default は 10 です。
+#MaxSENum = 10
+
+# SE Settings
+# PACKTERSE で再生される音声を XACT で作成したものを使う場合、以下の三つのファイルを指定する必要があります。
+# XACTFileForAudioEngine AudioEngine に渡される XACT DataFile (.xgs)
+# XACTFileForWaveBank WaveBank に渡される XACT DataFile (.xwb)
+# XACTFileForSoundBank SoundBank に渡される XACT DataFile (.xsb)
+# default ではそれぞれ null です。
+# ここで指定されたサウンドを鳴らす場合には PACKTERSE には Cue Name で指定してください。
+# また、XACT での同時再生数は MaxSENum にはよらず、環境依存です。
+#XACTFileForAudioEngine = SoundProject.xgs
+#XACTFileForWaveBank = Wave Bank.xwb
+#XACTFileForSoundBank = Sound Bank.xsb
+
+# ProgramMode
+# 実行モードを切り替えます。
+# SenderReceiver にすると SenderBoard と ReceiverBoard の間でパケットが飛びます
+# Ballistic にすると、床から弾道軌道を取って床に落ちます
+# default は SenderReceiver です
+#ProgramMode = Ballistic
+
+# BallisticMapTextureImage
+# ProgramMode == Ballistic(弾道軌道を取る)時に表示される床になるイメージの絵を指定します。
+#BallisticMapTextureImage = world.png
+
+# BallisticMapMeshFile
+# ProgramMode == Ballistic(弾道軌道を取る)時に表示される床になるメッシュを指定します。
+# BallisticMapTextureImage が指定されている場合には、その絵がこのメッシュに対するテクスチャとして利用されます
+# 逆にいうと、メッシュの中でテクスチャを指定しているようなモデルの場合、BallisticMapTextureImage は指定しないでください。
+#BallisticMapMeshFile = 
+
+# GatewayBoardEnable
+# GatewayBoard を表示するかどうかを決定します。
+# default は false です。
+#GatewayBoardEnable = true
+
+# GatewayBoardFile: 中継地点に表示されるオブジェクトの .x ファイルを指定します。default では未設定です
+#GatewayBoardFile = 
+
+# GatewayBoardScale: 中継地点に表示されるオブジェクトの拡大率を指定します。default では 1.0 です
+#GatewayBoardScale = 1.0
+
+# GatewayBoardTextureFile: 中継地点に表示されるオブジェクトのテクスチャを指定します。default では未設定です
+#GatewayBoardTextureFile =
+
+# XAxisStart: 表示されるパケットのX軸の開始位置。
+#IPv4表記(0.0.0.0～255.255.255.255まで)か、0.1 等のfloat表記で 0.0～1.0 までかのどちらかで記述できます。
+#XAxisStart = 0.0.0.0
+XAxisStart = 0.5
+# XAxisEnd: 表示されるパケットのX軸の終了位置
+#IPv4表記(0.0.0.0～255.255.255.255まで)か、0.1 等のfloat表記で 0.0～1.0 までかのどちらかで記述できます。
+#XAxisEnd = 255.255.255.255
+XAxisEnd = 200.255.255.255
+# YAxisStart: 表示されるパケットのY軸(上下方向)の開始位置
+#IPv4表記(0.0.0.0～255.255.255.255まで)か、0.1 等のfloat表記で 0.0～1.0 までかのどちらかで記述できます。
+#YAxisStart = 0.0.0.0
+# YAxisEnd: 表示されるパケットのY軸(上下方向)の終了位置
+#IPv4表記(0.0.0.0～255.255.255.255まで)か、0.1 等のfloat表記で 0.0～1.0 までかのどちらかで記述できます。
+#YAxisEnd = 255.255.255.255

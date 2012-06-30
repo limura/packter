@@ -1,0 +1,15 @@
+* Introduction
+	PACKTER is a tool for visualization of Internet traffic.
+
+	As PACKTER can figure out the source IP, destination IP, source port and destination port in 3D viewer, operators can easily recognize the feature of Internet Traffic Patterns.
+	PACTER also works with IDS(snort) and/or IPTraceback(intertrack) and informs operators to DoS or some attacks which are just performed now. 
+
+* Online Document
+	see http://www.packter.net/index.html (Japanese)
+	see http://www.packter.net/index_e.html (English)
+
+* Build
+	see INSTALL
+
+* Bug Report
+	please mail to namaya2hashi atmark packter.net

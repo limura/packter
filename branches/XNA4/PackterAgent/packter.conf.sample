@@ -1,0 +1,90 @@
+#
+# SYN 関連
+#
+MON_SYN_MSG=<div align="center"><font color="red" face="メイリオ" size=+1>TCP SYN パケットの割合が閾値を越えました</font></div>
+MON_SYN_PIC=male.png
+MON_SYN_SOUND=30000,packter01.wav
+MON_SYN_VOICE=TCPシンパケット　
+
+#
+# FIN 関連
+#
+MON_FIN_MSG=<div align="center"><font color="red" face="メイリオ" size=+1>TCP FIN パケットの割合が閾値を越えました</font></div>
+MON_FIN_PIC=male.png
+MON_FIN_SOUND=30000,packter01.wav
+MON_FIN_VOICE=TCPフィンパケット　
+
+#
+# RST 関連
+#
+MON_RST_MSG=<div align="center"><font color="red" face="メイリオ" size=+1>TCP RST パケットの割合が閾値を越えました</font></div>
+MON_RST_PIC=male.png
+MON_RST_SOUND=30000,packter01.wav
+MON_RST_VOICE=TCPリセットフィンパケット　
+
+#
+# ICMP 関連
+#
+MON_ICMP_MSG=<div align="center"><font color="red" face="メイリオ" size=+1>ICMP パケットの割合が閾値を越えました</font></div>
+MON_ICMP_PIC=male.png
+MON_ICMP_SOUND=30000,packter01.wav
+MON_ICMP_VOICE=ICMPパケット　
+
+#
+# UDP 関連
+#
+MON_UDP_MSG=<div align="center"><font color="red" face="メイリオ" size=+1>UDP パケットの割合が閾値を越えました</font></div>
+MON_UDP_PIC=male.png
+MON_UDP_SOUND=30000,packter01.wav
+MON_UDP_VOICE=UDPパケット　
+
+#
+# PPS 関連
+#
+MON_PPS_MSG=<div align="center"><font color="red" face="メイリオ" size=+1>PPS が閾値を越えました</font></div>
+MON_PPS_PIC=male.png
+MON_PPS_SOUND=30000,packter01.wav
+MON_PPS_VOICE=PPS　
+
+MON_SKYDOME_START=texture1.bmp
+
+#
+# その他オプション
+#
+MON_OPT_MSG_HEAD=<pic-m4>
+MON_OPT_MSG_FOOT=
+MON_OPT_PIC=
+MON_OPT_SOUND=
+MON_OPT_VOICE_HEAD=/T:1 /W:
+MON_OPT_VOICE_FOOT=がしきいちをこえました
+MONITOR=<div align="center"><font size="-1">観測値：</font>
+THRESHOLD= <font size="-1">閾値：</font>
+
+IPTB_OPT_MSG=</div>
+IPTB_OPT_PIC=
+IPTB_OPT_SOUND=
+IPTB_OPT_VOICE_HEAD=
+IPTB_OPT_VOICE_FOOT=
+
+#
+# トレースバック関連
+#
+IPTB_START_MSG=<pic-f2><div align="center"><font color="black" size=+2 face="メイリオ">トレースバックを開始しました</font></div><br><br>
+IPTB_START_PIC=female.png
+IPTB_START_SOUND=10000,packter02.wav
+IPTB_START_VOICE=/T:1 /W:トレースバックを開始しました
+
+IPTB_SUCCEED_MSG=<pic-f3><div align="center"><font color="blue" size=+2 face="メイリオ">トレースバックに成功しました</font></div><br>
+IPTB_SUCCEED_PIC=female.png
+IPTB_SUCCEED_SOUND=10000,packter03.wav
+IPTB_SUCCEED_VOICE=/T:1 /W:トレースバックに成功しました
+
+IPTB_FAILED_MSG=<pic-f1><div align="center"><font color="red" size=+2" face="メイリオ">トレースバックに失敗しました</font></div>
+IPTB_FAILED_PIC=female.png
+IPTB_FAILED_SOUND=10000,packter04.wav
+IPTB_FAILED_VOICE=/T:1 /W:トレースバックに失敗しました
+
+IPTB_OPT_HASH=<font color=black face="メイリオ">ハッシュ値：</font>
+
+IPTB_SKYDOME_START=texture2.bmp
+IPTB_SKYDOME_DONE=texture1.bmp
