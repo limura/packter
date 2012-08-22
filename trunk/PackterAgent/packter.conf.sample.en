@@ -1,62 +1,64 @@
 #
-# SYN
+# SYN 
 #
-MON_SYN_MSG=<div align="center"><font color="red" size=+1>TCP SYN rate exceeds threshold</font></div>
-MON_SYN_PIC=alert.png
-MON_SYN_SOUND=30000,packter01.wav
-MON_SYN_VOICE=TCPSYN 
+MON_SYN_MSG=<div align="center"><font color="red" face="Arial" size=+1>TCP SYN rate exceeds the threshold</font></div>
+MON_SYN_PIC=male.png
+MON_SYN_SOUND=30000,Detection.wav
+MON_SYN_VOICE=TCP Syn packet
 
 #
-# FIN 
+# FIN
 #
-MON_FIN_MSG=<div align="center"><font color="red" size=+1>TCP FIN rate exceeds threshold</font></div>
-MON_FIN_PIC=alert.png
-MON_FIN_SOUND=30000,packter01.wav
-MON_FIN_VOICE=TCPFIN 
+MON_FIN_MSG=<div align="center"><font color="red" face="Arial" size=+1>TCP FIN rate exceeds the threshold</font></div>
+MON_FIN_PIC=male.png
+MON_FIN_SOUND=30000,Detection.wav
+MON_FIN_VOICE=TCP Fin packet
 
 #
 # RST
 #
-MON_RST_MSG=<div align="center"><font color="red" size=+1>TCP RST rate exceeds threshold</font></div>
-MON_RST_PIC=alert.png
-MON_RST_SOUND=30000,packter01.wav
-MON_RST_VOICE=TCP Reset 
+MON_RST_MSG=<div align="center"><font color="red" face="Arial" size=+1>TCP RST rate exceeds the threshold</font></div>
+MON_RST_PIC=male.png
+MON_RST_SOUND=30000,Detection.wav
+MON_RST_VOICE=TCP Reset packet
 
 #
 # ICMP
 #
-MON_ICMP_MSG=<div align="center"><font color="red" size=+1>ICMP rate exceeds threshold</font></div>
-MON_ICMP_PIC=alert.png
-MON_ICMP_SOUND=30000,packter01.wav
-A
-MON_ICMP_VOICE=ICMP 
+MON_ICMP_MSG=<div align="center"><font color="red" face="Arial" size=+1>ICMP rate exceeds the threshold</font></div>
+MON_ICMP_PIC=male.png
+MON_ICMP_SOUND=30000,Detection.wav
+MON_ICMP_VOICE=ICMP packet
 
 #
-# UDP
+# UDP 
 #
-MON_UDP_MSG=<div align="center"><font color="red" size=+1>UDP rate exceeds threshold</font></div>
-MON_UDP_PIC=alert.png
-MON_UDP_SOUND=30000,packter01.wav
+MON_UDP_MSG=<div align="center"><font color="red" face="Arial" size=+1>UDP パケットのexceeds the threshold</font></div>
+MON_UDP_PIC=male.png
+MON_UDP_SOUND=30000,Detection.wav
 MON_UDP_VOICE=UDP
 
 #
-# PPS (Packet Per Second)
+# PPS 関連
 #
-MON_PPS_MSG=<div align="center"><font color="red" size=+1>PPS exceeds threshold</font></div>
-MON_PPS_PIC=alert.png
-MON_PPS_SOUND=30000,packter01.wav
-MON_PPS_VOICE=PPS 
+MON_PPS_MSG=<div align="center"><font color="red" face="Arial" size=+1>PPS が閾値を越えました</font></div>
+MON_PPS_PIC=male.png
+MON_PPS_SOUND=30000,Detection.wav
+MON_PPS_VOICE=PPS　
+
+#MON_SKYDOME_START=texture1.bmp
 
 #
-# Other Option
+# 
 #
-MON_OPT_MSG=
+MON_OPT_MSG_HEAD=<pic-m4>
+MON_OPT_MSG_FOOT=
 MON_OPT_PIC=
 MON_OPT_SOUND=
 MON_OPT_VOICE_HEAD=/T:1 /W:
 MON_OPT_VOICE_FOOT= exceeds the threshold
-MONITOR=<div align="center"><font size="-1">Observed:</font>
-THRESHOLD= <font size="-1">Threshold:</font>
+MONITOR=<div align="center"><font size="-1">Ovservation: </font>
+THRESHOLD= <font size="-1">Threshold: </font>
 
 IPTB_OPT_MSG=</div>
 IPTB_OPT_PIC=
@@ -65,21 +67,24 @@ IPTB_OPT_VOICE_HEAD=
 IPTB_OPT_VOICE_FOOT=
 
 #
-# IP Traecback
+# For IP Traceback
 #
-IPTB_START_MSG=<div align="center"><font color="black" size=+2>Start IP Traceback</font></div><br>
-IPTB_START_PIC=start.png
-IPTB_START_SOUND=10000,packter02.wav
-IPTB_START_VOICE=/T:1 /W:Start IP Traceback
+IPTB_START_MSG=<pic-f2><div align="center"><font color="black" size=+2 face="Arial">Launchd IP traceback process</font></div><br><br>
+IPTB_START_PIC=female.png
+IPTB_START_SOUND=10000,Traceback.wav
+IPTB_START_VOICE=/T:1 /W:Launched IP Traceback process
 
-IPTB_SUCCEED_MSG=<div align="center"><font color="blue" size=+2>Traceback Succeeded</font></div><br>
-IPTB_SUCCEED_PIC=success.png
-IPTB_SUCCEED_SOUND=10000,packter03.wav
-IPTB_SUCCEED_VOICE=/T:1 /W:Traceback Succeeded
+IPTB_SUCCEED_MSG=<pic-f3><div align="center"><font color="blue" size=+2 face="Arial">Traceback trial succeeded</font></div><br>
+IPTB_SUCCEED_PIC=female.png
+IPTB_SUCCEED_SOUND=10000,Success.wav
+IPTB_SUCCEED_VOICE=/T:1 /W:Traceback trial succeeded
 
-IPTB_FAILED_MSG=<div align="center"><font color="red" size=+2>Traceback Failed</font></div><br>
-IPTB_FAILED_PIC=failed.png
-IPTB_FAILED_SOUND=10000,packter04.wav
-IPTB_FAILED_VOICE=/T:1 /W:Traceback Failed 
+IPTB_FAILED_MSG=<pic-f1><div align="center"><font color="red" size=+2" face="Arial">Traceback trial failed</font></div><br>
+IPTB_FAILED_PIC=female.png
+IPTB_FAILED_SOUND=10000,Failed.wav
+IPTB_FAILED_VOICE=/T:1 /W:Traceback trial failed
 
-IPTB_OPT_HASH=<font color="black">Hash:</font>
+IPTB_OPT_HASH=<font color=black face="Arial">Hash Value: </font>
+
+#IPTB_SKYDOME_START=texture2.bmp
+#IPTB_SKYDOME_DONE=texture1.bmp

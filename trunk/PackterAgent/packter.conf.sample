@@ -3,7 +3,7 @@
 #
 MON_SYN_MSG=<div align="center"><font color="red" face="メイリオ" size=+1>TCP SYN パケットの割合が閾値を越えました</font></div>
 MON_SYN_PIC=male.png
-MON_SYN_SOUND=30000,packter01.wav
+MON_SYN_SOUND=30000,Detection.wav
 MON_SYN_VOICE=TCPシンパケット　
 
 #
@@ -11,7 +11,7 @@ MON_SYN_VOICE=TCPシンパケット　
 #
 MON_FIN_MSG=<div align="center"><font color="red" face="メイリオ" size=+1>TCP FIN パケットの割合が閾値を越えました</font></div>
 MON_FIN_PIC=male.png
-MON_FIN_SOUND=30000,packter01.wav
+MON_FIN_SOUND=30000,Detection.wav
 MON_FIN_VOICE=TCPフィンパケット　
 
 #
@@ -19,7 +19,7 @@ MON_FIN_VOICE=TCPフィンパケット　
 #
 MON_RST_MSG=<div align="center"><font color="red" face="メイリオ" size=+1>TCP RST パケットの割合が閾値を越えました</font></div>
 MON_RST_PIC=male.png
-MON_RST_SOUND=30000,packter01.wav
+MON_RST_SOUND=30000,Detection.wav
 MON_RST_VOICE=TCPリセットフィンパケット　
 
 #
@@ -27,7 +27,7 @@ MON_RST_VOICE=TCPリセットフィンパケット　
 #
 MON_ICMP_MSG=<div align="center"><font color="red" face="メイリオ" size=+1>ICMP パケットの割合が閾値を越えました</font></div>
 MON_ICMP_PIC=male.png
-MON_ICMP_SOUND=30000,packter01.wav
+MON_ICMP_SOUND=30000,Detection.wav
 MON_ICMP_VOICE=ICMPパケット　
 
 #
@@ -35,7 +35,7 @@ MON_ICMP_VOICE=ICMPパケット　
 #
 MON_UDP_MSG=<div align="center"><font color="red" face="メイリオ" size=+1>UDP パケットの割合が閾値を越えました</font></div>
 MON_UDP_PIC=male.png
-MON_UDP_SOUND=30000,packter01.wav
+MON_UDP_SOUND=30000,Detection.wav
 MON_UDP_VOICE=UDPパケット　
 
 #
@@ -43,10 +43,10 @@ MON_UDP_VOICE=UDPパケット　
 #
 MON_PPS_MSG=<div align="center"><font color="red" face="メイリオ" size=+1>PPS が閾値を越えました</font></div>
 MON_PPS_PIC=male.png
-MON_PPS_SOUND=30000,packter01.wav
+MON_PPS_SOUND=30000,Detection.wav
 MON_PPS_VOICE=PPS　
 
-MON_SKYDOME_START=texture1.bmp
+#MON_SKYDOME_START=texture1.bmp
 
 #
 # その他オプション
@@ -71,20 +71,20 @@ IPTB_OPT_VOICE_FOOT=
 #
 IPTB_START_MSG=<pic-f2><div align="center"><font color="black" size=+2 face="メイリオ">トレースバックを開始しました</font></div><br><br>
 IPTB_START_PIC=female.png
-IPTB_START_SOUND=10000,packter02.wav
+IPTB_START_SOUND=10000,Traceback.wav
 IPTB_START_VOICE=/T:1 /W:トレースバックを開始しました
 
 IPTB_SUCCEED_MSG=<pic-f3><div align="center"><font color="blue" size=+2 face="メイリオ">トレースバックに成功しました</font></div><br>
 IPTB_SUCCEED_PIC=female.png
-IPTB_SUCCEED_SOUND=10000,packter03.wav
+IPTB_SUCCEED_SOUND=10000,Success.wav
 IPTB_SUCCEED_VOICE=/T:1 /W:トレースバックに成功しました
 
 IPTB_FAILED_MSG=<pic-f1><div align="center"><font color="red" size=+2" face="メイリオ">トレースバックに失敗しました</font></div>
 IPTB_FAILED_PIC=female.png
-IPTB_FAILED_SOUND=10000,packter04.wav
+IPTB_FAILED_SOUND=10000,Failed.wav
 IPTB_FAILED_VOICE=/T:1 /W:トレースバックに失敗しました
 
 IPTB_OPT_HASH=<font color=black face="メイリオ">ハッシュ値：</font>
 
-IPTB_SKYDOME_START=texture2.bmp
-IPTB_SKYDOME_DONE=texture1.bmp
+#IPTB_SKYDOME_START=texture2.bmp
+#IPTB_SKYDOME_DONE=texture1.bmp
