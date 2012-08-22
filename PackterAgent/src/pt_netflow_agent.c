@@ -117,9 +117,9 @@ int main(int argc, char *argv[])
 
 	/* getopt */
 #ifdef USE_INET6
-	while ((op = getopt(argc, argv, "v:b:l:p:R:T:f:u:g:Us6dh?")) != -1)
+	while ((op = getopt(argc, argv, "v:b:l:p:R:T:f:u:s6dh?")) != -1)
 #else
-	while ((op = getopt(argc, argv, "v:b:l:p:R:T:f:u:g:Usdh?")) != -1)
+	while ((op = getopt(argc, argv, "v:b:l:p:R:T:f:u:sdh?")) != -1)
 #endif
 	{
 		switch(op){
@@ -218,11 +218,9 @@ void packter_netflow_agent_usage()
 	printf("      -p [ Viewer Port number ] (optional: default %d)\n", PACKTER_VIEWER_PORT);
 	printf("      -b [ sFlow Bind IP address ] (optional: default 0.0.0.0)\n");
 	printf("      -l [ sFlow Listen port number ] (optional: default %d)\n", PACKTER_NETFLOW_PORT);
-	printf("      -r [ Pcap dump file ] (optional)\n");
-	printf("      -f [ Flab base ] (optional: default 0)\n");
 	printf("      -u [ Run as another username ] (optional)\n");
+	printf("      -f [ Flag base ] (optional: default 0)\n");
 	printf("      -R [ Random droprate ] (optional)\n");
-	printf("      -s ( enable PACKERSE: optional)\n");
   printf("\n");
   printf(" ex) %s -v 192.168.1.1 -b 192.168.1.1 -l 2055\n", progname);
   printf("\n");
