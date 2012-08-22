@@ -37,7 +37,7 @@
 #include "pt_mesg.h"
 
 extern int trace;
-extern char *trace_server;
+extern char *trace_server[];
 extern int packter_flagbase;
 
 void packter_mesg(char *mesg, char *srcip, char *dstip, int data1, int data2, int flag, char *mesgbuf)

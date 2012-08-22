@@ -88,6 +88,9 @@ int interval = PACKTER_INTVAL;
 /* sound */
 int enable_sound = PACKTER_FALSE;
 
+/* flagbase */
+int packter_flagbase = 0;
+
 /* config */
 GHashTable *config = NULL;
 char *configfile = NULL ;
@@ -113,12 +116,16 @@ int main(int argc, char *argv[])
 
 	/* getopt */
 #ifdef USE_INET6
-	while ((op = getopt(argc, argv, "v:i:r:p:S:F:R:I:U:P:C:w:c:s6dh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:i:r:p:S:F:R:I:U:P:C:w:c:f:s6dh?")) != -1) 
 #else
-	while ((op = getopt(argc, argv, "v:i:r:p:S:F:R:I:U:P:C:w:c:sdh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:i:r:p:S:F:R:I:U:P:C:w:c:f:sdh?")) != -1) 
 #endif
 	{
 		switch (op) {
+		case 'f': /* packter flag base */
+			packter_flagbase = atoi(optarg);
+			break;
+
 		case 'd': /* show debug */
 			debug = PACKTER_TRUE;
 			break;
