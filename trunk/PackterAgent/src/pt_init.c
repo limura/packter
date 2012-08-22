@@ -46,7 +46,6 @@ extern struct sockaddr_in addr;
 #ifdef USE_INET6
 extern struct sockaddr_in6 addr6;
 #endif
-extern char *trace_server;
 extern int rate_limit;
 
 void packter_init()
@@ -62,6 +61,5 @@ void packter_init()
 	srand((unsigned)time(NULL));
 	rate_limit = 1;
 
-	memset((void *)&trace_server, '\0', sizeof(trace_server)); 
 	return;
 }

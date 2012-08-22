@@ -217,7 +217,7 @@ packter_usage(void)
 	printf("      -p [ Viewer Port number ] (optional: default %d)\n", PACKTER_VIEWER_PORT);
 	printf("      -i [ Monitor device ] (optional)\n");
 	printf("      -r [ Pcap dump file ] (optional)\n");
-	printf("      -f [ Flab base ] (optional: default 0)\n");
+	printf("      -f [ Flag base ] (optional: default 0)\n");
 	printf("      -u [ Run as another username ] (optional)\n");
 	printf("      -U ( Read from Snort's UNIX domain socket: optional)\n");
 	printf("      -d ( Show debug information: optional)\n");
