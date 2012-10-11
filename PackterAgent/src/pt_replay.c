@@ -44,10 +44,9 @@
 #include <openssl/md5.h>
 
 #include "pt_std.h"
-#include "pt_agent.h"
-#include "pt_snort.h"
-#include "pt_pcap.h"
+#include "pt_replay.h"
 #include "pt_init.h"
+#include "pt_send.h"
 #include "pt_util.h"
 
 /* for debug */
@@ -66,20 +65,11 @@ struct sockaddr_in6 addr6;
 #endif
 int use6 = PACKTER_FALSE;
 
-/* for InterTrack */
-char trace_server[PACKTER_BUFSIZ];
-int trace = PACKTER_FALSE;
-int packter_flagbase = 0;
-
-/* for Sound */
-int enable_sound = PACKTER_FALSE;
 
 int main(int argc, char *argv[])
 {
 	/* pcap */
-	char *dumpfile = NULL ;										/* pcap dumpfile */
-	char *device = NULL;											/* interface */
-	char *filter = NULL;											/* pcap filter */
+	char *textfile = NULL ;										/* pcap textfile */
 
 	/* viewer */
 	char *ip = NULL;
@@ -100,16 +90,12 @@ int main(int argc, char *argv[])
 
 	/* getopt */
 #ifdef USE_INET6
-	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:u:g:nUs6dh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:r:p:T:f:u:g:nUs6dh?")) != -1) 
 #else
-	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:u:g:nUsdh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:r:p:T:f:u:g:nUsdh?")) != -1) 
 #endif
 	{
 		switch (op) {
-		case 'f': /* packter flag base */
-			packter_flagbase = atoi(optarg);
-			break;
-
 		case 'd': /* show debug */
 			debug = PACKTER_TRUE;
 			break;
@@ -129,16 +115,8 @@ int main(int argc, char *argv[])
 			port = atoi(optarg);
 			break;
 
-		case 'i':	/* interface specified */
-			device = optarg;
-			break;
-
 		case 'r':	/* read local files */
-			dumpfile = optarg;
-			break;
-
-		case 's': /* sound enable */
-			enable_sound = PACKTER_TRUE;
+			textfile = optarg;
 			break;
 
 		case 'u': /* setuid */
@@ -156,26 +134,6 @@ int main(int argc, char *argv[])
 			}
 			break;
 
-		case 'n': /* not send packter protocol : only outputs it in the screen */
-			notsend = PACKTER_TRUE;
-			break;
-
-		case 'U': /* read from snort */
-			snort = PACKTER_TRUE;
-			break;
-
-		case 'R': /* specifi rate_limit */
-			rate_limit = atoi(optarg);
-			break;
-
-		case 'T': /* for traceback support */
-			trace = PACKTER_TRUE;
-			if (strlen(optarg) < 1){
-				packter_usage();
-			}
-			strncpy(trace_server, optarg, PACKTER_BUFSIZ);
-			break;	
-
 		case 'h':
 		case '?':	/* usage */
 			packter_usage();
@@ -183,35 +141,19 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if (argv[optind] != NULL){
-		filter = argv[optind];
-	}
+  rate_limit = 1;
+  rate = packter_rate(rate_limit);
 
 	if (viewer != PACKTER_TRUE){
 		packter_usage();
 	}
-
-	if (packter_flagbase < 0){
-		packter_flagbase = 0;
-	}
-
-	if (rate_limit < 1){
-		rate_limit = 1;
-	}
-
-	rate = packter_rate(rate_limit);
 
 	if ((sock = pt_sock(ip, port, use6)) < 0){
 		perror("socket");
 		exit(EXIT_FAILURE);
 	}
 
-	if (snort == PACKTER_TRUE){
-		packter_snort(dumpfile, device, filter);
-	}
-	else {
-		packter_pcap(dumpfile, device, filter);
-	}
+	packter_text(textfile);
 	exit(EXIT_SUCCESS);
 }
 
@@ -221,21 +163,77 @@ packter_usage(void)
 	printf("usage: %s \n", progname);
 	printf("      -v [ Viewer IP address ]\n");
 	printf("      -p [ Viewer Port number ] (optional: default %d)\n", PACKTER_VIEWER_PORT);
-	printf("      -i [ Monitor device ] (optional)\n");
-	printf("      -r [ Pcap dump file ] (optional)\n");
-	printf("      -f [ Flag base ] (optional: default 0)\n");
+	printf("      -r [ Text replay file ] (optional)\n");
 	printf("      -u [ Run as another username ] (optional)\n");
-	printf("      -U ( Read from Snort's UNIX domain socket: optional)\n");
 	printf("      -d ( Show debug information: optional)\n");
-	printf("      -R [ Random droprate ] (optional)\n");
-	printf("      -T [ Traceback Client ] (optional)\n");
-	printf("      -s ( enable PACKERSE: optional)\n");
-	printf("      -n ( Not send packter packet: optional)\n");
 	printf("      [ pcap filter expression ] (optional)\n");
 	printf("      (if -u specified, then [ UNIX domain socket path ]) \n");
 	printf("\n");
-	printf(" ex) %s -v 192.168.1.1 \"port not 11300 and port not 22\"\n", progname);
+	printf(" ex) %s -v 192.168.1.1 -r replay_file\n", progname);
 	printf("\n");
 
 	exit(EXIT_SUCCESS);
+}
+
+void
+packter_text(char *textfile)
+{
+	struct timeval now;
+	struct timeval text;
+	FILE *fp;
+	char buf[PACKTER_BUFSIZ];
+	char mesg[PACKTER_BUFSIZ];
+	char *t1, *t2;
+	long diff_sec, diff_usec;
+
+	if ((fp = fopen(textfile, "r")) == NULL){
+		fprintf(stderr, "Replay file not found\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if ((t1 = (char *)malloc(PACKTER_BUFSIZ)) == NULL){
+		fprintf(stderr, "Malloc failed\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if ((t2 = (char *)malloc(PACKTER_BUFSIZ)) == NULL){
+		fprintf(stderr, "Malloc failed\n");
+		exit(EXIT_FAILURE);
+	}
+
+	now.tv_sec = 0;
+	now.tv_usec = 0;
+	memset((void *)mesg, '\0', PACKTER_BUFSIZ);				
+
+	while (fgets(buf, PACKTER_BUFSIZ, fp) != NULL) {
+		if (strcmp(buf, PACKTER_TIME) > 0){
+			if (sscanf(buf, "TIME %s %s\n", t1, t2) == 2){
+				if (now.tv_sec == 0 && now.tv_usec == 0){
+					now.tv_sec = atol(t1);
+					now.tv_usec = atol(t2);
+				}
+				else {
+					text.tv_sec = atol(t1);
+					text.tv_usec = atol(t2);
+
+					diff_sec = packter_diff_sec(&text, &now);
+					diff_usec = packter_diff_usec(&text, &now);
+					packter_send(mesg);
+					memset((void *)mesg, '\0', PACKTER_BUFSIZ);				
+
+					now.tv_sec = text.tv_sec;
+					now.tv_usec = text.tv_usec;
+					usleep((int)(diff_sec * 1000 * 1000 + diff_usec));
+				}
+			}
+		}
+		else {
+			strcat(mesg, buf);
+		}
+	}
+	packter_send(mesg);
+	fclose(fp);	
+
+	return;
+
 }

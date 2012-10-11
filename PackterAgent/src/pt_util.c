@@ -65,3 +65,54 @@ void packter_addfloat(char *buf, float val)
   return;
 }
 
+u_long
+packter_diff_sec(struct timeval *a, struct timeval *b)
+{
+	u_long sec = 0;
+	if (a->tv_sec < b->tv_sec){
+		sec = 0;
+	}
+	else if (a->tv_sec == b->tv_sec){
+		if (a->tv_usec <= b->tv_usec){
+			sec = 0;
+		}
+    else {
+      sec = a->tv_sec - b->tv_sec;
+    }
+  }
+  else {
+    if (a->tv_usec <= b->tv_usec){
+      sec = a->tv_sec - b->tv_sec - 1;
+    }
+    else {
+      sec = a->tv_sec - b->tv_sec;
+    }
+  }
+  return sec;
+}
+
+u_long
+packter_diff_usec(struct timeval *a, struct timeval *b)
+{
+	u_long usec = 0;
+  if (a->tv_sec < b->tv_sec){
+		usec = 0;
+	}
+	else if (a->tv_sec == b->tv_sec){
+		if (a->tv_usec <= b->tv_usec){
+			usec = 0;
+		}
+		else {
+			usec = a->tv_usec - b->tv_usec;
+		}
+	}
+  else {
+		if (a->tv_usec <= b->tv_usec){
+			usec = 1000 * 1000 + a->tv_usec - b->tv_usec;
+		}
+		else {
+			usec = a->tv_usec - b->tv_usec;
+		}
+	}
+  return usec;
+}

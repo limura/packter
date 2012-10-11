@@ -1,4 +1,4 @@
-bin_PROGRAMS = pt_agent pt_sflow pt_netflow pt_thmon  
+bin_PROGRAMS = pt_agent pt_sflow pt_netflow pt_thmon pt_replay
 
 pt_agent_SOURCES = pt_agent.c pt_sock.c pt_pcap.c pt_snort.c pt_datalink.c pt_ip.c pt_ip6.c pt_tcp.c pt_udp.c pt_icmp.c pt_icmp6.c pt_iptbhash.c pt_mesg.c pt_send.c pt_util.c pt_init.c
 pt_agent_LDADD = 
@@ -16,3 +16,7 @@ pt_netflow_CFLAGS =
 pt_thmon_SOURCES = pt_thmon.c pt_iptbhash.c pt_hash.c pt_util.c
 pt_thmon_LDADD =
 pt_thmon_CFLAGS =   
+
+pt_replay_SOURCES = pt_replay.c pt_sock.c pt_send.c pt_util.c pt_init.c
+pt_replay_LDADD =
+pt_replay_CFLAGS =   

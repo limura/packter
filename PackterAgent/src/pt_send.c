@@ -61,6 +61,7 @@ extern int rate;
 void packter_send(char *mesg)
 {
 	struct timeval now;
+
 	/* check the limit */
 	if (rate != 1){
 		rate -= 1;
@@ -72,13 +73,13 @@ void packter_send(char *mesg)
 	if (debug == PACKTER_TRUE){
 		printf("%s", mesg);
 	}
-
+	
 	if (notsend == PACKTER_TRUE){
 		if (gettimeofday(&now, NULL) < 0){
 			perror("gettimeofday");
 			exit;
 		}
-		printf("%d.%d\r\n", now.tv_sec, now.tv_usec);
+		printf("TIME %d %d\n", now.tv_sec, now.tv_usec);
 		printf("%s", mesg);
 	}
 	else {
