@@ -52,6 +52,7 @@ extern struct sockaddr_in addr;
 extern struct sockaddr_in6 addr6;
 #endif
 extern int use6;
+extern int notsend;
 
 extern int debug;
 extern int rate_limit;
@@ -59,6 +60,7 @@ extern int rate;
 
 void packter_send(char *mesg)
 {
+	struct timeval now;
 	/* check the limit */
 	if (rate != 1){
 		rate -= 1;
@@ -71,23 +73,31 @@ void packter_send(char *mesg)
 		printf("%s", mesg);
 	}
 
-#ifdef USE_INET6
-	if (use6 == PACKTER_TRUE){
-		if (sendto(sock, mesg, strlen(mesg), 0,
-					(struct sockaddr *)&addr6, sizeof(struct sockaddr_in6)) < 0){
-			perror("sendto");
+	if (notsend == PACKTER_TRUE){
+		if (gettimeofday(&now, NULL) < 0){
+			perror("gettimeofday");
+			exit;
 		}
+		printf("%d.%d\r\n", now.tv_sec, now.tv_usec);
+		printf("%s", mesg);
 	}
 	else {
-#endif
-
-		if (sendto(sock, mesg, strlen(mesg), 0,
-					(struct sockaddr *)&addr, sizeof(struct sockaddr)) < 0){
-			perror("sendto");
-		}
-
 #ifdef USE_INET6
-	}
+		if (use6 == PACKTER_TRUE){
+			if (sendto(sock, mesg, strlen(mesg), 0,
+						(struct sockaddr *)&addr6, sizeof(struct sockaddr_in6)) < 0){
+				perror("sendto");
+			}
+		}
+		else {
 #endif
+			if (sendto(sock, mesg, strlen(mesg), 0,
+						(struct sockaddr *)&addr, sizeof(struct sockaddr)) < 0){
+				perror("sendto");
+			}
+#ifdef USE_INET6
+		}
+#endif
+	}
 	return;
 }
