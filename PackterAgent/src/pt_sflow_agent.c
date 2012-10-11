@@ -56,6 +56,8 @@ int sock;
 struct sockaddr_in addr;
 int rate_limit;
 int rate;
+int notsend = PACKTER_FALSE;
+
 
 /* for IPv6 */
 #ifdef USE_INET6
@@ -108,9 +110,9 @@ int main(int argc, char *argv[])
 
 	/* getopt */
 #ifdef USE_INET6
-	while ((op = getopt(argc, argv, "v:b:l:p:R:T:f:u:s6dh?")) != -1)
+	while ((op = getopt(argc, argv, "v:b:l:p:R:T:f:u:ns6dh?")) != -1)
 #else
-	while ((op = getopt(argc, argv, "v:b:l:p:R:T:f:u:sdh?")) != -1)
+	while ((op = getopt(argc, argv, "v:b:l:p:R:T:f:u:nsdh?")) != -1)
 #endif
 	{
 		switch(op){
@@ -148,6 +150,10 @@ int main(int argc, char *argv[])
 
 			case 's': /* sound enable */
 				enable_sound = PACKTER_TRUE;
+				break;
+
+			case 'n': /* not send */
+				notsend = PACKTER_TRUE;
 				break;
 
 			case 'u': /* setuid */

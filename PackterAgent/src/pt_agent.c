@@ -58,6 +58,7 @@ int sock;
 struct sockaddr_in addr;
 int rate_limit;
 int rate;
+int notsend = PACKTER_FALSE;
 
 /* for IPv6 */
 #ifdef USE_INET6
@@ -98,9 +99,9 @@ int main(int argc, char *argv[])
 
 	/* getopt */
 #ifdef USE_INET6
-	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:u:g:Us6dh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:u:g:nUs6dh?")) != -1) 
 #else
-	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:u:g:Usdh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:u:g:nUsdh?")) != -1) 
 #endif
 	{
 		switch (op) {
@@ -152,6 +153,10 @@ int main(int argc, char *argv[])
 				perror("setuid");
 				exit(EXIT_FAILURE);
 			}
+			break;
+
+		case 'n': /* not send packter protocol : only outputs it in the screen */
+			notsend = PACKTER_TRUE;
 			break;
 
 		case 'U': /* read from snort */
@@ -224,6 +229,7 @@ packter_usage(void)
 	printf("      -R [ Random droprate ] (optional)\n");
 	printf("      -T [ Traceback Client ] (optional)\n");
 	printf("      -s ( enable PACKERSE: optional)\n");
+	printf("      -n ( Not send packter packet: optional)\n");
 	printf("      [ pcap filter expression ] (optional)\n");
 	printf("      (if -u specified, then [ UNIX domain socket path ]) \n");
 	printf("\n");
