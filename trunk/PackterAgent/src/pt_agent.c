@@ -187,10 +187,6 @@ int main(int argc, char *argv[])
 		filter = argv[optind];
 	}
 
-	if (viewer != PACKTER_TRUE){
-		packter_usage();
-	}
-
 	if (packter_flagbase < 0){
 		packter_flagbase = 0;
 	}
@@ -201,9 +197,17 @@ int main(int argc, char *argv[])
 
 	rate = packter_rate(rate_limit);
 
-	if ((sock = pt_sock(ip, port, use6)) < 0){
-		perror("socket");
-		exit(EXIT_FAILURE);
+	if (notsend == PACKTER_TRUE){
+		sock = 0;
+	}
+	else {
+		if (viewer != PACKTER_TRUE){
+			packter_usage();
+		}
+		if ((sock = pt_sock(ip, port, use6)) < 0){
+			perror("socket");
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	if (snort == PACKTER_TRUE){
