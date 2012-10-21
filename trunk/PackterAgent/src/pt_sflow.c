@@ -108,7 +108,7 @@ int packter_sflow_read(char *buf, int len)
 		pt->caplen = samplelen;
 		pt->len = samplelen;
 
-		packter_ether(NULL, pt, (buf + mesglen));
+		packter_ether_callback(NULL, pt, (buf + mesglen));
 
 		free(pt);
 

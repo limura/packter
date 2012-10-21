@@ -4070,7 +4070,7 @@ _ACEOF
   LIBS="-lssl $LIBS"
 
 else
-  as_fn_error $? "Cannot find SSL: do you have the PCAP development packages installed?" "$LINENO" 5
+  as_fn_error $? "Cannot find SSL: do you have the SSL development packages installed?" "$LINENO" 5
 fi
 ac_cv_lib_ssl=ac_cv_lib_ssl_main
 

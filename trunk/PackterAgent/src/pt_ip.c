@@ -50,12 +50,11 @@ extern int trace;
 
 /* process ip header */
 void
-packter_ip(u_char * p, u_int len)
+packter_ip(u_char * p, u_int len, char *mesgbuf)
 {
 	struct ip			*ip;
 	char srcip[PACKTER_BUFSIZ];
 	char dstip[PACKTER_BUFSIZ];
-	char mesgbuf[PACKTER_BUFSIZ];
 	u_char *packet;
 
 	/* if ip is too short */
