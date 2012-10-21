@@ -50,9 +50,16 @@
 #include "proto_ip6.h"
 #include "proto_ipproto.h"
 
+/* callback */
+void packter_lback_callback(u_char * userdata, const struct pcap_pkthdr *h, const u_char *p)
+{
+	char mesgbuf[PACKTER_BUFSIZ];
+	packter_lback(userdata, h, p, mesgbuf);
+}
+
 /* process Loop Back */
 void
-packter_lback(u_char * userdata, const struct pcap_pkthdr *h, const u_char * p)
+packter_lback(u_char * userdata, const struct pcap_pkthdr *h, const u_char * p, char *mesgbuf)
 {
 	/* paranoia NULL check */
 	if (userdata == NULL || h == NULL || p == NULL)
@@ -61,13 +68,21 @@ packter_lback(u_char * userdata, const struct pcap_pkthdr *h, const u_char * p)
 	if (h->caplen < NULL_HDRLEN)
 		return;
 	else
-		packter_ip((u_char *)(p + NULL_HDRLEN), (u_int)(h->len - NULL_HDRLEN));
+		packter_ip((u_char *)(p + NULL_HDRLEN), (u_int)(h->len - NULL_HDRLEN), mesgbuf);
 	return;
+}
+
+
+/* callback */
+void packter_ether_callback(u_char * userdata, const struct pcap_pkthdr *h, const u_char *p)
+{
+	char mesgbuf[PACKTER_BUFSIZ];
+	packter_ether(userdata, h, p, mesgbuf);
 }
 
 /* process IEEE 802.3 Ethernet */
 void
-packter_ether(u_char * userdata, const struct pcap_pkthdr *h, const u_char * p)
+packter_ether(u_char * userdata, const struct pcap_pkthdr *h, const u_char *p, char *mesgbuf)
 {
 	struct ether_header *ep;
 	u_int	ether_type;
@@ -90,11 +105,11 @@ packter_ether(u_char * userdata, const struct pcap_pkthdr *h, const u_char * p)
 
 	switch(ether_type){
 		case ETHERTYPE_IP:
-			packter_ip((u_char *)(p + skiplen), (u_int)(h->len - skiplen));
+			packter_ip((u_char *)(p + skiplen), (u_int)(h->len - skiplen), mesgbuf);
 			break;
 
 		case ETHERTYPE_IPV6:
-			packter_ip6((u_char *)(p + skiplen), (u_int)(h->len - skiplen));
+			packter_ip6((u_char *)(p + skiplen), (u_int)(h->len - skiplen), mesgbuf);
 			break;
 
 		default:

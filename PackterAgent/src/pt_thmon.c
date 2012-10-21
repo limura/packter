@@ -45,8 +45,6 @@
 
 #include "pt_std.h"
 #include "pt_thmon.h"
-#include "pt_pcap.h"
-#include "pt_datalink.h"
 #include "pt_ip.h"
 #include "pt_ip6.h"
 #include "pt_tcp.h"
@@ -89,7 +87,7 @@ int interval = PACKTER_INTVAL;
 int enable_sound = PACKTER_FALSE;
 
 /* flagbase */
-int packter_flagbase = 0;
+int packter_thmon_flagbase = 0;
 
 /* config */
 GHashTable *config = NULL;
@@ -122,8 +120,8 @@ int main(int argc, char *argv[])
 #endif
 	{
 		switch (op) {
-		case 'f': /* packter flag base */
-			packter_flagbase = atoi(optarg);
+		case 'f': /* packter_thmon flag base */
+			packter_thmon_flagbase = atoi(optarg);
 			break;
 
 		case 'd': /* show debug */
@@ -209,7 +207,7 @@ int main(int argc, char *argv[])
 		packter_thmon_usage();
 	}
 
-	if (packter_config_parse(configfile) < 0){
+	if (packter_thmon_config_parse(configfile) < 0){
 		packter_thmon_usage();
 	}
 
@@ -256,7 +254,7 @@ int main(int argc, char *argv[])
 	}
 #endif
 
-	packter_pcap(dumpfile, device, filter);
+	packter_thmon_pcap(dumpfile, device, filter);
 
 	exit(EXIT_SUCCESS);
 }
@@ -284,15 +282,15 @@ void packter_thmon_init()
 	th.stop.tv_sec = 0;
 	th.stop.tv_usec = 0;
 
-	packter_count_init();
+	packter_thmon_count_init();
 
 	config = g_hash_table_new((GHashFunc)g_str_hash, (GCompareFunc)g_str_equal);
-	signal(SIGHUP, packter_sig_handler);
+	signal(SIGHUP, packter_thmon_sig_handler);
 
 	return;
 }
 
-void packter_count_init()
+void packter_thmon_count_init()
 {
 	th.count_all = 0;
 	th.count_syn = 0;
@@ -302,7 +300,7 @@ void packter_count_init()
 	th.count_udp = 0;
 }
 
-void packter_pcap(char *dumpfile, char *device, char *filter)
+void packter_thmon_pcap(char *dumpfile, char *device, char *filter)
 {
 	/* pcap */
 	pcap_t *pd;														/* pcap descriptor */
@@ -367,14 +365,14 @@ void packter_pcap(char *dumpfile, char *device, char *filter)
 		if (debug == PACKTER_TRUE){
 			printf("linktype = LoopBack\n");
 		}
-		callback = packter_lback;
+		callback = packter_thmon_lback;
 		break;
 
 	case DLT_EN10MB:
 		if (debug == PACKTER_TRUE){
 			printf("linktype = Ethernet\n");
 		}
-		callback = packter_ether;
+		callback = packter_thmon_ether;
 		break;
 
 	default:
@@ -421,7 +419,7 @@ packter_thmon_usage(void)
 
 /* process Loop Back */
 void
-packter_lback(u_char * userdata, const struct pcap_pkthdr *h, const u_char * p)
+packter_thmon_lback(u_char * userdata, const struct pcap_pkthdr *h, const u_char * p)
 {
 	/* paranoia NULL check */
 	if (userdata == NULL || h == NULL || p == NULL)
@@ -430,13 +428,13 @@ packter_lback(u_char * userdata, const struct pcap_pkthdr *h, const u_char * p)
 	if (h->caplen < NULL_HDRLEN)
 		return;
 	else
-		packter_ip((u_char *)(p + NULL_HDRLEN), (u_int)(h->len - NULL_HDRLEN));
+		packter_thmon_ip((u_char *)(p + NULL_HDRLEN), (u_int)(h->len - NULL_HDRLEN));
 	return;
 }
 
 /* process IEEE 802.3 Ethernet */
 void
-packter_ether(u_char * userdata, const struct pcap_pkthdr *h, const u_char * p)
+packter_thmon_ether(u_char * userdata, const struct pcap_pkthdr *h, const u_char * p)
 {
 	struct ether_header *ep;
 	u_int	ether_type;
@@ -465,7 +463,7 @@ packter_ether(u_char * userdata, const struct pcap_pkthdr *h, const u_char * p)
 			/* check interval */
 			if (th.start.tv_sec - th.stop.tv_sec > interval){
 				th.count_all = th.count_all + 1;
-				packter_ip((u_char *)(p + skiplen), (u_int)(h->len - skiplen));
+				packter_thmon_ip((u_char *)(p + skiplen), (u_int)(h->len - skiplen));
 			}
 			break;
 
@@ -476,24 +474,24 @@ packter_ether(u_char * userdata, const struct pcap_pkthdr *h, const u_char * p)
 			/* check interval */
 			if (th.start.tv_sec - th.stop.tv_sec > interval){
 				th.count_all = th.count_all + 1;
-				packter_ip6((u_char *)(p + skiplen), (u_int)(h->len - skiplen));
+				packter_thmon_ip6((u_char *)(p + skiplen), (u_int)(h->len - skiplen));
 			}
 			break;
 
 		default:
 			break;
 	}
-	/* after packter_ip() ends */
+	/* after packter_thmon_ip() ends */
 
 	if (th.count_all >= th.count_max){
-		packter_analy();
-		packter_count_init();
+		packter_thmon_analy();
+		packter_thmon_count_init();
 	}
 	return;
 }
 
 void
-packter_analy()
+packter_thmon_analy()
 {
 	int alert = PACKTER_FALSE;
 	char mesg[PACKTER_BUFSIZ];
@@ -532,37 +530,37 @@ packter_analy()
 	printf ("-------------------------\n");
 
 	if (mon_syn > th.rate_syn && th.rate_syn > 0){
-		alert = packter_generate_alert(alert, mesg, sound, voice,
+		alert = packter_thmon_generate_alert(alert, mesg, sound, voice,
 											"MON_SYN_PIC", "MON_SYN_MSG", "MON_SYN_SOUND", "MON_SYN_VOICE",
 											mon_syn * 100, th.rate_syn * 100);
 	}
 
   if (mon_fin > th.rate_fin && th.rate_fin > 0){
-		alert = packter_generate_alert(alert, mesg, sound, voice,
+		alert = packter_thmon_generate_alert(alert, mesg, sound, voice,
 											"MON_FIN_PIC", "MON_FIN_MSG", "MON_FIN_SOUND", "MON_FIN_VOICE",
 											mon_fin * 100, th.rate_fin * 100);
   }
 
   if (mon_rst > th.rate_rst && th.rate_rst > 0){
-		alert = packter_generate_alert(alert, mesg, sound, voice,
+		alert = packter_thmon_generate_alert(alert, mesg, sound, voice,
 											"MON_RST_PIC", "MON_RST_MSG", "MON_RST_SOUND", "MON_RST_VOICE",
 											mon_rst * 100, th.rate_rst * 100);
   }
 
   if (mon_icmp > th.rate_icmp && th.rate_icmp > 0){
-		alert = packter_generate_alert(alert, mesg, sound, voice,
+		alert = packter_thmon_generate_alert(alert, mesg, sound, voice,
 											"MON_ICMP_PIC", "MON_ICMP_MSG", "MON_ICMP_SOUND", "MON_ICMP_VOICE",
 											mon_icmp * 100, th.rate_icmp * 100);
 	}
 
   if (mon_udp > th.rate_udp && th.rate_udp > 0){
-		alert = packter_generate_alert(alert, mesg, sound, voice,
+		alert = packter_thmon_generate_alert(alert, mesg, sound, voice,
 											"MON_UDP_PIC", "MON_UDP_MSG", "MON_UDP_SOUND", "MON_UDP_VOICE",
 											mon_udp * 100, th.rate_udp * 100);
 	}
 
   if (mon_pps > th.rate_pps && th.rate_pps > 0){
-		alert = packter_generate_alert(alert, mesg, sound, voice,
+		alert = packter_thmon_generate_alert(alert, mesg, sound, voice,
 											"MON_PPS_PIC", "MON_PPS_MSG", "MON_PPS_SOUND", "MON_PPS_VOICE",
 											mon_pps, th.rate_pps);
 	}
@@ -571,25 +569,25 @@ packter_analy()
 		if (packter_is_exist_key_str("MON_OPT_MSG_FOOT") == PACKTER_TRUE){
     	packter_addstring_hash(mesg, "MON_OPT_MSG_FOOT");
 		}
-		packter_send(mesg);
+		packter_thmon_send(mesg);
 
 		if (enable_sound == PACKTER_TRUE){
 			/* PACKTERSOUND uses no footer, but codes are prepared */
 			if (packter_is_exist_key_str("MON_OPT_SOUND_FOOT") == PACKTER_TRUE){
 				packter_addstring_hash(voice, "MON_OPT_SOUND");
 			}
-			packter_send(sound);
+			packter_thmon_send(sound);
 
 			/* PACKTERVOICE sometimes needs footer */
 			if (packter_is_exist_key_str("MON_OPT_VOICE_FOOT") == PACKTER_TRUE){
 				packter_addstring_hash(voice, "MON_OPT_VOICE_FOOT");
 			}
-			packter_send(voice);
+			packter_thmon_send(voice);
 
 			/* PACKTER_SKYDOME sends only skydome texture is specified */	
 			if (packter_is_exist_key_str("MON_SKYDOME_START") == PACKTER_TRUE){
 				packter_addstring_hash(skydome, "MON_SKYDOME_START");
-				packter_send(skydome);
+				packter_thmon_send(skydome);
 			}
 		}
 	}
@@ -599,7 +597,7 @@ packter_analy()
 
 /* process ip header */
 void
-packter_ip(u_char * p, u_int len)
+packter_thmon_ip(u_char * p, u_int len)
 {
 	struct ip			*ip;
 	char srcip[PACKTER_BUFSIZ];
@@ -624,7 +622,7 @@ packter_ip(u_char * p, u_int len)
 
 	switch (ip->ip_p) {
 		case IPPROTO_TCP:
-			packter_tcp((u_char *)(p + ip->ip_hl * 4), (u_int)(len - ip->ip_hl*4),
+			packter_thmon_tcp((u_char *)(p + ip->ip_hl * 4), (u_int)(len - ip->ip_hl*4),
 										srcip, dstip, PACKTER_TCP_ACK, mesgbuf);
 			break;
 
@@ -644,7 +642,7 @@ packter_ip(u_char * p, u_int len)
 
 /* process ipv6 header */
 void
-packter_ip6(u_char * p, u_int len)
+packter_thmon_ip6(u_char * p, u_int len)
 {
 	struct ip6_hdr *ip6;
 	char srcip[PACKTER_BUFSIZ];
@@ -665,7 +663,7 @@ packter_ip6(u_char * p, u_int len)
 
 	switch(ip6->ip6_nxt){
 		case IPPROTO_TCP:
-			packter_tcp((u_char *)(p + ntohs(ip6->ip6_plen)),
+			packter_thmon_tcp((u_char *)(p + ntohs(ip6->ip6_plen)),
 										(u_int)(len - ntohs(ip6->ip6_plen)),
 										srcip, dstip, PACKTER_TCP_ACK6, mesgbuf);
 			break;
@@ -686,7 +684,7 @@ packter_ip6(u_char * p, u_int len)
 
 /* process tcp header */
 void
-packter_tcp(u_char *p, u_int len, char *srcip, char *dstip, int flag, char *mesgbuf)
+packter_thmon_tcp(u_char *p, u_int len, char *srcip, char *dstip, int flag, char *mesgbuf)
 {
 	struct tcphdr *tcph;
 
@@ -713,7 +711,7 @@ packter_tcp(u_char *p, u_int len, char *srcip, char *dstip, int flag, char *mesg
 	return;
 }
 
-void packter_send(char *mesg)
+void packter_thmon_send(char *mesg)
 {
 	/* check the limit */
 
@@ -742,7 +740,7 @@ void packter_send(char *mesg)
 	return;
 }
 
-int packter_config_trim(char buf[])
+int packter_thmon_config_trim(char buf[])
 {
   char newbuf[PACKTER_BUFSIZ];
   int i, j, space, frontspace;
@@ -785,7 +783,7 @@ int packter_config_trim(char buf[])
   return j;
 }
 
-int packter_config_parse(char *configfile)
+int packter_thmon_config_parse(char *configfile)
 {
 	FILE *fp;
 	GHashTable *hash = NULL;
@@ -814,7 +812,7 @@ int packter_config_parse(char *configfile)
     if (buf[0] == '#'){
       continue;
     }
-    if (packter_config_trim(buf) < 1){
+    if (packter_thmon_config_trim(buf) < 1){
       continue;
     }
 
@@ -833,7 +831,7 @@ int packter_config_parse(char *configfile)
 	return PACKTER_TRUE;
 }
 
-int packter_generate_alert(int alert, char *mesg, char *sound, char *voice, char *mon_pic, char *mon_mesg, char *mon_sound, char *mon_voice, float mon_th, float given_th)
+int packter_thmon_generate_alert(int alert, char *mesg, char *sound, char *voice, char *mon_pic, char *mon_mesg, char *mon_sound, char *mon_voice, float mon_th, float given_th)
 {
 	char tmp[PACKTER_BUFSIZ];
 	memset((void *)tmp, '\0', PACKTER_BUFSIZ);
@@ -910,12 +908,12 @@ int packter_generate_alert(int alert, char *mesg, char *sound, char *voice, char
 	return alert;
 }
 
-void packter_sig_handler(int sig){
+void packter_thmon_sig_handler(int sig){
 	switch(sig){
 		case SIGHUP:
 			g_hash_table_destroy(config);			
 			config = g_hash_table_new((GHashFunc)g_str_hash, (GCompareFunc)g_str_equal);
-			if (packter_config_parse(configfile) < 0){
+			if (packter_thmon_config_parse(configfile) < 0){
 				printf("reload configfile failed\n");
 			}
 			else {

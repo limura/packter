@@ -50,12 +50,11 @@ extern int trace;
 
 /* process ipv6 header */
 void
-packter_ip6(u_char * p, u_int len)
+packter_ip6(u_char * p, u_int len, char *mesgbuf)
 {
 	struct ip6_hdr *ip6;
 	char srcip[PACKTER_BUFSIZ];
 	char dstip[PACKTER_BUFSIZ];
-	char mesgbuf[PACKTER_BUFSIZ];
 	u_char *packet;
 
 	if (len < sizeof(struct ip6_hdr)){

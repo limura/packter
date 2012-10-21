@@ -27,7 +27,7 @@
 #ifndef __PACKTER_IPV4_H__
 #define __PACKTER_IPV4_H__
 
-void packter_ip(u_char *, u_int);
+void packter_ip(u_char *, u_int, char *);
 
 #endif
 

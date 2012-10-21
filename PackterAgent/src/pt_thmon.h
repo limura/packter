@@ -25,6 +25,7 @@
  */
 
 #include <sys/time.h>
+#include <pcap.h>
 
 #ifndef __PACKTER_THMON_H__
 #define __PACKTER_THMON_H__
@@ -55,15 +56,23 @@ struct pt_threshold {
 
 };
 
+void packter_thmon_pcap(char *, char *, char *);
+void packter_thmon_lback(u_char *, const struct pcap_pkthdr *, const u_char *);
+void packter_thmon_ether(u_char *, const struct pcap_pkthdr *, const u_char *);
 void packter_thmon_usage();
 void packter_thmon_init();
-void packter_count_init();
-void packter_analy();
-int packter_config_parse(char *);
-int packter_config_trim(char *);
-int packter_generate_alert(int, char *, char *, char *, char *, char *, char *, char *, float, float);
-void packter_sig_handler(int);
+void packter_thmon_count_init();
+void packter_thmon_analy();
+void packter_thmon_ip(u_char *, u_int);
+void packter_thmon_ip6(u_char *, u_int);
 void packter_thmon_tcp(u_char *, u_int, char *, char *, int, char *);
+void packter_thmon_udp(u_char *, u_int, char *, char *, int, char *);
+void packter_thmon_send(char *);
+
+int packter_thmon_config_parse(char *);
+int packter_thmon_config_trim(char *);
+int packter_thmon_generate_alert(int, char *, char *, char *, char *, char *, char *, char *, float, float);
+void packter_thmon_sig_handler(int);
 
 #endif
 

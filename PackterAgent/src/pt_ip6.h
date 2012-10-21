@@ -27,7 +27,7 @@
 #ifndef __PACKTER_IPV6_H__
 #define __PACKTER_IPV6_H__
 
-void packter_ip6(u_char *, u_int);
+void packter_ip6(u_char *, u_int, char *);
 
 #endif
 

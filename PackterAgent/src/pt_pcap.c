@@ -113,14 +113,14 @@ packter_pcap(char *dumpfile, char *device, char *filter)
 		if (debug == PACKTER_TRUE){
 			printf("linktype = LoopBack\n");
 		}
-		callback = packter_lback;
+		callback = packter_lback_callback;
 		break;
 
 	case DLT_EN10MB:
 		if (debug == PACKTER_TRUE){
 			printf("linktype = Ethernet\n");
 		}
-		callback = packter_ether;
+		callback = packter_ether_callback;
 		break;
 
 	default:
