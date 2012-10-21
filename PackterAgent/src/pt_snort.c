@@ -47,6 +47,7 @@
 #include "proto_snort.h"
 
 extern int debug;
+extern int snort_report;
 
 void packter_snort(char *dumpfile, char *device, char *filter)
 {
@@ -54,6 +55,7 @@ void packter_snort(char *dumpfile, char *device, char *filter)
 	struct sockaddr_un un;
 	Alertpkt alert;
 	char sockname[SUN_BUFSIZ];
+	char mesgbuf[PACKTER_BUFSIZ];
 
 	/* if filter was set */
 	if (filter != NULL){
@@ -87,7 +89,17 @@ void packter_snort(char *dumpfile, char *device, char *filter)
 			if (debug == PACKTER_TRUE){
 				printf("incident: %s\n", alert.alertmsg);
 			}
-			packter_ether(NULL, &(alert.pkth), (u_char *)alert.pkt);
+			if (snort_report == PACKTER_TRUE){
+				snprintf(mesgbuf, PACKTER_BUFSIZ, "Incident:%s sid:%lu gen:%lu rev:%lu",
+									alert.alertmsg, 
+									(unsigned long)alert.event.sig_id,
+									(unsigned long)alert.event.sig_generator, 
+									(unsigned long)alert.event.sig_rev);
+				packter_ether(NULL, &(alert.pkth), (u_char *)alert.pkt, mesgbuf);
+			}
+			else {
+				packter_ether_callback(NULL, &(alert.pkth), (u_char *)alert.pkt);
+			}
 		}
 	}
 }

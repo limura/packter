@@ -69,10 +69,16 @@ int use6 = PACKTER_FALSE;
 /* for InterTrack */
 char trace_server[PACKTER_BUFSIZ];
 int trace = PACKTER_FALSE;
-int packter_flagbase = 0;
+
+/* for Snort */
+int snort = PACKTER_FALSE;
+int snort_report = PACKTER_FALSE;
 
 /* for Sound */
 int enable_sound = PACKTER_FALSE;
+
+/* flag base */
+int packter_flagbase = 0;
 
 int main(int argc, char *argv[])
 {
@@ -88,7 +94,6 @@ int main(int argc, char *argv[])
 	/* misc */
 	int op;
 	int viewer = PACKTER_FALSE;
-	int snort = PACKTER_FALSE;
 
 	/* setuid */
 	struct passwd *pw;
@@ -100,9 +105,9 @@ int main(int argc, char *argv[])
 
 	/* getopt */
 #ifdef USE_INET6
-	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:u:g:nUs6dh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:u:g:nUsS6dh?")) != -1) 
 #else
-	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:u:g:nUsdh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:u:g:nUsSdh?")) != -1) 
 #endif
 	{
 		switch (op) {
@@ -162,6 +167,10 @@ int main(int argc, char *argv[])
 
 		case 'U': /* read from snort */
 			snort = PACKTER_TRUE;
+			break;
+
+		case 'S': /* overwrite snort message */
+			snort_report = PACKTER_TRUE;
 			break;
 
 		case 'R': /* specifi rate_limit */
@@ -230,6 +239,7 @@ packter_usage(void)
 	printf("      -f [ Flag base ] (optional: default 0)\n");
 	printf("      -u [ Run as another username ] (optional)\n");
 	printf("      -U ( Read from Snort's UNIX domain socket: optional)\n");
+	printf("      -S ( Use Snort's alert for viewer: optional)\n");
 	printf("      -d ( Show debug information: optional)\n");
 	printf("      -R [ Random droprate ] (optional)\n");
 	printf("      -T [ Traceback Client ] (optional)\n");

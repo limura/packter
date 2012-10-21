@@ -54,6 +54,7 @@
 void packter_lback_callback(u_char * userdata, const struct pcap_pkthdr *h, const u_char *p)
 {
 	char mesgbuf[PACKTER_BUFSIZ];
+	memset((void *)mesgbuf, '\0', PACKTER_BUFSIZ);
 	packter_lback(userdata, h, p, mesgbuf);
 }
 
@@ -77,6 +78,7 @@ packter_lback(u_char * userdata, const struct pcap_pkthdr *h, const u_char * p, 
 void packter_ether_callback(u_char * userdata, const struct pcap_pkthdr *h, const u_char *p)
 {
 	char mesgbuf[PACKTER_BUFSIZ];
+	memset((void *)mesgbuf, '\0', PACKTER_BUFSIZ);
 	packter_ether(userdata, h, p, mesgbuf);
 }
 

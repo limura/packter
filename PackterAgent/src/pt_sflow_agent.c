@@ -69,7 +69,7 @@ int use6 = PACKTER_FALSE;
 char trace_server[PACKTER_BUFSIZ];
 int trace = PACKTER_FALSE;
 int packter_flagbase = 0;
-
+int snort_report = PACKTER_FALSE;
 int enable_sound = PACKTER_FALSE;
 
 int main(int argc, char *argv[])

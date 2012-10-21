@@ -48,6 +48,7 @@
 
 extern int enable_sound;
 extern int trace;
+extern int snort_report;
 
 /* process icmp header */
 void
@@ -64,7 +65,7 @@ packter_icmp(u_char *p, u_int len, char *srcip, char *dstip, int flag, char *mes
 		ih = (struct icmphdr *)p;
 	}
 
-	if (trace == PACKTER_FALSE){
+	if (trace == PACKTER_FALSE && snort_report == PACKTER_FALSE){
 		sprintf(mesgbuf, "ICMPv4 src:%s dst:%s (type:%d code:%d)",
 						srcip, dstip, (ih->icmp_type), (ih->icmp_code));
 	}

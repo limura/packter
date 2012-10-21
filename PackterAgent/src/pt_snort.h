@@ -71,4 +71,5 @@ typedef struct _Alertpkt
 } Alertpkt;
 
 void packter_snort(char *, char *, char *);
+extern int snort_report;
 #endif
