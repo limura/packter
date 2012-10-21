@@ -47,6 +47,7 @@
 
 extern int enable_sound;
 extern int trace;
+extern int snort_report;
 
 /* process udp header */
 void
@@ -63,7 +64,7 @@ packter_udp(u_char *p, u_int len, char *srcip, char *dstip, int flag, char *mesg
 	}
 	memset((void *)&mesg, '\0', PACKTER_BUFSIZ);
 
-	if (trace == PACKTER_FALSE){
+	if (trace == PACKTER_FALSE && snort_report == PACKTER_FALSE){
 		sprintf(mesgbuf, "UDP src:%s(%d) dst:%s(%d)",
 						srcip, ntohs(uh->uh_sport), dstip, ntohs(uh->uh_dport));
 	}
