@@ -70,6 +70,10 @@ int use6 = PACKTER_FALSE;
 char trace_server[PACKTER_BUFSIZ];
 int trace = PACKTER_FALSE;
 
+/* for GeoIP */
+int geoip = PACKTER_FALSE;
+char geoip_datfile[PACKTER_BUFSIZ];
+
 /* for Snort */
 int snort = PACKTER_FALSE;
 int snort_report = PACKTER_FALSE;
@@ -105,9 +109,9 @@ int main(int argc, char *argv[])
 
 	/* getopt */
 #ifdef USE_INET6
-	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:u:g:nUsS6dh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:i:r:p:R:T:G:f:u:g:nUsS6dh?")) != -1) 
 #else
-	while ((op = getopt(argc, argv, "v:i:r:p:R:T:f:u:g:nUsSdh?")) != -1) 
+	while ((op = getopt(argc, argv, "v:i:r:p:R:T:G:f:u:g:nUsSdh?")) != -1) 
 #endif
 	{
 		switch (op) {
@@ -185,6 +189,14 @@ int main(int argc, char *argv[])
 			strncpy(trace_server, optarg, PACKTER_BUFSIZ);
 			break;	
 
+		case 'G': /* enable GeoIP */
+			geoip = PACKTER_TRUE;
+			if (strlen(optarg) < 1){
+				packter_usage();
+			}
+			strncpy(geoip_datfile, optarg, PACKTER_BUFSIZ);
+			break;
+
 		case 'h':
 		case '?':	/* usage */
 			packter_usage();
@@ -243,6 +255,7 @@ packter_usage(void)
 	printf("      -d ( Show debug information: optional)\n");
 	printf("      -R [ Random droprate ] (optional)\n");
 	printf("      -T [ Traceback Client ] (optional)\n");
+	printf("      -G [ GeoLiteCity datafile ] (optional)\n");
 	printf("      -s ( enable PACKERSE: optional)\n");
 	printf("      -n ( Not send packter packet: optional)\n");
 	printf("      [ pcap filter expression ] (optional)\n");

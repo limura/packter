@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Daisuke Miyamoto. All rights reserved.
+ * Copyright (c) 2011 Daisuke Miyamoto. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,75 +29,44 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <time.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-
-#include "pt_std.h"
-#include "pt_mesg.h"
-#include "pt_geoip.h"
-
-extern int trace;
-extern char *trace_server[];
-extern int packter_flagbase;
-extern int geoip;
-
-void packter_mesg(char *mesg, char *srcip, char *dstip, int data1, int data2, int flag, char *mesgbuf)
-{
 
 #ifdef USE_GEOIP
-	if (geoip == PACKTER_TRUE){
-		char srcgeo[PACKTER_BUFSIZ];
-		char dstgeo[PACKTER_BUFSIZ];
-
-		packter_geoip(srcip, srcgeo);
-		packter_geoip(dstip, dstgeo);
-	
-		if (trace == PACKTER_TRUE){
-			snprintf(mesg, PACKTER_BUFSIZ, "%s%s,%s,%d,%s-%s\n",
-						PACKTER_EARTH,
-						srcgeo,
-						dstgeo,
-						(flag + packter_flagbase),
-						mesgbuf,
-						trace_server					
-			);
-		}
-		else {
-			snprintf(mesg, PACKTER_BUFSIZ, "%s%s,%s,%d,%s\n",
-						PACKTER_EARTH,
-						srcgeo,
-						dstgeo,
-						(flag + packter_flagbase),
-						mesgbuf
-			);
-		}
-		return;	
-	}
+#include <GeoIP.h>
+#include <GeoIPCity.h>
 #endif
 
-	if (trace == PACKTER_TRUE){
-		snprintf(mesg, PACKTER_BUFSIZ, "%s%s,%s,%d,%d,%d,%s-%s\n",
-						PACKTER_HEADER,
-						srcip,
-						dstip,
-						data1,
-						data2,
-						(flag + packter_flagbase),
-						mesgbuf,
-						trace_server					
-		);
+#include "pt_std.h"
+#include "pt_geoip.h"
+
+extern int debug;
+extern char *geoip_datfile[];
+
+static const char * _mk_NA( const char * p ){
+	return p ? p : "N/A";
+}
+
+void packter_geoip(char *host, char *buf)
+{
+#ifdef USE_GEOIP
+	GeoIP       *gi;
+	GeoIPRecord *gir;
+	const char  *time_zone = NULL;
+	char        **ret;
+
+	gi = GeoIP_open((const char *)geoip_datfile, GEOIP_INDEX_CACHE);
+	gir = GeoIP_record_by_name(gi, host);
+	if (gir == NULL) {
+		printf("GeoIP record is NULL!\n");
+		exit(PACKTER_FALSE);
 	}
-	else {
-		snprintf(mesg, PACKTER_BUFSIZ, "%s%s,%s,%d,%d,%d,%s\n",
-						PACKTER_HEADER,
-						srcip,
-						dstip,
-						data1,
-						data2,
-						(flag + packter_flagbase),
-						mesgbuf
-		);
-	}
+	ret = GeoIP_range_by_ip(gi, host);
+	time_zone = GeoIP_time_zone_by_country_and_region(gir->country_code, gir->region);
+	snprintf(buf, PACKTER_BUFSIZ, "%f,%f", gir->latitude, gir->longitude);
+	GeoIP_range_by_ip_delete(ret);
+	GeoIPRecord_delete(gir);
+	GeoIP_delete(gi);
+#endif
 	return;
 }
+

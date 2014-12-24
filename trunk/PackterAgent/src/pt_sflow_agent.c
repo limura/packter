@@ -68,6 +68,11 @@ int use6 = PACKTER_FALSE;
 /* for InterTrack */
 char trace_server[PACKTER_BUFSIZ];
 int trace = PACKTER_FALSE;
+
+/* for GeoIP */
+int geoip = PACKTER_FALSE;
+char geoip_datfile[PACKTER_BUFSIZ];
+
 int packter_flagbase = 0;
 int snort_report = PACKTER_FALSE;
 int enable_sound = PACKTER_FALSE;
@@ -110,9 +115,9 @@ int main(int argc, char *argv[])
 
 	/* getopt */
 #ifdef USE_INET6
-	while ((op = getopt(argc, argv, "v:b:l:p:R:T:f:u:ns6dh?")) != -1)
+	while ((op = getopt(argc, argv, "v:b:l:p:R:T:G:f:u:ns6dh?")) != -1)
 #else
-	while ((op = getopt(argc, argv, "v:b:l:p:R:T:f:u:nsdh?")) != -1)
+	while ((op = getopt(argc, argv, "v:b:l:p:R:T:G:f:u:nsdh?")) != -1)
 #endif
 	{
 		switch(op){
@@ -183,6 +188,14 @@ int main(int argc, char *argv[])
 				strncpy(trace_server, optarg, PACKTER_BUFSIZ);
 				break;
 
+			case 'G': /* enable GeoIP */
+				geoip = PACKTER_TRUE;
+				if (strlen(optarg) < 1){
+					packter_sflow_agent_usage();
+				}
+				strncpy(geoip_datfile, optarg, PACKTER_BUFSIZ);
+				break;
+
 			case 'h': /* usage */
       case '?':
       default:
@@ -227,8 +240,9 @@ void packter_sflow_agent_usage()
 	printf("      -f [ Flag base ] (optional: default 0)\n");
 	printf("      -R [ Random droprate ] (optional)\n");
 	printf("      -T [ Traceback Client ] (optional)\n");
+	printf("      -G [ GeoLiteCity datafile ] (optional)\n");
   printf("\n");
-  printf(" ex) %s -v 192.168.1.1 -b 192.168.1.1 -l 6343\n", progname);
+  printf(" ex) %s -v 192.168.1.1 -b 192.168.1.2 -l 6343\n", progname);
   printf("\n");
 
 	exit(EXIT_SUCCESS);
