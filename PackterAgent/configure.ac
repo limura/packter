@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT(pt-agent, 1.0.0, namaya2hashi@packter.net)
+AC_INIT(pt-agent, 2.6.0, namaya2hashi@packter.net)
 AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION)
 AC_CONFIG_SRCDIR([src/pt_agent.c])
 AC_CONFIG_HEADER([config.h])
@@ -46,6 +46,13 @@ AC_ARG_ENABLE(ipv6,
 [  --enable-ipv6           enable ipv6 PACKTER viewer [default no]])
 if test "$enable_ipv6" = "yes"; then
   CFLAGS="-DUSE_INET6 $CFLAGS"
+fi
+
+AC_ARG_ENABLE(geoip,
+[  --enable-geoip          enable geoip support [default no]])
+if test "$enable_geoip" = "yes"; then
+	CFLAGS="-DUSE_GEOIP $CFLAGS"
+	LIBS="$LIBS -lGeoIP"
 fi
 
 AC_CONFIG_FILES([Makefile
