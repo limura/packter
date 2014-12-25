@@ -46,27 +46,36 @@ static const char * _mk_NA( const char * p ){
 	return p ? p : "N/A";
 }
 
-void packter_geoip(char *host, char *buf)
+#ifdef USE_GEOIP
+GeoIP       *gi = NULL;
+#endif
+
+int packter_geoip(char *host, char *buf)
 {
 #ifdef USE_GEOIP
-	GeoIP       *gi;
 	GeoIPRecord *gir;
 	const char  *time_zone = NULL;
 	char        **ret;
 
-	gi = GeoIP_open((const char *)geoip_datfile, GEOIP_INDEX_CACHE);
+	if (gi == NULL){
+		if ((gi = GeoIP_open((const char *)geoip_datfile, GEOIP_INDEX_CACHE)) == NULL){
+			return;
+		}
+	}
 	gir = GeoIP_record_by_name(gi, host);
 	if (gir == NULL) {
-		printf("GeoIP record is NULL!\n");
-		exit(PACKTER_FALSE);
+		if (debug == PACKTER_TRUE){
+			printf("GeoIP lookup failed for host %s\n", host);
+		}
+		return PACKTER_FALSE;
 	}
 	ret = GeoIP_range_by_ip(gi, host);
 	time_zone = GeoIP_time_zone_by_country_and_region(gir->country_code, gir->region);
 	snprintf(buf, PACKTER_BUFSIZ, "%f,%f", gir->latitude, gir->longitude);
 	GeoIP_range_by_ip_delete(ret);
 	GeoIPRecord_delete(gir);
-	GeoIP_delete(gi);
+	/* GeoIP_delete(gi); */
 #endif
-	return;
+	return PACKTER_TRUE;
 }
 

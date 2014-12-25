@@ -28,7 +28,7 @@
 #define __PACKTER_GEOIP_H__
 
 static const char * _mk_NA(const char *);
-void packter_geoip(char *, char *);
+int packter_geoip(char *, char *);
 
 #endif
 
