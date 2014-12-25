@@ -50,9 +50,11 @@ void packter_mesg(char *mesg, char *srcip, char *dstip, int data1, int data2, in
 		char srcgeo[PACKTER_BUFSIZ];
 		char dstgeo[PACKTER_BUFSIZ];
 
-		packter_geoip(srcip, srcgeo);
-		packter_geoip(dstip, dstgeo);
-	
+		if (packter_geoip(srcip, srcgeo) == PACKTER_FALSE ||
+				packter_geoip(dstip, dstgeo) == PACKTER_FALSE)
+		{
+			return;
+		}
 		if (trace == PACKTER_TRUE){
 			snprintf(mesg, PACKTER_BUFSIZ, "%s%s,%s,%d,%s-%s\n",
 						PACKTER_EARTH,
