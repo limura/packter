@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT(pt-agent, 2.6.0, namaya2hashi@packter.net)
+AC_INIT(pt-agent, 2.6.0, namaya2hashi@packter.jp)
 AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION)
 AC_CONFIG_SRCDIR([src/pt_agent.c])
 AC_CONFIG_HEADER([config.h])

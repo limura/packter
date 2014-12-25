@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Daisuke Miyamoto. All rights reserved.
+ * Copyright (c) 2008-15 Project PACKTER. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions

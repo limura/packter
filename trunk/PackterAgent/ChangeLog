@@ -1,6 +1,25 @@
-1.0.1
+2.6 
+  Support GeoIP
+
+2.5
+  Buf fixed
+
+2.4 
+	Support sFlow and NetFlow
+
+2.3
+  Bug fixed
+
+2.2
+  Minor update for supporting ound
+
+2.1
+  Minor update for supporting textures
+
+2.0
+  Support Traceback
 	Fix bug for 802.1Q VLAN (aka Tagged VLAN)
 
-1.0.0
+1.0
 	Initial Release
 
