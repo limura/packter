@@ -1,25 +1,66 @@
-2.6 
-  Support GeoIP
+Packter2.6 (r113) (2014/12/25)
+ Viewer
+ * Support new viewer runs on port 11400
 
-2.5
-  Buf fixed
+ Agent
+ * Support GeoIP
 
-2.4 
-	Support sFlow and NetFlow
+Packter2.5 (r102) (2012/08/21)
+ Agent
+ * Support sFlow and NetFlow
 
-2.3
-  Bug fixed
+Packter2.4 (r94) (2011/07/17)
+ Viewer
+ * Set Locale
 
-2.2
-  Minor update for supporting ound
+ Agent
+ * add intertrack config sample
+ * add option
 
-2.1
-  Minor update for supporting textures
+Packter2.3 (r76) (2010/07/13)
+ Viewer
+ * Append Soundfile
+ * Change config sample
 
-2.0
-  Support Traceback
-	Fix bug for 802.1Q VLAN (aka Tagged VLAN)
+ Agent
+ * Change config sample
 
-1.0
-	Initial Release
 
+Packter2.2 Agent (r70) (2010/06/14)
+
+ Agent
+ * Change Snort's UNIX domain socket support from -s to -u
+ * Support -s option for PACKTERSE command (experiemntal)
+
+ Thmon
+ * Accept SIGHUP for reloading configfile
+ * Modify help message
+ * Clarify configfile
+
+Packter2.1 (r56) (2010/06/10)
+
+ Viewer
+ * Enable /EnableSkyDome option
+ * Support HtmlConvertToCurrentDirTarget and  HtmlConvertTarget
+
+ Agent
+ * Support PACKTERSKYDOMETEXTURE command
+
+
+Packter 2.0 (r44) (2010/06/06)
+
+ * Support PACKTERMSG
+
+ * Support PACKTERSOUND
+
+ * Support PACKTERVOICE
+
+ * Add visual effects (Lightning)
+
+ * Add ball object
+
+
+
+Packter 1.0 (2008/08/31)
+
+ * Initial Release
