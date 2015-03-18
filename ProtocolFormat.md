@@ -1,0 +1,108 @@
+# packter protocol format (2010/06/13)
+
+# Abstract #
+
+This article specified a protocol format between Packter Viewer and Packter Agent. Packter Viewer, a multi-purpose traffic visualizer, listens for UDP datagrams on UDP port 11300. For drawing flying objects, showing messages, and/or playing sounds, Packter Agent sends a control UDP datagram toward Packter Viewer.
+
+# Details #
+## PACKTER ##
+This command is used for drawing flying objects. The format is as follows.
+```
+PACKTER
+SRCIP,DSTIP,SRCPORT,DSTPORT,FLAG,DESCRIPTION
+```
+where SRCIP and DSTIP are dot quatted IPv4 address or colon separeted IPv6 address, SRCPORT and DSTPORT are numeric higher than 0 and less than 65535. FLAG is identifier for the types of flying objects. Default settings of packter, flag can be specified 0, 1, ... 9. DESCRIPTION is string and used for showing packet description in Packet Viewer. This field is also used for IP Traceback.
+For example,
+```
+PACKTER
+192.168.1.1,10.0.0.1,49305,80,5,This is a test
+```
+A flying object departures from (192.168.1.1, 49305) to (10,0.0.1, 80) and its kind is 5. When this packet is selected, Packter Viewer shows ``This is a test'' in its window.
+```
+PACKTER
+192.168.1.1,10.0.0.1,49305,80,4,0123456789ABCDEF0123456789ABCDEF-172.16.45.1
+```
+This is similar to adove packet, but DESCRIPTION is used for IP Traceback. When this packet is selected, operators can be start IP Traceback procedure. In this case, the packet hash ``0123456789ABCDEF0123456789ABCDEF'' will be sent to 172.16.45.1 which runs PACKTER TC.
+
+## PACKTERMSG ##
+This command is used for showing messages. The format is as follows.
+```
+PACKTERMSG
+PICFILE,MESSAGE
+```
+PICFILE is a string and designates a graphic file name. MESSAGE is also string and designates a message appears on Packter Viewer.
+For example,
+```
+PACKTERMSG
+pic01.png,This is a message
+```
+Packter Viewer draws pic01.png and shows ```This is a message'' in its window. In this case, image file ```pic01.png'' should be placed in the working directory of Packter Viewer.
+
+## PACKTERHTML ##
+This comamnd is used for showing HTML mesasges. The format is as follows.
+```
+PACKTERMSG
+HTMLMESSAGE
+```
+HTMLMESSAEG is a string and is along with HTML format. Packet Viewer shows the message by using browser rendering support.
+For example,
+```
+PACKTERMSG
+<html><body><b>ABCDEFG</b></body></html>
+```
+Packter Viewer shows **ABCDEFG**.
+
+## PACKTERSE ##
+This command is used for playing a sound effect file. The format is as follows.
+```
+PACKTERMSG
+SOUNDFILE
+```
+SOUNDFILE is a string and designates a sound effect file.
+For example,
+```
+PACKTERSE
+sound01.wav
+```
+Packter Viewer plays ``sound01.wav'' This file also should be placed in the working directory of the packter.
+
+## PACKTERSOUND ##
+This command is used for playing a bgm file. The format is as follows.
+```
+PACKTERSOUND
+TIME,SOUNDFILE
+```
+TIME is a numeric and designates playing time for BGM. SOUNDFILE is a string and designates a BGM file. This file also should be placed in the working directory of the packter.
+For example,
+```
+PACKTERSOUND
+60,bgm01.wav
+```
+Packter Viewer plays ```bgm01.wav'' till 60 seconds past. When the play time of ```bgm01.wav'' is lesser than 60, bgm01.wav will be repeated till 60 seconds past.
+
+## PACKTERVOICE ##
+This command is used for playing some voice. For using this feature, Packter Viewer should be configured to use an external text reading software.
+```
+PACKTERVOICE
+SOUNDTEXT
+```
+SOUNDTEXT is a string and designates a text which is read by the external software.
+For example,
+```
+PACKTERVOICE
+/option /parameter ABCDEFG
+```
+Pacter Viewer calls the external software with "/option /parameter ABCDEFG".
+
+## PACKTERSKYDOMETEXTURE ##
+This command is used for adding texture for skydome. The format is as follows.
+```
+PACKTERSKYDOMETEXTURE
+TEXTUREFILE
+```
+TEXTUREFILE is the filename of the SkyDome's texture. For example,
+```
+PACKTERSKYDOMETEXTURE
+texture1.bmp
+```
+PACKTER Viewer draws texture1.bmp for the skydome.
