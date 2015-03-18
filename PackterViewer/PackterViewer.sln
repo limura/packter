@@ -1,12 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual C# Express 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackterViewer", "PackterViewer\PackterViewer.csproj", "{1C2CA02E-B756-4D2B-B27E-F740DB06F712}"
-	ProjectSection(ProjectDependencies) = postProject
-		{C2152F36-93F0-4D91-807A-DE7C44AB6AF1} = {C2152F36-93F0-4D91-807A-DE7C44AB6AF1}
-	EndProjectSection
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackterViewer", "PackterViewer\PackterViewer\PackterViewer.csproj", "{4AB30D31-76D0-40AE-85E7-BBE9600AE95B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Content", "PackterViewer\Content\Content.contentproj", "{C2152F36-93F0-4D91-807A-DE7C44AB6AF1}"
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "PackterViewerContent", "PackterViewer\PackterViewerContent\PackterViewerContent.contentproj", "{34F1116A-FAC8-4B02-83E6-2E5E703AF91E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,14 +13,12 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1C2CA02E-B756-4D2B-B27E-F740DB06F712}.Debug|x86.ActiveCfg = Debug|x86
-		{1C2CA02E-B756-4D2B-B27E-F740DB06F712}.Debug|x86.Build.0 = Debug|x86
-		{1C2CA02E-B756-4D2B-B27E-F740DB06F712}.Release|x86.ActiveCfg = Release|x86
-		{1C2CA02E-B756-4D2B-B27E-F740DB06F712}.Release|x86.Build.0 = Release|x86
-		{C2152F36-93F0-4D91-807A-DE7C44AB6AF1}.Debug|x86.ActiveCfg = Debug|x86
-		{C2152F36-93F0-4D91-807A-DE7C44AB6AF1}.Debug|x86.Build.0 = Debug|x86
-		{C2152F36-93F0-4D91-807A-DE7C44AB6AF1}.Release|x86.ActiveCfg = Release|x86
-		{C2152F36-93F0-4D91-807A-DE7C44AB6AF1}.Release|x86.Build.0 = Release|x86
+		{4AB30D31-76D0-40AE-85E7-BBE9600AE95B}.Debug|x86.ActiveCfg = Debug|x86
+		{4AB30D31-76D0-40AE-85E7-BBE9600AE95B}.Debug|x86.Build.0 = Debug|x86
+		{4AB30D31-76D0-40AE-85E7-BBE9600AE95B}.Release|x86.ActiveCfg = Release|x86
+		{4AB30D31-76D0-40AE-85E7-BBE9600AE95B}.Release|x86.Build.0 = Release|x86
+		{34F1116A-FAC8-4B02-83E6-2E5E703AF91E}.Debug|x86.ActiveCfg = Debug|x86
+		{34F1116A-FAC8-4B02-83E6-2E5E703AF91E}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

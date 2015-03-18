@@ -1,0 +1,84 @@
+#
+# 2010/06/10: イベントにて使用
+# 2010/07/13: 最新の設定に合わせて改良
+#
+# PackterViewer /EnableSkyDome Config.txt.sample
+# にて起動
+#
+
+# Size: 流れるパケットの大きさを指定します。default: 8
+#Size = 8
+
+# Softalk: PACKTERVOICE で指定された文字列を渡されるコマンド。default: softalk/softalkw.exe
+#Softalk = softalk/softalkw.exe
+Softalk = softalk\\softalkw.exe
+
+# PackterMsgFormat1: PACKTERMSG で渡された文字列部分の前に挿入されるもの。
+# default: <html lang="ja"><body>
+PackterMSGFormat1 = <html><head><style type="text/css"><!-- body { font-family: verdana,メイリオ; } --> </style></head><body font-family="verdana,arial,sans-serif"><table><tr><td width="80"></td><td align="left">
+
+# PackterMsgFormat2: PACKTERMSG で渡された文字列部分の後に挿入されるもの
+# default: </body></html>
+#PackterMsgFormat2 = </body></html>
+PackterMSGFormat2 = </tr></table></body></html>
+
+# HtmlConvertTarget: PACKTERMSG で渡された HTML メッセージを変換するもの
+# default: (なし)
+#
+HtmlConvertTarget = <pic-m1> <img src="file:///<CURRENTDIR>/pic01.png" height="150" align="top"></td><td width="1200" align="center">
+HtmlConvertTarget = <pic-m2> <img src="file:///<CURRENTDIR>/pic02.png" height="150" align="top"></td><td width="1200" align="center">
+HtmlConvertTarget = <pic-m3> <img src="file:///<CURRENTDIR>/pic03.png" height="150" align="top"></td><td width="1200" align="center">
+HtmlConvertTarget = <pic-m4> <img src="file:///<CURRENTDIR>/pic04.png" height="150" align="top"></td><td width="1200" align="center">
+HtmlConvertTarget = <pic-f1> <img src="file:///<CURRENTDIR>/pic05.png" height="150" align="top"></td><td width="1200" align="center">
+HtmlConvertTarget = <pic-f2> <img src="file:///<CURRENTDIR>/pic06.png" height="150" align="top"></td><td width="1200" align="center">
+HtmlConvertTarget = <pic-f3> <img src="file:///<CURRENTDIR>/pic07.png" height="150" align="top"></td><td width="1200" align="center">
+HtmlConvertTarget = <pic-f4> <img src="file:///<CURRENTDIR>/pic08.png" height="150" align="top"></td><td width="1200" align="center">
+HtmlConvertToCurrentDirTarget = <CURRENTDIR>
+
+# MsgBoxCloseTimeSec: PACKTERMSG で表示されたメッセージが閉じるまでの時間(秒)。default: 10(秒)
+#MsgBoxCloseTimeSec = 10
+MsgBoxCloseTimeSec = 8
+
+# LoadPacketTarget: 流れるパケットの形状を指定します。ball と board のみが使用できます。
+# 理解できないものは ball として判定されます。default: ball
+LoadPacketTarget = ball
+
+# SenderBoardFile: 送信側に表示されるオブジェクトの .x ファイルを指定します。default では未設定です
+#SenderBoardFile = 
+
+# ReceiverBoardFile: 受信側に表示されるオブジェクトの .x ファイルを指定します。default では未設定です
+#ReceiverBoardFile = 
+
+# SenderBoardScale: 送信側に表示されるオブジェクトの拡大率を指定します。default では 1.0 です
+#SenderBoardScale = 1.0
+
+# ReceiverBoardScale: 受信側に表示されるオブジェクトの拡大率を指定します。default では 1.0 です
+#ReceiverBoardScale = 1.0
+
+# SenderBoardTextureFile: 送信側に表示されるオブジェクトのテクスチャを指定します。default では未設定です
+#SenderBoardTextureFile =
+
+# ReceiverBoardTextureFile: 受信側に表示されるオブジェクトのテクスチャを指定します。default では未設定です
+#ReceiverBoardTextureFile =
+
+# TickKeyInputAcceptMicrosecond: とても短いキー入力(KeyDown -> KeyUp までの時間)が短い場合、
+# Bキー と Fキー の効果を強化する機能の「短い」と判断するための時間(マイクロ秒)。default: 50000(マイクロ秒)
+TickKeyInputAcceptMicrosecond = 50000
+
+
+# MaxSENum
+# PACKTERSE で再生するSEで同時に再生出来る数を指定します。
+# default は 10 です。
+#MaxSENum = 1
+
+# SE Settings
+# PACKTERSE で再生される音声を XACT で作成したものを使う場合、以下の三つのファイルを指定する必要があります。
+# XACTFileForAudioEngine AudioEngine に渡される XACT DataFile (.xgs)
+# XACTFileForWaveBank WaveBank に渡される XACT DataFile (.xwb)
+# XACTFileForSoundBank SoundBank に渡される XACT DataFile (.xsb)
+# default ではそれぞれ null です。
+# ここで指定されたサウンドを鳴らす場合には PACKTERSE には Cue Name で指定してください。
+# また、XACT での同時再生数は MaxSENum にはよらず、環境依存です。
+#XACTFileForAudioEngine = Sound Project.xgs
+#XACTFileForWaveBank = Wave Bank.xwb
+#XACTFileForSoundBank = Sound Bank.xsb
